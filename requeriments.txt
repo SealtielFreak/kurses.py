@@ -1,2 +1,2 @@
-pysdl2
-pysdl2-dll
+pysdl2~=0.9.15
+pysdl2-dll~=2.26.2
