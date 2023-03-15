@@ -55,7 +55,7 @@ def rgb_to_hex(rgb):
     return (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]
 
 
-DEFAULT_BIT_COLORS = get_8bit_colors
+DEFAULT_BIT_COLORS = get_1bit_colors
 
 
 def main():
