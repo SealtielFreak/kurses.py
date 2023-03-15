@@ -55,7 +55,7 @@ def rgb_to_hex(rgb):
     return (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]
 
 
-DEFAULT_BIT_COLORS = get_1bit_colors
+DEFAULT_BIT_COLORS = get_8bit_colors
 
 
 def main():
@@ -111,6 +111,8 @@ def main():
 
         x, y = 0, 0
         for texture in ascii_texture.values():
+            over = False
+
             for rgb in DEFAULT_BIT_COLORS():
                 source = sdl2.SDL_Rect(0, 0, w, h)
                 dest = sdl2.SDL_Rect(x * w, y * h, w, h)
@@ -120,9 +122,16 @@ def main():
 
                 x += 1
 
+                if x * w > window_width and y * h > window_height:
+                    over = True
+                    break
+
                 if x * w > window_width:
                     y += 1
                     x = 0
+
+            if over:
+                break
 
         sdl2.SDL_RenderPresent(renderer)
 
