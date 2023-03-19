@@ -30,6 +30,12 @@ class CharacterValue:
         return hash((self.code, self.fg, self.bg, self.style))
 
 
+def get_true_colors():
+    for r in range(0, 256):
+        for g in range(0, 256):
+            for b in range(0, 256):
+                yield r, g, b
+
 def get_8bit_colors():
     for r in range(0, 256, 36):
         for g in range(0, 256, 36):
