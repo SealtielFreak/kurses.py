@@ -36,6 +36,7 @@ def get_true_colors():
             for b in range(0, 256):
                 yield r, g, b
 
+
 def get_8bit_colors():
     for r in range(0, 256, 36):
         for g in range(0, 256, 36):
@@ -120,11 +121,10 @@ def main():
             over = False
 
             for rgb in DEFAULT_BIT_COLORS():
-                source = sdl2.SDL_Rect(0, 0, w, h)
                 dest = sdl2.SDL_Rect(x * w, y * h, w, h)
                 sdl2.SDL_SetRenderDrawColor(renderer, *rgb, 255)
                 sdl2.SDL_RenderFillRect(renderer, dest)
-                sdl2.SDL_RenderCopy(renderer, texture, source, dest)
+                sdl2.SDL_RenderCopy(renderer, texture, None, dest)
 
                 x += 1
 
