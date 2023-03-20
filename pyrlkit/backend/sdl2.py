@@ -42,6 +42,7 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
     def __init__(self):
         self.__buffer = pyrlkit.buffer_matrix.BufferMatrix(80, 30)
         self.__target = None
+        self.__running = True
 
     @property
     def buffer(self) -> pyrlkit.buffer_matrix.BufferMatrix:
@@ -68,10 +69,16 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
 
         DEFAULT_BIT_COLORS = get_1bit_colors
 
+        def __main():
+            try:
+                self.__target()
+            except Exception as e:
+                self.__running = False
+                raise e
+
         if sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING):
             return
 
-        running = True
         window = sdl2.SDL_CreateWindow(
             WINDOW_DEFAULT_TITLE.encode(),
             *WINDOW_DEFAULT_POSITION,
@@ -111,11 +118,11 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
         sdl2.SDL_QueryTexture(next(iter(ascii_texture.values())), None, None, ctypes.byref(w), ctypes.byref(h))
         w, h = w.value, h.value
 
-        thread = threading.Thread(target=self.__target)
+        thread = threading.Thread(target=__main)
         thread.daemon = True
         thread.start()
 
-        while running:
+        while self.__running:
             events = sdl2.SDL_Event()
             while sdl2.SDL_PollEvent(ctypes.byref(events)) != 0:
                 if events.type == sdl2.SDL_QUIT:
