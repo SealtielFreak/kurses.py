@@ -38,7 +38,7 @@ class CharacterAttribute:
         return self.code == other.code
 
     def __hash__(self):
-        return hash((self.code, self.foreign, self.background, self.style))
+        return hash((self.code, self.foreign, self.background, self.bold, self.italic, self.underline))
 
     def __bool__(self):
         return self.code != ''
@@ -64,7 +64,7 @@ def copy_memset(a: MatrixCharacterAttribute, b: MatrixCharacterAttribute) -> Mat
     return b
 
 
-class MatrixBuffer:
+class BufferMatrix:
     def __init__(self, columns: int, rows: int):
         self.__current_character = CharacterAttribute()
         self.__shape = rows, columns
