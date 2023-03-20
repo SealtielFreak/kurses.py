@@ -71,7 +71,10 @@ class BufferMatrix:
         self.__matrix = create_matrix(rows, columns)
 
     def __iter__(self):
-        return iter([[c for c in k] for k in self.__matrix])
+        for row in self.__matrix:
+            for _chr in row:
+                if _chr.code != '':
+                    yield _chr
 
     @property
     def queue(self) -> DequeCharacterAttribute:
@@ -133,7 +136,14 @@ class BufferMatrix:
     def cputs(self, _chr: chr):
         self.__current_character.code = _chr
         x, y = self.__current_character.x, self.__current_character.y
-        self.__matrix[y][x] = dataclasses.replace(self.__current_character)
+
+        try:
+            chr_attr = dataclasses.replace(self.__current_character)
+            chr_attr.x = x
+            chr_attr.y = y
+            self.__matrix[y][x] = chr_attr
+        except IndexError:
+            pass
 
     def print(self, _str: str):
         x, y = self.wherex(), self.wherey()
@@ -144,7 +154,14 @@ class BufferMatrix:
 
     def putchxy(self, x: int, y: int, _chr: chr) -> None:
         self.__current_character.code = _chr
-        self.__matrix[y][x] = dataclasses.replace(self.__current_character)
+
+        try:
+            chr_attr = dataclasses.replace(self.__current_character)
+            chr_attr.x = x
+            chr_attr.y = y
+            self.__matrix[y][x] = chr_attr
+        except IndexError:
+            pass
 
     def cputsxy(self, x: int, y: int, _str: str) -> None:
         for _chr in _str:

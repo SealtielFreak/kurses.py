@@ -126,7 +126,7 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
             events = sdl2.SDL_Event()
             while sdl2.SDL_PollEvent(ctypes.byref(events)) != 0:
                 if events.type == sdl2.SDL_QUIT:
-                    running = False
+                    self.__running = False
 
                 elif events.type == sdl2.SDL_WINDOWEVENT:
                     if events.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
@@ -142,7 +142,7 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
                 x, y = _chr.x, _chr.y
                 dest = sdl2.SDL_Rect(x * w, y * h, w, h)
 
-                sdl2.SDL_SetRenderDrawColor(renderer, *pyrlkit.buffer_matrix.hex_to_rgb(_chr.background), 255)
+                sdl2.SDL_SetRenderDrawColor(renderer, *_chr.background, 255)
                 sdl2.SDL_RenderFillRect(renderer, dest)
                 sdl2.SDL_RenderCopy(renderer, ascii_texture[_chr], None, dest)
 

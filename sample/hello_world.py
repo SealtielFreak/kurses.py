@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
     def main():
         while True:
-            term.print("Hello world")
+            term.cputsxy(0, 0, "Hello world")
 
     console.set_target(main)
     console.main_loop()
