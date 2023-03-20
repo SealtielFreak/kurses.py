@@ -41,7 +41,7 @@ class CharacterAttribute:
         return hash((self.code, self.foreign, self.background, self.style))
 
     def __bool__(self):
-        return self == CharacterAttribute()
+        return self.code != ''
 
 
 ArrayCharacterAttribute = typing.List[CharacterAttribute]
@@ -99,6 +99,12 @@ class MatrixBuffer:
     def clrscr(self) -> None:
         self.__matrix = create_matrix(*self.buffersize)
 
+    def wherex(self):
+        return self.__current_character.x
+
+    def wherey(self):
+        return self.__current_character.y
+
     def gotoxy(self, x: int, y: int) -> None:
         self.__current_character.x = x
         self.__current_character.y = y
@@ -130,8 +136,11 @@ class MatrixBuffer:
         self.__matrix[y][x] = dataclasses.replace(self.__current_character)
 
     def print(self, _str: str):
+        x, y = self.wherex(), self.wherey()
         for _chr in _str:
+            self.gotoxy(x, y)
             self.cputs(_chr)
+            x += 1
 
     def putchxy(self, x: int, y: int, _chr: chr) -> None:
         self.__current_character.code = _chr
