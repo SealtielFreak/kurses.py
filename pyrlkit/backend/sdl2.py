@@ -1,4 +1,3 @@
-import collections
 import ctypes
 import string
 import threading
@@ -36,6 +35,17 @@ def get_1bit_colors():
         for g in range(0, 256, 255):
             for b in range(0, 256, 255):
                 yield r, g, b
+
+
+def rgb_to_bit_depth(rgb, bit_depth):
+    factor = 256 // bit_depth
+    r, g, b = rgb
+
+    r = r // factor * factor
+    g = g // factor * factor
+    b = b // factor * factor
+
+    return (r << 16) + (g << 8)
 
 
 class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
@@ -109,6 +119,9 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
                         chr_attr = pyrlkit.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, italic=True)
                     elif style == sdl2.sdlttf.TTF_STYLE_BOLD:
                         chr_attr = pyrlkit.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, bold=True)
+                    elif style == sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH:
+                        chr_attr = pyrlkit.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign,
+                                                                            strikethrough=True)
 
                     ascii_texture[chr_attr] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)
 

@@ -33,15 +33,22 @@ class CharacterAttribute:
     bold: bool = False
     italic: bool = False
     underline: bool = False
+    strikethrough: bool = False
 
     def __eq__(self, other):
         return self.code == other.code
 
     def __hash__(self):
-        return hash((self.code, self.foreign, self.background, self.bold, self.italic, self.underline))
+        return hash(
+            (
+                self.code,
+                self.foreign, self.background,
+                self.bold, self.italic, self.underline, self.strikethrough
+            )
+        )
 
     def __bool__(self):
-        return self.code != ''
+        return not self.code == ' '
 
 
 ArrayCharacterAttribute = typing.List[CharacterAttribute]
@@ -70,6 +77,7 @@ class BufferMatrix:
         self.__bold = False
         self.__italic = False
         self.__underline = False
+        self.__strikethrough = False
         self.__foreign_color = (255, 255, 255)
         self.__background_color = (0, 0, 0)
         self.__shape = rows, columns
@@ -139,13 +147,14 @@ class BufferMatrix:
 
     def __create_character_attr(self, _chr, x, y):
         return CharacterAttribute(
-                _chr, x, y,
-                self.__foreign_color,
-                self.__background_color,
-                self.__bold,
-                self.__italic,
-                self.__underline
-            )
+            _chr, x, y,
+            self.__foreign_color,
+            self.__background_color,
+            self.__bold,
+            self.__italic,
+            self.__underline,
+            self.__strikethrough
+        )
 
     def cputs(self, _chr: chr):
         x, y = self.__current_position
