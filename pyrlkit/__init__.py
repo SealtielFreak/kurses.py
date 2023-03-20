@@ -1,5 +1,4 @@
 import abc
-import collections
 
 import pyrlkit.character_attr
 import pyrlkit.style
@@ -131,9 +130,6 @@ class VirtualMatrixBuffer(abc.ABC):
     def resize(self, columns: int, rows: int) -> None: ...
 
     @abc.abstractmethod
-    def refresh(self) -> int: ...
-
-    @abc.abstractmethod
     def clreol(self) -> None: ...
 
     @abc.abstractmethod
@@ -158,18 +154,6 @@ class VirtualMatrixBuffer(abc.ABC):
     def print(self, _str: str): ...
 
     @abc.abstractmethod
-    def cputsxy(self, x: int, y: int, _str: str) -> None: ...
-
-    @abc.abstractmethod
-    def putchxy(self, x: int, y: int, _chr: chr) -> None: ...
-
-    @abc.abstractmethod
-    def _setcursortype(self, type: int) -> None: ...
-
-    @abc.abstractmethod
-    def textattr(self, attr: int) -> None: ...
-
-    @abc.abstractmethod
     def normvideo(self) -> None: ...
 
     @abc.abstractmethod
@@ -179,150 +163,26 @@ class VirtualMatrixBuffer(abc.ABC):
     def textcolor(self, color: int) -> None: ...
 
     @abc.abstractmethod
-    def wherex(self) -> int: ...
-
-    @abc.abstractmethod
-    def wherey(self) -> int: ...
-
-    @abc.abstractmethod
-    def getpass(self, prompt: str, str: str) -> str: ...
-
-    @abc.abstractmethod
-    def highvideo(self) -> None: ...
-
-    @abc.abstractmethod
-    def lowvideo(self) -> None: ...
-
-    @abc.abstractmethod
-    def delay(self, ms: int) -> None: ...
-
-    @abc.abstractmethod
     def switchbackground(self, color: int) -> None: ...
 
     @abc.abstractmethod
     def flashbackground(self, color: int, ms: int) -> None: ...
 
     @abc.abstractmethod
-    def clearkeybuf(self) -> None: ...
+    def bold(self, _bool: bool): ...
 
     @abc.abstractmethod
-    def kbhit(self) -> int: ...
+    def italic(self, _bool: bool): ...
 
     @abc.abstractmethod
-    def getch(self) -> int: ...
+    def underline(self, _bool: bool): ...
 
     @abc.abstractmethod
-    def getche(self) -> int: ...
+    def cputsxy(self, x: int, y: int, _str: str) -> None: ...
+
+    @abc.abstractmethod
+    def putchxy(self, x: int, y: int, _chr: chr) -> None: ...
 
 
 class MatrixBuffer(VirtualMatrixBuffer):
-    def __init__(self, columns: int, rows: int):
-        self.__shape = rows, columns
-        self.__matrix = create_matrix(rows, columns)
-
-    @property
-    @abc.abstractmethod
-    def queue(self) -> typing.Deque[pyrlkit.character_attr.CharacterAttribute]:
-        return collections.deque(iter(self))
-
-    def __iter__(self):
-        for row in self.__matrix.copy():
-            for c in row:
-                yield c
-
-    @property
-    def buffersize(self) -> typing.Tuple[int, int]:
-        return self.getbuffersize()
-
-    def getbuffersize(self) -> typing.Tuple[int, int]:
-        return self.__shape
-
-    def resize(self, columns: int, rows: int) -> None:
-        self.__matrix = memset_matrix(self.__matrix, create_matrix(rows, columns))
-
-    def refresh(self) -> int:
-        pass
-
-    def clreol(self) -> None:
-        pass
-
-    def clrscr(self) -> None:
-        self.__matrix = create_matrix(*self.buffersize)
-
-    def delline(self) -> None:
-        pass
-
-    def insline(self) -> None:
-        pass
-
-    def puttext(self, left: int, top: int, right: int, bottom: int, char_info) -> None:
-        pass
-
-    def movetext(self, left: int, top: int, right: int, bottom: int, destleft: int, desttop: int) -> None:
-        pass
-
-    def gotoxy(self, x: int, y: int) -> None:
-        pass
-
-    def print(self, _str: str):
-        pass
-
-    def cputsxy(self, x: int, y: int, _str: str) -> None:
-        pass
-
-    def putchxy(self, x: int, y: int, _chr: chr) -> None:
-        try:
-            self.__matrix[y][x] = pyrlkit.character_attr.CharacterAttribute(code=_chr, x=x, y=y)
-        except IndexError:
-            pass
-
-    def _setcursortype(self, type: int) -> None:
-        pass
-
-    def textattr(self, attr: int) -> None:
-        pass
-
-    def normvideo(self) -> None:
-        pass
-
-    def textbackground(self, color: int) -> None:
-        pass
-
-    def textcolor(self, color: int) -> None:
-        pass
-
-    def wherex(self) -> int:
-        pass
-
-    def wherey(self) -> int:
-        pass
-
-    def getpass(self, prompt: str, str: str) -> str:
-        pass
-
-    def highvideo(self) -> None:
-        pass
-
-    def lowvideo(self) -> None:
-        pass
-
-    def delay(self, ms: int) -> None:
-        pass
-
-    def switchbackground(self, color: int) -> None:
-        pass
-
-    def flashbackground(self, color: int, ms: int) -> None:
-        pass
-
-    def clearkeybuf(self) -> None:
-        pass
-
-    def kbhit(self) -> int:
-        pass
-
-    def getch(self) -> int:
-        pass
-
-    def getche(self) -> int:
-        pass
+    pass
