@@ -1,5 +1,5 @@
-import pyrlkit.virtual_console
 import pyrlkit.buffer_matrix
+import pyrlkit.virtual_console
 
 
 class PygameVirtualConsole(pyrlkit.virtual_console.VirtualConsole):

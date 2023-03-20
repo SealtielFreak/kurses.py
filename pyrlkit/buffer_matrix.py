@@ -71,7 +71,7 @@ class BufferMatrix:
         self.__matrix = create_matrix(rows, columns)
 
     def __iter__(self):
-        return iter([k[:] for k in self.__matrix])
+        return iter([[c for c in k] for k in self.__matrix])
 
     @property
     def queue(self) -> DequeCharacterAttribute:
