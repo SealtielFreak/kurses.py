@@ -84,8 +84,7 @@ class Window(abc.ABC):
         pass
 
 
-@enum.Enum
-class FontStyle:
+class FontStyle(enum.Enum):
     NORMAL = 0
     ITALIC = 1
     BOLD = 2
