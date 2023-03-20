@@ -1,10 +1,10 @@
 import sdl2
 
-import pyrlkit.backend.virtual_console
+import pyrlkit.virtual_console
 import pyrlkit.buffer_matrix
 
 
-class SDL2VirtualConsole(pyrlkit.backend.virtual_console.VirtualConsole):
+class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
     def __init__(self):
         self.__buffer = pyrlkit.buffer_matrix.BufferMatrix(80, 30)
 
@@ -16,7 +16,7 @@ class SDL2VirtualConsole(pyrlkit.backend.virtual_console.VirtualConsole):
         pass
 
     def main_loop(self):
-        pass
+        sdl2.SDL_Init(0)
 
     def set_title(self, _str: str):
         pass

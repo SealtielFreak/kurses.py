@@ -1,8 +1,8 @@
-import pyrlkit.backend.virtual_console
+import pyrlkit.virtual_console
 import pyrlkit.buffer_matrix
 
 
-class PygameVirtualConsole(pyrlkit.backend.virtual_console.VirtualConsole):
+class PygameVirtualConsole(pyrlkit.virtual_console.VirtualConsole):
     @property
     def buffer(self) -> pyrlkit.buffer_matrix.BufferMatrix:
         pass
