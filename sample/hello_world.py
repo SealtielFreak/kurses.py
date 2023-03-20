@@ -1,8 +1,9 @@
 import pyrlkit
+from pyrlkit.buffer_matrix import BufferMatrix
 
 
 if __name__ == "__main__":
-    buffer = pyrlkit.BufferMatrix(80, 30)
+    buffer = BufferMatrix(80, 30)
 
     buffer.print("Hello world")
 
