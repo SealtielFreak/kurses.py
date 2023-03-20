@@ -1,102 +1,59 @@
 import abc
-
-import pyrlkit.character_attr
-import pyrlkit.style
-
-
-class Window(abc.ABC):
-    @property
-    @abc.abstractmethod
-    def position(self):
-        pass
-
-    @position.setter
-    @abc.abstractmethod
-    def position(self, value):
-        pass
-
-    @property
-    @abc.abstractmethod
-    def size(self):
-        pass
-
-    @size.setter
-    @abc.abstractmethod
-    def size(self, value):
-        pass
-
-    @property
-    @abc.abstractmethod
-    def title(self):
-        pass
-
-    @title.setter
-    @abc.abstractmethod
-    def title(self, value):
-        pass
-
-    @property
-    @abc.abstractmethod
-    def visible(self):
-        pass
-
-    @visible.setter
-    @abc.abstractmethod
-    def visible(self, value):
-        pass
-
-    @abc.abstractmethod
-    def set_size(self, width, height):
-        pass
-
-    @abc.abstractmethod
-    def set_position(self, x, y):
-        pass
-
-    @abc.abstractmethod
-    def set_title(self, title):
-        pass
-
-    @abc.abstractmethod
-    def show(self):
-        pass
-
-    @abc.abstractmethod
-    def hide(self):
-        pass
-
-    @abc.abstractmethod
-    def minimize(self):
-        pass
-
-    @abc.abstractmethod
-    def maximize(self):
-        pass
-
-    @abc.abstractmethod
-    def restore(self):
-        pass
-
-    @abc.abstractmethod
-    def close(self):
-        pass
-
-    @abc.abstractmethod
-    def set_transparency(self, alpha):
-        pass
-
-
-import abc
+import collections
+import dataclasses
 import typing
 
-MatrixCharacterAttribute = typing.List[typing.List[pyrlkit.character_attr.CharacterAttribute]]
+TupleColor = typing.Tuple[int, int, int]
+Color = typing.Union[TupleColor, int]
+
+
+def rgb_to_hex(rgb: TupleColor) -> int:
+    return (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]
+
+
+def hex_to_rgb(hex_color: int) -> TupleColor:
+    hex_str = hex(hex_color)[2:]
+
+    hex_str = hex_str.rjust(6, '0')
+
+    r = int(hex_str[0:2], 16)
+    g = int(hex_str[2:4], 16)
+    b = int(hex_str[4:6], 16)
+
+    return r, g, b
+
+
+@dataclasses.dataclass
+class CharacterAttribute:
+    code: chr = ''
+    x: int = 0
+    y: int = 0
+    foreign: TupleColor = (255, 255, 255)
+    background: TupleColor = (0, 0, 0)
+    bold: bool = False
+    italic: bool = False
+    underline: bool = False
+
+    def __eq__(self, other):
+        return self.code == other.code
+
+    def __hash__(self):
+        return hash((self.code, self.foreign, self.background, self.style))
+
+    def __bool__(self):
+        return self == CharacterAttribute()
+
+
+ArrayCharacterAttribute = typing.List[CharacterAttribute]
+MatrixCharacterAttribute = typing.List[ArrayCharacterAttribute]
+DequeCharacterAttribute = typing.Deque[CharacterAttribute]
 
 
 def create_matrix(rows: int, cols: int) -> MatrixCharacterAttribute:
-    return [[pyrlkit.character_attr.CharacterAttribute() for _ in range(rows)] for _ in range(cols)]
+    return [[CharacterAttribute() for _ in range(rows)] for _ in range(cols)]
 
 
-def memset_matrix(a: MatrixCharacterAttribute, b: MatrixCharacterAttribute):
+def copy_memset(a: MatrixCharacterAttribute, b: MatrixCharacterAttribute) -> MatrixCharacterAttribute:
     for y, row in enumerate(a):
         for x, c in enumerate(a):
             try:
@@ -107,82 +64,80 @@ def memset_matrix(a: MatrixCharacterAttribute, b: MatrixCharacterAttribute):
     return b
 
 
-class VirtualMatrixBuffer(abc.ABC):
-    U_CHR_MAX = 255
-    DEFAULT_TITLE = ""
-    DEFAULT_SIZE = 640, 480
+class MatrixBuffer:
+    def __init__(self, columns: int, rows: int):
+        self.__current_character = CharacterAttribute()
+        self.__shape = rows, columns
+        self.__matrix = create_matrix(rows, columns)
+
+    def __iter__(self):
+        return iter([k[:] for k in self.__matrix])
 
     @property
-    @abc.abstractmethod
-    def queue(self) -> typing.Deque[pyrlkit.character_attr.CharacterAttribute]: ...
+    def queue(self) -> DequeCharacterAttribute:
+        return collections.deque(iter(self))
+
+    def resize(self, columns: int, rows: int) -> None:
+        self.__shape = rows, columns
+        self.__matrix = copy_memset(self.__matrix, create_matrix(rows, columns))
 
     @abc.abstractmethod
-    def __iter__(self): ...
+    def getbuffersize(self) -> typing.Tuple[int, int]:
+        return self.__shape
 
     @property
-    @abc.abstractmethod
-    def buffersize(self): ...
+    def buffersize(self) -> typing.Tuple[int, int]:
+        return self.getbuffersize()
 
-    @abc.abstractmethod
-    def getbuffersize(self) -> typing.Tuple[int, int]: ...
+    @buffersize.setter
+    def buffersize(self, shape: typing.Tuple[int, int]):
+        self.resize(*shape)
 
-    @abc.abstractmethod
-    def resize(self, columns: int, rows: int) -> None: ...
+    def clreol(self) -> None:
+        ...
 
-    @abc.abstractmethod
-    def clreol(self) -> None: ...
+    def clrscr(self) -> None:
+        self.__matrix = create_matrix(*self.buffersize)
 
-    @abc.abstractmethod
-    def clrscr(self) -> None: ...
+    def gotoxy(self, x: int, y: int) -> None:
+        self.__current_character.x = x
+        self.__current_character.y = y
 
-    @abc.abstractmethod
-    def delline(self) -> None: ...
+    def set_background_color(self, color: Color) -> None:
+        if isinstance(color, int):
+            color = hex_to_rgb(color)
 
-    @abc.abstractmethod
-    def insline(self) -> None: ...
+        self.__current_character.background = color
 
-    @abc.abstractmethod
-    def puttext(self, left: int, top: int, right: int, bottom: int, char_info) -> None: ...
+    def set_foreign_color(self, color: Color) -> None:
+        if isinstance(color, int):
+            color = hex_to_rgb(color)
 
-    @abc.abstractmethod
-    def movetext(self, left: int, top: int, right: int, bottom: int, destleft: int, desttop: int) -> None: ...
+        self.__current_character.foreign = color
 
-    @abc.abstractmethod
-    def gotoxy(self, x: int, y: int) -> None: ...
+    def bold(self, _bool: bool):
+        self.__current_character.bold = _bool
 
-    @abc.abstractmethod
-    def print(self, _str: str): ...
+    def italic(self, _bool: bool):
+        self.__current_character.italic = _bool
 
-    @abc.abstractmethod
-    def normvideo(self) -> None: ...
+    def underline(self, _bool: bool):
+        self.__current_character.underline = _bool
 
-    @abc.abstractmethod
-    def textbackground(self, color: int) -> None: ...
+    def cputs(self, _chr: chr):
+        self.__current_character.code = _chr
+        x, y = self.__current_character.x, self.__current_character.y
+        self.__matrix[y][x] = dataclasses.replace(self.__current_character)
 
-    @abc.abstractmethod
-    def textcolor(self, color: int) -> None: ...
+    def print(self, _str: str):
+        for _chr in _str:
+            self.cputs(_chr)
 
-    @abc.abstractmethod
-    def switchbackground(self, color: int) -> None: ...
+    def putchxy(self, x: int, y: int, _chr: chr) -> None:
+        self.__current_character.code = _chr
+        self.__matrix[y][x] = dataclasses.replace(self.__current_character)
 
-    @abc.abstractmethod
-    def flashbackground(self, color: int, ms: int) -> None: ...
-
-    @abc.abstractmethod
-    def bold(self, _bool: bool): ...
-
-    @abc.abstractmethod
-    def italic(self, _bool: bool): ...
-
-    @abc.abstractmethod
-    def underline(self, _bool: bool): ...
-
-    @abc.abstractmethod
-    def cputsxy(self, x: int, y: int, _str: str) -> None: ...
-
-    @abc.abstractmethod
-    def putchxy(self, x: int, y: int, _chr: chr) -> None: ...
-
-
-class MatrixBuffer(VirtualMatrixBuffer):
-    pass
+    def cputsxy(self, x: int, y: int, _str: str) -> None:
+        for _chr in _str:
+            self.putchxy(x, y, _chr)
+            x += 1
