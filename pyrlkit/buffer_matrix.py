@@ -150,4 +150,3 @@ class BufferMatrix:
         for _chr in _str:
             self.putchxy(x, y, _chr)
             x += 1
-

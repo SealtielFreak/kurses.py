@@ -1,11 +1,13 @@
-import pyrlkit
-from pyrlkit.buffer_matrix import BufferMatrix
+from pyrlkit import Console
 
 
 if __name__ == "__main__":
-    buffer = BufferMatrix(80, 30)
+    console = Console()
+    term = console.buffer
 
-    buffer.print("Hello world")
+    def main():
+        while True:
+            term.print("Hello world")
 
-    print(buffer.queue)
-    print(list(filter(bool, buffer.queue)))
+    console.set_target(main)
+    console.main_loop()
