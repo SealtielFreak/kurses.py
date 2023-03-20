@@ -1,5 +1,4 @@
 import abc
-import enum
 
 
 class Window(abc.ABC):
@@ -84,15 +83,7 @@ class Window(abc.ABC):
         pass
 
 
-class FontStyle(enum.Enum):
-    NORMAL = 0
-    ITALIC = 1
-    BOLD = 2
-    UNDERLINE = 3
-
-
 class VirtualTerminal(abc.ABC):
-
     @abc.abstractmethod
     def getkey(self):
         pass

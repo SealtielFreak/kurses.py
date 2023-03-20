@@ -4,7 +4,7 @@ import string
 import sdl2
 import sdl2.sdlttf as sdlttf
 
-from pyrlkit.character_value import CharacterValue
+from pyrlkit.character_attr import CharacterAttribute
 
 DEFAULT_FONT = "ModernDOS8x16.ttf"
 DEFAULT_PTSIZE = 16
@@ -84,7 +84,7 @@ def main():
                 sdlttf.TTF_SetFontStyle(font, style)
                 surface_c = sdlttf.TTF_RenderText_Blended(font, c.encode(), sdl2.SDL_Color(*rgb_foreign))
                 ascii_texture[
-                    CharacterValue(c, rgb_to_hex(rgb_foreign), style=style)
+                    CharacterAttribute(c, rgb_to_hex(rgb_foreign), style=style)
                 ] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)
                 sdl2.SDL_FreeSurface(surface_c)
 

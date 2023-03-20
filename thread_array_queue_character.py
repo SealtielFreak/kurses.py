@@ -7,7 +7,7 @@ import time
 import sdl2
 import sdl2.sdlttf as sdlttf
 
-from pyrlkit.character_value import CharacterValue
+from pyrlkit.character_attr import CharacterAttribute
 
 DEFAULT_SHAPE = [80, 30]
 
@@ -69,7 +69,7 @@ def hex_to_rgb(hex_color):
 
 def create_shape(shape):
     rows, cols = shape
-    return [[CharacterValue() for _ in range(rows)] for _ in range(cols)]
+    return [[CharacterAttribute() for _ in range(rows)] for _ in range(cols)]
 
 
 chr_matrix = create_shape(DEFAULT_SHAPE)
@@ -91,7 +91,7 @@ def putchxy(x: int, y: int, c: chr):
     global chr_matrix
 
     try:
-        chr_matrix[y][x] = CharacterValue(code=c, x=x, y=y)
+        chr_matrix[y][x] = CharacterAttribute(code=c, x=x, y=y)
     except IndexError:
         pass
 
@@ -138,7 +138,7 @@ def main_loop(target):
                 sdlttf.TTF_SetFontStyle(font, style)
                 surface_c = sdlttf.TTF_RenderText_Blended(font, _chr.encode(), sdl2.SDL_Color(*rgb_foreign))
                 ascii_texture[
-                    CharacterValue(_chr, rgb_to_hex(rgb_foreign), style=style)
+                    CharacterAttribute(_chr, rgb_to_hex(rgb_foreign), style=style)
                 ] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)
                 sdl2.SDL_FreeSurface(surface_c)
 
@@ -177,7 +177,7 @@ def main_loop(target):
             x, y = _chr.x, _chr.y
             dest = sdl2.SDL_Rect(x * w, y * h, w, h)
 
-            sdl2.SDL_SetRenderDrawColor(renderer, *hex_to_rgb(_chr.bg), 255)
+            sdl2.SDL_SetRenderDrawColor(renderer, *hex_to_rgb(_chr.background), 255)
             sdl2.SDL_RenderFillRect(renderer, dest)
             sdl2.SDL_RenderCopy(renderer, ascii_texture[_chr], None, dest)
 
