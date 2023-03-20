@@ -215,8 +215,6 @@ class VirtualMatrixBuffer(abc.ABC):
     def getche(self) -> int: ...
 
 
-
-
 class MatrixBuffer(VirtualMatrixBuffer):
     def __init__(self, columns: int, rows: int):
         self.__shape = rows, columns
