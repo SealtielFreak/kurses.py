@@ -1,5 +1,7 @@
 import abc
 
+import pyrlkit.style
+
 
 class Window(abc.ABC):
     @property
@@ -83,13 +85,27 @@ class Window(abc.ABC):
         pass
 
 
-class VirtualTerminal(abc.ABC):
+class VirtualMatrixBuffer(abc.ABC):
     @abc.abstractmethod
     def getkey(self):
         pass
 
+    @property
     @abc.abstractmethod
-    def gotoxy(self, x, y):
+    def keys_pressed(self):
+        pass
+
+    @property
+    @abc.abstractmethod
+    def keys_released(self):
+        pass
+
+    @abc.abstractmethod
+    def resize(self, shape):
+        pass
+
+    @abc.abstractmethod
+    def gotoxy(self, x: int, y: int):
         pass
 
     @abc.abstractmethod
@@ -105,11 +121,19 @@ class VirtualTerminal(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def cprintf(self, fmt, *args):
+    def cprintf(self, fmt: str, *args):
         pass
 
     @abc.abstractmethod
-    def putch(self, char):
+    def putch(self, _chr: chr):
+        pass
+
+    @abc.abstractmethod
+    def cputsxy(self, x: int, y: int, _chr: chr):
+        pass
+
+    @abc.abstractmethod
+    def cputsxy(self, x: int, y: int, _str: str):
         pass
 
     @abc.abstractmethod
@@ -117,7 +141,7 @@ class VirtualTerminal(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def set_font_style(self, style):
+    def set_font_style(self, style: pyrlkit.style.FontStyle):
         pass
 
     @abc.abstractmethod
@@ -128,62 +152,6 @@ class VirtualTerminal(abc.ABC):
     def set_background_color(self, color):
         pass
 
-    @abc.abstractmethod
-    def enable_echo(self):
-        pass
 
-    @abc.abstractmethod
-    def disable_echo(self):
-        pass
-
-    @abc.abstractmethod
-    def set_cursor_visibility(self, visibility):
-        pass
-
-    @abc.abstractmethod
-    def set_cursor_shape(self, shape):
-        pass
-
-    @abc.abstractmethod
-    def enable_scroll(self):
-        pass
-
-    @abc.abstractmethod
-    def disable_scroll(self):
-        pass
-
-    @abc.abstractmethod
-    def set_title(self, title):
-        pass
-
-    @abc.abstractmethod
-    def set_icon(self, icon_path):
-        pass
-
-    @abc.abstractmethod
-    def set_window_size(self, width, height):
-        pass
-
-    @abc.abstractmethod
-    def set_window_position(self, x, y):
-        pass
-
-    @abc.abstractmethod
-    def enable_mouse_input(self):
-        pass
-
-    @abc.abstractmethod
-    def disable_mouse_input(self):
-        pass
-
-    @abc.abstractmethod
-    def enable_alt_buffer(self):
-        pass
-
-    @abc.abstractmethod
-    def disable_alt_buffer(self):
-        pass
-
-
-class Terminal(VirtualTerminal):
+class MatrixBuffer(VirtualMatrixBuffer):
     pass
