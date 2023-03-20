@@ -66,7 +66,12 @@ def copy_memset(a: MatrixCharacterAttribute, b: MatrixCharacterAttribute) -> Mat
 
 class BufferMatrix:
     def __init__(self, columns: int, rows: int):
-        self.__current_character = CharacterAttribute()
+        self.__current_position = 0, 0
+        self.__bold = False
+        self.__italic = False
+        self.__underline = False
+        self.__foreign_color = (255, 255, 255)
+        self.__background_color = (0, 0, 0)
         self.__shape = rows, columns
         self.__matrix = create_matrix(rows, columns)
 
@@ -103,45 +108,50 @@ class BufferMatrix:
         self.__matrix = create_matrix(*self.buffersize)
 
     def wherex(self):
-        return self.__current_character.x
+        return self.__current_position[0]
 
     def wherey(self):
-        return self.__current_character.y
+        return self.__current_position[1]
 
     def gotoxy(self, x: int, y: int) -> None:
-        self.__current_character.x = x
-        self.__current_character.y = y
+        self.__current_position = x, y
 
     def set_background_color(self, color: Color) -> None:
         if isinstance(color, int):
             color = hex_to_rgb(color)
 
-        self.__current_character.background = color
+        self.__background_color = color
 
     def set_foreign_color(self, color: Color) -> None:
         if isinstance(color, int):
             color = hex_to_rgb(color)
 
-        self.__current_character.foreign = color
+        self.__foreign_color = color
 
     def bold(self, _bool: bool):
-        self.__current_character.bold = _bool
+        self.__bold = _bool
 
     def italic(self, _bool: bool):
-        self.__current_character.italic = _bool
+        self.__italic = _bool
 
     def underline(self, _bool: bool):
-        self.__current_character.underline = _bool
+        self.__underline = _bool
+
+    def __create_character_attr(self, _chr, x, y):
+        return CharacterAttribute(
+                _chr, x, y,
+                self.__foreign_color,
+                self.__background_color,
+                self.__bold,
+                self.__italic,
+                self.__underline
+            )
 
     def cputs(self, _chr: chr):
-        self.__current_character.code = _chr
-        x, y = self.__current_character.x, self.__current_character.y
+        x, y = self.__current_position
 
         try:
-            chr_attr = dataclasses.replace(self.__current_character)
-            chr_attr.x = x
-            chr_attr.y = y
-            self.__matrix[y][x] = chr_attr
+            self.__matrix[y][x] = self.__create_character_attr(_chr, x, y)
         except IndexError:
             pass
 
@@ -153,13 +163,8 @@ class BufferMatrix:
             x += 1
 
     def putchxy(self, x: int, y: int, _chr: chr) -> None:
-        self.__current_character.code = _chr
-
         try:
-            chr_attr = dataclasses.replace(self.__current_character)
-            chr_attr.x = x
-            chr_attr.y = y
-            self.__matrix[y][x] = chr_attr
+            self.__matrix[y][x] = self.__create_character_attr(_chr, x, y)
         except IndexError:
             pass
 

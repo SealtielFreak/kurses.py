@@ -11,3 +11,5 @@ if __name__ == "__main__":
 
     console.set_target(main)
     console.main_loop()
+
+    exit()
