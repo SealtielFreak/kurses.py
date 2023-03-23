@@ -4,7 +4,7 @@ import string
 import sdl2
 import sdl2.sdlttf as sdlttf
 
-from pyrlkit.character_attr import CharacterAttribute
+from pyrogue.character_attr import CharacterAttribute
 
 DEFAULT_FONT = "ModernDOS8x16.ttf"
 DEFAULT_PTSIZE = 16

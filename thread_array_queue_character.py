@@ -7,7 +7,7 @@ import time
 import sdl2
 import sdl2.sdlttf as sdlttf
 
-from pyrlkit.character_attr import CharacterAttribute
+from pyrogue.character_attr import CharacterAttribute
 
 DEFAULT_SHAPE = [80, 30]
 

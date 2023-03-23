@@ -1,64 +1,27 @@
 import ctypes
 import string
 import threading
+import typing
 
 import sdl2
 import sdl2.sdlttf
 
-import pyrlkit.buffer_matrix
-import pyrlkit.virtual_console
+import pyrogue.buffer_matrix
+import pyrogue.virtual_console
+import pyrogue.colors
 
 
-def get_true_colors():
-    for r in range(0, 256):
-        for g in range(0, 256):
-            for b in range(0, 256):
-                yield r, g, b
-
-
-def get_8bit_colors():
-    for r in range(0, 256, 36):
-        for g in range(0, 256, 36):
-            for b in range(0, 256, 85):
-                yield r, g, b
-
-
-def get_2bit_colors():
-    for r in (0, 85, 170, 255):
-        for g in (0, 85, 170, 255):
-            for b in (0, 85, 170, 255):
-                yield r, g, b
-
-
-def get_1bit_colors():
-    for r in range(0, 256, 255):
-        for g in range(0, 256, 255):
-            for b in range(0, 256, 255):
-                yield r, g, b
-
-
-def rgb_to_bit_depth(rgb, bit_depth):
-    factor = 256 // bit_depth
-    r, g, b = rgb
-
-    r = r // factor * factor
-    g = g // factor * factor
-    b = b // factor * factor
-
-    return (r << 16) + (g << 8)
-
-
-class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
+class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
     def __init__(self):
-        self.__buffer = pyrlkit.buffer_matrix.BufferMatrix(80, 30)
+        self.__buffer = pyrogue.buffer_matrix.BufferMatrix(80, 30)
         self.__target = None
         self.__running = True
 
     @property
-    def buffer(self) -> pyrlkit.buffer_matrix.BufferMatrix:
+    def buffer(self) -> pyrogue.buffer_matrix.BufferMatrix:
         return self.__buffer
 
-    def set_target(self, target):
+    def set_target(self, target: typing.Callable[[None], None]):
         self.__target = target
 
     def main_loop(self):
@@ -77,9 +40,12 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
         WINDOW_DEFAULT_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
         WINDOW_DEFAULT_SIZE = 640, 480
 
-        DEFAULT_BIT_COLORS = get_1bit_colors
+        DEFAULT_BIT_COLORS = pyrogue.colors.get_1bit_colors
 
         def __main():
+            if self.__target is None:
+                return
+
             try:
                 self.__target()
             except Exception as e:
@@ -111,16 +77,16 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
                     sdl2.sdlttf.TTF_SetFontStyle(font, style)
                     surface_c = sdl2.sdlttf.TTF_RenderText_Blended(font, _chr.encode(), sdl2.SDL_Color(*rgb_foreign))
 
-                    chr_attr = pyrlkit.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign)
+                    chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign)
 
                     if style == sdl2.sdlttf.TTF_STYLE_UNDERLINE:
-                        chr_attr = pyrlkit.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, underline=True)
+                        chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, underline=True)
                     elif style == sdl2.sdlttf.TTF_STYLE_ITALIC:
-                        chr_attr = pyrlkit.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, italic=True)
+                        chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, italic=True)
                     elif style == sdl2.sdlttf.TTF_STYLE_BOLD:
-                        chr_attr = pyrlkit.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, bold=True)
+                        chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, bold=True)
                     elif style == sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH:
-                        chr_attr = pyrlkit.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign,
+                        chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign,
                                                                             strikethrough=True)
 
                     ascii_texture[chr_attr] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)
@@ -130,10 +96,6 @@ class SDL2VirtualConsole(pyrlkit.virtual_console.VirtualConsole):
         w, h = ctypes.c_int(), ctypes.c_int()
         sdl2.SDL_QueryTexture(next(iter(ascii_texture.values())), None, None, ctypes.byref(w), ctypes.byref(h))
         w, h = w.value, h.value
-
-        thread = threading.Thread(target=__main)
-        thread.daemon = True
-        thread.start()
 
         while self.__running:
             events = sdl2.SDL_Event()

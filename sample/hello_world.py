@@ -1,4 +1,4 @@
-from pyrlkit import Console
+from pyrogue import Console
 
 
 if __name__ == "__main__":
