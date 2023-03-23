@@ -34,27 +34,10 @@ class CharacterAttribute:
         return not self.code == ' '
 
 
-ArrayCharacterAttribute = typing.List[CharacterAttribute]
-MatrixCharacterAttribute = typing.List[ArrayCharacterAttribute]
 DequeCharacterAttribute = typing.Deque[CharacterAttribute]
 
 
-def create_matrix(rows: int, cols: int) -> MatrixCharacterAttribute:
-    return [[CharacterAttribute() for _ in range(rows)] for _ in range(cols)]
-
-
-def copy_memset(a: MatrixCharacterAttribute, b: MatrixCharacterAttribute) -> MatrixCharacterAttribute:
-    for y, row in enumerate(a):
-        for x, c in enumerate(a):
-            try:
-                b[y][x] = a[y][x]
-            except IndexError:
-                pass
-
-    return b
-
-
-class BufferMatrix:
+class BufferTerm:
     def __init__(self, columns: int, rows: int):
         self.__current_position = 0, 0
         self.__bold = False
@@ -64,21 +47,14 @@ class BufferMatrix:
         self.__foreign_color = (255, 255, 255)
         self.__background_color = (0, 0, 0)
         self.__shape = rows, columns
-        self.__matrix = create_matrix(rows, columns)
+        self.__queue = collections.deque()
 
     def __iter__(self):
-        for row in self.__matrix:
-            for _chr in row:
-                if _chr.code != '':
-                    yield _chr
-
-    @property
-    def queue(self) -> DequeCharacterAttribute:
-        return collections.deque(iter(self))
+        for _chr in self.__queue:
+            yield _chr
 
     def resize(self, columns: int, rows: int) -> None:
         self.__shape = rows, columns
-        self.__matrix = copy_memset(self.__matrix, create_matrix(rows, columns))
 
     @abc.abstractmethod
     def getbuffersize(self) -> typing.Tuple[int, int]:
@@ -96,7 +72,7 @@ class BufferMatrix:
         ...
 
     def clrscr(self) -> None:
-        self.__matrix = create_matrix(*self.buffersize)
+        self.__queue.clear()
 
     def wherex(self):
         return self.__current_position[0]
@@ -141,11 +117,7 @@ class BufferMatrix:
 
     def cputs(self, _chr: chr):
         x, y = self.__current_position
-
-        try:
-            self.__matrix[y][x] = self.__create_character_attr(_chr, x, y)
-        except IndexError:
-            pass
+        self.__queue.append(self.__create_character_attr(_chr, x, y))
 
     def print(self, _str: str):
         x, y = self.wherex(), self.wherey()
@@ -155,10 +127,7 @@ class BufferMatrix:
             x += 1
 
     def putchxy(self, x: int, y: int, _chr: chr) -> None:
-        try:
-            self.__matrix[y][x] = self.__create_character_attr(_chr, x, y)
-        except IndexError:
-            pass
+        self.__queue.append(self.__create_character_attr(_chr, x, y))
 
     def cputsxy(self, x: int, y: int, _str: str) -> None:
         for _chr in _str:

@@ -6,19 +6,19 @@ import typing
 import sdl2
 import sdl2.sdlttf
 
-import pyrogue.buffer_matrix
+import pyrogue.buffer_term
 import pyrogue.virtual_console
 import pyrogue.colors
 
 
 class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
     def __init__(self):
-        self.__buffer = pyrogue.buffer_matrix.BufferMatrix(80, 30)
+        self.__buffer = pyrogue.buffer_term.BufferTerm(80, 30)
         self.__target = None
         self.__running = True
 
     @property
-    def buffer(self) -> pyrogue.buffer_matrix.BufferMatrix:
+    def buffer(self) -> pyrogue.buffer_term.BufferTerm:
         return self.__buffer
 
     def set_target(self, target: typing.Callable[[None], None]):
@@ -77,16 +77,16 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
                     sdl2.sdlttf.TTF_SetFontStyle(font, style)
                     surface_c = sdl2.sdlttf.TTF_RenderText_Blended(font, _chr.encode(), sdl2.SDL_Color(*rgb_foreign))
 
-                    chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign)
+                    chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign)
 
                     if style == sdl2.sdlttf.TTF_STYLE_UNDERLINE:
-                        chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, underline=True)
+                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, underline=True)
                     elif style == sdl2.sdlttf.TTF_STYLE_ITALIC:
-                        chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, italic=True)
+                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, italic=True)
                     elif style == sdl2.sdlttf.TTF_STYLE_BOLD:
-                        chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign, bold=True)
+                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, bold=True)
                     elif style == sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH:
-                        chr_attr = pyrogue.buffer_matrix.CharacterAttribute(_chr, foreign=rgb_foreign,
+                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
                                                                             strikethrough=True)
 
                     ascii_texture[chr_attr] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)

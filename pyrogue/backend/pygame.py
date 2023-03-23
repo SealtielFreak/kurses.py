@@ -1,10 +1,10 @@
-import pyrogue.buffer_matrix
+import pyrogue.buffer_term
 import pyrogue.virtual_console
 
 
 class PygameVirtualConsole(pyrogue.virtual_console.VirtualConsole):
     @property
-    def buffer(self) -> pyrogue.buffer_matrix.BufferMatrix:
+    def buffer(self) -> pyrogue.buffer_matrix.BufferTerm:
         pass
 
     def set_target(self, target):
