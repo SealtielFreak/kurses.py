@@ -3,24 +3,7 @@ import collections
 import dataclasses
 import typing
 
-TupleColor = typing.Tuple[int, int, int]
-Color = typing.Union[TupleColor, int]
-
-
-def rgb_to_hex(rgb: TupleColor) -> int:
-    return (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]
-
-
-def hex_to_rgb(hex_color: int) -> TupleColor:
-    hex_str = hex(hex_color)[2:]
-
-    hex_str = hex_str.rjust(6, '0')
-
-    r = int(hex_str[0:2], 16)
-    g = int(hex_str[2:4], 16)
-    b = int(hex_str[4:6], 16)
-
-    return r, g, b
+import pyrogue.colors
 
 
 @dataclasses.dataclass
@@ -28,8 +11,8 @@ class CharacterAttribute:
     code: chr = ''
     x: int = 0
     y: int = 0
-    foreign: TupleColor = (255, 255, 255)
-    background: TupleColor = (0, 0, 0)
+    foreign: pyrogue.colors.TupleColor = (255, 255, 255)
+    background: pyrogue.colors.TupleColor = (0, 0, 0)
     bold: bool = False
     italic: bool = False
     underline: bool = False
@@ -124,15 +107,15 @@ class BufferMatrix:
     def gotoxy(self, x: int, y: int) -> None:
         self.__current_position = x, y
 
-    def set_background_color(self, color: Color) -> None:
+    def set_background_color(self, color: pyrogue.colors.Color) -> None:
         if isinstance(color, int):
-            color = hex_to_rgb(color)
+            color = pyrogue.colors.hex_to_rgb(color)
 
         self.__background_color = color
 
-    def set_foreign_color(self, color: Color) -> None:
+    def set_foreign_color(self, color: pyrogue.colors.Color) -> None:
         if isinstance(color, int):
-            color = hex_to_rgb(color)
+            color = pyrogue.colors.hex_to_rgb(color)
 
         self.__foreign_color = color
 

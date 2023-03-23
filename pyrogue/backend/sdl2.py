@@ -110,6 +110,8 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
             sdl2.SDL_RenderClear(renderer)
 
+            __main()
+
             chr_queue = self.__buffer.queue
 
             while len(chr_queue) != 0:
