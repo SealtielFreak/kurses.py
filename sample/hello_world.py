@@ -11,8 +11,10 @@ if __name__ == "__main__":
         term.set_foreign_color((255, 0, 255))
         term.cputsxy(0, 0, "Hello world")
 
-        term.set_background_color((255, 0, 0))
-        term.set_foreign_color((0, 255, 255))
+        term.italic(True)
+        term.bold(True)
+        # term.set_background_color((255, 0, 0))
+        term.set_foreign_color((255, 255, 255))
         term.cputsxy(6, 1, "Hello world")
 
         term.resetall()
