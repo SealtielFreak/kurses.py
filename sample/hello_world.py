@@ -5,6 +5,8 @@ if __name__ == "__main__":
     console = Console()
 
     def main():
+        global x, y
+
         term = console.buffer
 
         term.set_background_color((0, 255, 0))
@@ -13,9 +15,14 @@ if __name__ == "__main__":
 
         term.italic(True)
         term.bold(True)
-        # term.set_background_color((255, 0, 0))
+        term.set_background_color((255, 0, 0))
         term.set_foreign_color((255, 255, 255))
         term.cputsxy(6, 1, "Hello world")
+
+        term.resetall()
+
+        term.underline(True)
+        term.cputsxy(16, 16, "Underline text")
 
         term.resetall()
 
