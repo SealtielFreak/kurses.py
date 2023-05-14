@@ -25,7 +25,7 @@ class CharacterAttribute:
         return hash(
             (
                 self.code,
-                self.foreign, self.background,
+                self.foreign,
                 self.bold, self.italic, self.underline, self.strikethrough
             )
         )

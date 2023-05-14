@@ -3,10 +3,9 @@ from pyrogue import Console
 
 if __name__ == "__main__":
     console = Console()
-    term = console.buffer
 
     def main():
-        print(console.keyspressed())
+        term = console.buffer
 
         term.set_background_color((0, 255, 0))
         term.set_foreign_color((255, 0, 255))

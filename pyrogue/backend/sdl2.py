@@ -25,6 +25,8 @@ def get_pressed_keys(_str_format=lambda _str: _str.decode().lower()):
 
 class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
     def __init__(self):
+        self.__title_window = ""
+        self.__window = None
         self.__buffer = pyrogue.buffer_term.BufferTerm(80, 30)
         self.__target = None
         self.__running = True
@@ -68,13 +70,13 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         if sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING):
             return
 
-        window = sdl2.SDL_CreateWindow(
+        self.__window = sdl2.SDL_CreateWindow(
             WINDOW_DEFAULT_TITLE.encode(),
             *WINDOW_DEFAULT_POSITION,
             *WINDOW_DEFAULT_SIZE,
             sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_RESIZABLE
         )
-        renderer = sdl2.SDL_CreateRenderer(window, -1, sdl2.SDL_RENDERER_ACCELERATED)
+        renderer = sdl2.SDL_CreateRenderer(self.__window, -1, sdl2.SDL_RENDERER_ACCELERATED)
 
         sdl2.sdlttf.TTF_Init()
 
@@ -86,38 +88,36 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
         for _chr in DEFAULT_ALL_ASCII:
             for rgb_foreign in DEFAULT_BIT_COLORS():
-                for rgb_background in DEFAULT_BIT_COLORS():
-                    for style in DEFAULT_ALL_STYLES:
-                        sdl2.sdlttf.TTF_SetFontStyle(font, style)
-                        surface_c = sdl2.sdlttf.TTF_RenderText_Blended(font, _chr.encode(),
-                                                                       sdl2.SDL_Color(*rgb_foreign))
+                for style in DEFAULT_ALL_STYLES:
+                    sdl2.sdlttf.TTF_SetFontStyle(font, style)
+                    surface_c = sdl2.sdlttf.TTF_RenderText_Blended(font, _chr.encode(),
+                                                                   sdl2.SDL_Color(*rgb_foreign))
 
+                    chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign)
+
+                    if style == sdl2.sdlttf.TTF_STYLE_UNDERLINE:
+                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, underline=True)
+                    elif style == sdl2.sdlttf.TTF_STYLE_ITALIC:
+                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, italic=True)
+                    elif style == sdl2.sdlttf.TTF_STYLE_BOLD:
+                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, bold=True)
+                    elif style == sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH:
                         chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
-                                                                          background=rgb_background)
+                                                                          strikethrough=True)
 
-                        if style == sdl2.sdlttf.TTF_STYLE_UNDERLINE:
-                            chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
-                                                                              background=rgb_background, underline=True)
-                        elif style == sdl2.sdlttf.TTF_STYLE_ITALIC:
-                            chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
-                                                                              background=rgb_background, italic=True)
-                        elif style == sdl2.sdlttf.TTF_STYLE_BOLD:
-                            chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
-                                                                              background=rgb_background, bold=True)
-                        elif style == sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH:
-                            chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
-                                                                              background=rgb_background,
-                                                                              strikethrough=True)
+                    ascii_texture[chr_attr] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)
 
-                        ascii_texture[chr_attr] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)
+                    sdl2.SDL_FreeSurface(surface_c)
 
-                        sdl2.SDL_FreeSurface(surface_c)
+        print(len(ascii_texture))
 
         w, h = ctypes.c_int(), ctypes.c_int()
         sdl2.SDL_QueryTexture(next(iter(ascii_texture.values())), None, None, ctypes.byref(w), ctypes.byref(h))
         w, h = w.value, h.value
 
         while self.__running:
+            sdl2.SDL_SetWindowTitle(self.__window, self.__title_window.encode())
+
             events = sdl2.SDL_Event()
             while sdl2.SDL_PollEvent(ctypes.byref(events)) != 0:
                 if events.type == sdl2.SDL_QUIT:
@@ -151,11 +151,11 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         [sdl2.SDL_DestroyTexture(texture) for texture in ascii_texture.values()]
         ascii_texture.clear()
 
-        sdl2.SDL_DestroyWindow(window)
+        sdl2.SDL_DestroyWindow(self.__window)
         sdl2.SDL_Quit()
 
     def set_title(self, _str: str):
-        pass
+        self.__title_window = _str
 
     def keyspressed(self):
         return list(self.__keys)
