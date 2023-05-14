@@ -3,7 +3,6 @@ from pyrogue import Console
 if __name__ == "__main__":
     console = Console()
 
-
     def main():
         term = console.buffer
 
