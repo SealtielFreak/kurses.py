@@ -10,5 +10,4 @@ except ImportError as e:
 
     Console = PygameVirtualConsole
 
-
 __all__ = ["Console"]

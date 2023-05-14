@@ -1,12 +1,10 @@
 from pyrogue import Console
 
-
 if __name__ == "__main__":
     console = Console()
 
-    def main():
-        global x, y
 
+    def main():
         term = console.buffer
 
         term.set_background_color((0, 255, 0))
@@ -25,6 +23,7 @@ if __name__ == "__main__":
         term.cputsxy(16, 16, "Underline text")
 
         term.resetall()
+
 
     console.set_target(main)
     console.main_loop()

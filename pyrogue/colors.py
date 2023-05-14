@@ -1,6 +1,5 @@
 import typing
 
-
 TupleColor = typing.Tuple[int, int, int]
 Color = typing.Union[TupleColor, int]
 

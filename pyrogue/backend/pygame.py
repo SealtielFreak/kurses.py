@@ -1,4 +1,3 @@
-import pyrogue.buffer_term
 import pyrogue.virtual_console
 
 
