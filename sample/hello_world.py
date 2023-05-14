@@ -18,6 +18,8 @@ if __name__ == "__main__":
 
         # term.set_background_color((0, 0, 0))
 
+        term.resetall()
+
     console.set_target(main)
     console.main_loop()
 

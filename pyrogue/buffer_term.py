@@ -39,13 +39,7 @@ DequeCharacterAttribute = typing.Deque[CharacterAttribute]
 
 class BufferTerm:
     def __init__(self, columns: int, rows: int):
-        self.__current_position = 0, 0
-        self.__bold = False
-        self.__italic = False
-        self.__underline = False
-        self.__strikethrough = False
-        self.__foreign_color = (255, 255, 255)
-        self.__background_color = (0, 0, 0)
+        self.resetall()
         self.__shape = rows, columns
         self.__queue = collections.deque()
 
@@ -79,8 +73,21 @@ class BufferTerm:
     def wherey(self):
         return self.__current_position[1]
 
+    @property
+    def current_cursor(self):
+        return self.__current_position
+
     def gotoxy(self, x: int, y: int) -> None:
         self.__current_position = x, y
+
+    def resetall(self):
+        self.__current_position = 0, 0
+        self.__bold = False
+        self.__italic = False
+        self.__underline = False
+        self.__strikethrough = False
+        self.__foreign_color = (255, 255, 255)
+        self.__background_color = (0, 0, 0)
 
     def set_background_color(self, color: pyrogue.colors.Color) -> None:
         if isinstance(color, int):
@@ -126,6 +133,7 @@ class BufferTerm:
             x += 1
 
     def putchxy(self, x: int, y: int, _chr: chr) -> None:
+        self.__current_position = x, y
         self.__queue.append(self.__create_character_attr(_chr, x, y))
 
     def cputsxy(self, x: int, y: int, _str: str) -> None:
