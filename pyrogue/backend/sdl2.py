@@ -84,6 +84,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
         empty_texture = create_texture_chr(self.font, self.surface, ' ')
 
+        self.__background_color = 0, 0, 0
         self.__buffer = pyrogue.buffer_term.BufferTerm(80, 30)
         self.__target = None
         self.__running = True
@@ -97,14 +98,21 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         self.quit()
 
     @property
-    def buffer(self) -> pyrogue.buffer_term.BufferTerm:
+    def buffer(self):
         return self.__buffer
 
-    def set_target(self, target: typing.Callable[[None], None]):
+    def set_target(self, target):
         self.__target = target
 
-    def main_loop(self):
+    @property
+    def background(self):
+        return self.__background_color
 
+    @background.setter
+    def background(self, background):
+        self.__background_color = background
+
+    def main_loop(self):
         while self.__running:
             self.events()
 
@@ -115,7 +123,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
                     self.__running = False
                     raise e
 
-            sdl2.SDL_SetRenderDrawColor(self.surface, 0, 0, 0, 255)
+            sdl2.SDL_SetRenderDrawColor(self.surface, *self.background, 255)
             sdl2.SDL_RenderClear(self.surface)
 
             self.draw()
