@@ -177,8 +177,8 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
             sdl2.SDL_RenderCopy(self.surface, self.__textures_allocate[chr_attr], None, d_rect)
 
     def events(self):
-        events = sdl2.SDL_Event()
         w, h = self.__size_texture
+        events = sdl2.SDL_Event()
 
         while sdl2.SDL_PollEvent(ctypes.byref(events)) != 0:
             if events.type == sdl2.SDL_QUIT:
