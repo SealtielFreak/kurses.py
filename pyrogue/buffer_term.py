@@ -50,13 +50,12 @@ class BufferTerm:
         self.__queue = collections.deque()
 
     def __iter__(self):
-        for _chr in self.__queue:
-            yield _chr
+        while len(self.__queue) != 0:
+            yield self.__queue.pop()
 
     def resize(self, columns: int, rows: int) -> None:
         self.__shape = rows, columns
 
-    @abc.abstractmethod
     def getbuffersize(self) -> typing.Tuple[int, int]:
         return self.__shape
 

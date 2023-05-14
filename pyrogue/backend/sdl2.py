@@ -1,14 +1,26 @@
+import collections
 import ctypes
 import string
-import threading
 import typing
 
 import sdl2
 import sdl2.sdlttf
 
 import pyrogue.buffer_term
-import pyrogue.virtual_console
 import pyrogue.colors
+import pyrogue.virtual_console
+
+
+def get_pressed_keys(_str_format=lambda _str: _str.decode().lower()):
+    pressed_keys = collections.deque()
+
+    keyboard_state = sdl2.SDL_GetKeyboardState(None)
+
+    for key_code in range(sdl2.SDL_NUM_SCANCODES):
+        if keyboard_state[key_code] == 1:
+            pressed_keys.append(_str_format(sdl2.SDL_GetScancodeName(key_code)))
+
+    return pressed_keys
 
 
 class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
@@ -16,6 +28,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         self.__buffer = pyrogue.buffer_term.BufferTerm(80, 30)
         self.__target = None
         self.__running = True
+        self.__keys = collections.deque()
 
     @property
     def buffer(self) -> pyrogue.buffer_term.BufferTerm:
@@ -73,25 +86,32 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
         for _chr in DEFAULT_ALL_ASCII:
             for rgb_foreign in DEFAULT_BIT_COLORS():
-                for style in DEFAULT_ALL_STYLES:
-                    sdl2.sdlttf.TTF_SetFontStyle(font, style)
-                    surface_c = sdl2.sdlttf.TTF_RenderText_Blended(font, _chr.encode(), sdl2.SDL_Color(*rgb_foreign))
+                for rgb_background in DEFAULT_BIT_COLORS():
+                    for style in DEFAULT_ALL_STYLES:
+                        sdl2.sdlttf.TTF_SetFontStyle(font, style)
+                        surface_c = sdl2.sdlttf.TTF_RenderText_Blended(font, _chr.encode(),
+                                                                       sdl2.SDL_Color(*rgb_foreign))
 
-                    chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign)
-
-                    if style == sdl2.sdlttf.TTF_STYLE_UNDERLINE:
-                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, underline=True)
-                    elif style == sdl2.sdlttf.TTF_STYLE_ITALIC:
-                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, italic=True)
-                    elif style == sdl2.sdlttf.TTF_STYLE_BOLD:
-                        chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign, bold=True)
-                    elif style == sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH:
                         chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
-                                                                            strikethrough=True)
+                                                                          background=rgb_background)
 
-                    ascii_texture[chr_attr] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)
+                        if style == sdl2.sdlttf.TTF_STYLE_UNDERLINE:
+                            chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
+                                                                              background=rgb_background, underline=True)
+                        elif style == sdl2.sdlttf.TTF_STYLE_ITALIC:
+                            chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
+                                                                              background=rgb_background, italic=True)
+                        elif style == sdl2.sdlttf.TTF_STYLE_BOLD:
+                            chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
+                                                                              background=rgb_background, bold=True)
+                        elif style == sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH:
+                            chr_attr = pyrogue.buffer_term.CharacterAttribute(_chr, foreign=rgb_foreign,
+                                                                              background=rgb_background,
+                                                                              strikethrough=True)
 
-                    sdl2.SDL_FreeSurface(surface_c)
+                        ascii_texture[chr_attr] = sdl2.SDL_CreateTextureFromSurface(renderer, surface_c)
+
+                        sdl2.SDL_FreeSurface(surface_c)
 
         w, h = ctypes.c_int(), ctypes.c_int()
         sdl2.SDL_QueryTexture(next(iter(ascii_texture.values())), None, None, ctypes.byref(w), ctypes.byref(h))
@@ -108,14 +128,17 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
                         width, height = events.window.data1, events.window.data2
                         self.__buffer.resize(width // w, height // h)
 
+            sdl2.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255)
             sdl2.SDL_RenderClear(renderer)
+
+            self.__keys = get_pressed_keys()
 
             __main()
 
-            chr_queue = self.__buffer.queue
+            for _chr in self.__buffer:
+                if not _chr in ascii_texture.keys():
+                    continue
 
-            while len(chr_queue) != 0:
-                _chr = chr_queue.pop()
                 x, y = _chr.x, _chr.y
                 dest = sdl2.SDL_Rect(x * w, y * h, w, h)
 
@@ -133,3 +156,6 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
     def set_title(self, _str: str):
         pass
+
+    def keyspressed(self):
+        return list(self.__keys)

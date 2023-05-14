@@ -16,3 +16,6 @@ class VirtualConsole(abc.ABC):
 
     @abc.abstractmethod
     def set_title(self, _str: str): ...
+
+    @abc.abstractmethod
+    def keyspressed(self) -> list[chr]: ...
