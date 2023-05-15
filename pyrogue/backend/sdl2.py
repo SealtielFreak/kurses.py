@@ -26,11 +26,10 @@ WINDOW_DEFAULT_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEF
 WINDOW_DEFAULT_SIZE = 640, 480
 
 
-def create_texture_chr(font: sdl2.sdlttf.TTF_Font, renderer: sdl2.SDL_Renderer, _chr: chr, foreign_color=(0, 0, 0),
-                       style: int = 0):
+def create_texture_chr_sdl2(font: sdl2.sdlttf.TTF_Font, renderer: sdl2.SDL_Renderer, _chr: chr, fg=(0, 0, 0), bg=(0, 0, 0), style: int = 0):
     sdl2.sdlttf.TTF_SetFontStyle(font, style)
 
-    chr_surface = sdl2.sdlttf.TTF_RenderText_Blended(font, _chr.encode(), sdl2.SDL_Color(*foreign_color))
+    chr_surface = sdl2.sdlttf.TTF_RenderText_Shaded(font, _chr.encode(), sdl2.SDL_Color(*fg), sdl2.SDL_Color(*bg))
     chr_texture = sdl2.SDL_CreateTextureFromSurface(renderer, chr_surface)
 
     sdl2.SDL_FreeSurface(chr_surface)
@@ -38,28 +37,38 @@ def create_texture_chr(font: sdl2.sdlttf.TTF_Font, renderer: sdl2.SDL_Renderer, 
     return chr_texture
 
 
-def get_size_texture(texture: sdl2.SDL_Texture):
+def get_size_texture_sdl2(texture: sdl2.SDL_Texture):
     w, h = ctypes.c_int(), ctypes.c_int()
     sdl2.SDL_QueryTexture(texture, None, None, ctypes.byref(w), ctypes.byref(h))
     return w.value, h.value
 
 
-def get_style(chr_attr: pyrogue.buffer_term.CharacterAttribute) -> int:
+def get_style_sdl2(chr_attr: pyrogue.buffer_term.CharacterAttribute) -> int:
+    all_styles = {
+        "bold": sdl2.sdlttf.TTF_STYLE_BOLD,
+        "italic": sdl2.sdlttf.TTF_STYLE_ITALIC,
+        "underline": sdl2.sdlttf.TTF_STYLE_UNDERLINE,
+        "strikethrough": sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH,
+    }
+
     style = 0
 
-    if chr_attr.bold:
-        style |= sdl2.sdlttf.TTF_STYLE_BOLD
-
-    if chr_attr.italic:
-        style |= sdl2.sdlttf.TTF_STYLE_ITALIC
-
-    if chr_attr.underline:
-        style |= sdl2.sdlttf.TTF_STYLE_UNDERLINE
-
-    if chr_attr.strikethrough:
-        style |= sdl2.sdlttf.TTF_STYLE_STRIKETHROUGH
+    for _s in all_styles.keys():
+        if getattr(chr_attr, _s):
+            style |= all_styles[_s]
 
     return style
+
+
+def get_font_quality_sdl2(quality: pyrogue.virtual_console.QualityFont):
+    quality_format = {
+        pyrogue.virtual_console.QualityFont.SOLID: sdl2.sdlttf.TTF_RenderText_Solid,
+        pyrogue.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderText_Shaded,
+        pyrogue.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderText_LCD,
+        pyrogue.virtual_console.QualityFont.BLENDED: sdl2.sdlttf.TTF_RenderText_Blended,
+    }[quality]
+
+    return lambda font, code, fg, bg: quality_format(font, code, fg, bg)
 
 
 class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
@@ -80,17 +89,18 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         self.__c_font = sdl2.sdlttf.TTF_OpenFont(DEFAULT_FONT.encode(), ptsize=DEFAULT_PTSIZE)
 
     def __init__(self):
+        super().__init__()
+
         self.__instance_all_service()
 
-        empty_texture = create_texture_chr(self.font, self.surface, ' ')
+        empty_texture = create_texture_chr_sdl2(self.font, self.surface, ' ')
 
         self.__background_color = 0, 0, 0
         self.__buffer = pyrogue.buffer_term.BufferTerm(80, 30)
         self.__target = None
-        self.__running = True
         self.__textures_allocate = {}
         self.__chr_format_key = lambda _str: _str.decode().lower()
-        self.__size_texture = get_size_texture(empty_texture)
+        self.__size_texture = get_size_texture_sdl2(empty_texture)
 
         sdl2.SDL_DestroyTexture(empty_texture)
 
@@ -113,28 +123,28 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         self.__background_color = background
 
     def main_loop(self):
-        while self.__running:
-            self.events()
+        while self.running:
+            event = sdl2.SDL_Event()
+            while sdl2.SDL_PollEvent(ctypes.byref(event)) != 0:
+                self.events(event)
 
             if self.__target:
                 try:
                     self.__target()
                 except Exception as e:
-                    self.__running = False
+                    self.running = False
                     raise e
 
             sdl2.SDL_SetRenderDrawColor(self.surface, *self.background, 255)
             sdl2.SDL_RenderClear(self.surface)
 
-            self.draw()
+            self.present()
 
             sdl2.SDL_RenderPresent(self.surface)
 
         self.clear_cache()
 
-        sdl2.sdlttf.TTF_CloseFont(self.font)
-        sdl2.SDL_DestroyWindow(self.__c_window)
-        sdl2.SDL_Quit()
+        self.quit()
 
     def set_title(self, _str: str):
         sdl2.SDL_SetWindowTitle(self.__c_window, _str.encode())
@@ -168,36 +178,43 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
         self.__textures_allocate.clear()
 
-    def draw(self):
+    def events(self, event: sdl2.SDL_Event):
         w, h = self.__size_texture
 
-        for chr_attr in self.__buffer:
-            x, y = chr_attr.x, chr_attr.y
-            d_rect = sdl2.SDL_Rect(x * w, y * h, w, h)
+        if event.type == sdl2.SDL_QUIT:
+            self.running = False
 
-            if chr_attr not in self.__textures_allocate.keys():
-                self.__textures_allocate[chr_attr] = create_texture_chr(
-                    self.font, self.surface, chr_attr.code, chr_attr.foreign, get_style(chr_attr)
-                )
+        elif event.type == sdl2.SDL_WINDOWEVENT:
+            if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
+                width, height = event.window.data1, event.window.data2
+                self.__buffer.resize(width // w, height // h)
 
-            sdl2.SDL_SetRenderDrawColor(self.surface, *chr_attr.background, 255)
-            sdl2.SDL_RenderFillRect(self.surface, d_rect)
-            sdl2.SDL_RenderCopy(self.surface, self.__textures_allocate[chr_attr], None, d_rect)
-
-    def events(self):
+    def present(self):
         w, h = self.__size_texture
-        events = sdl2.SDL_Event()
 
-        while sdl2.SDL_PollEvent(ctypes.byref(events)) != 0:
-            if events.type == sdl2.SDL_QUIT:
-                self.__running = False
+        for _obj in self.__buffer:
+            x, y = _obj.x, _obj.y
 
-            elif events.type == sdl2.SDL_WINDOWEVENT:
-                if events.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
-                    width, height = events.window.data1, events.window.data2
-                    self.__buffer.resize(width // w, height // h)
+            if isinstance(_obj, pyrogue.buffer_term.CharacterAttribute):
+                d_rect = sdl2.SDL_Rect(x * w, y * h, w, h)
+
+                if _obj not in self.__textures_allocate.keys():
+                    self.__textures_allocate[_obj] = create_texture_chr_sdl2(
+                        self.font, self.surface, _obj.code,
+                        pyrogue.colors.cast_depth_colors(_obj.foreign, self.depth_colors),
+                        pyrogue.colors.cast_depth_colors(_obj.background, self.depth_colors),
+                        get_style_sdl2(_obj)
+                    )
+
+                sdl2.SDL_SetRenderDrawColor(self.surface, *_obj.background, 255)
+                sdl2.SDL_RenderCopy(self.surface, self.__textures_allocate[_obj], None, d_rect)
+            elif isinstance(_obj, pyrogue.buffer_term.RectangleAttribute):
+                d_rect = sdl2.SDL_Rect(x, y, _obj.w * w, _obj.h * h)
+
+                sdl2.SDL_SetRenderDrawColor(self.surface, *_obj.color, 255)
+                sdl2.SDL_RenderFillRect(self.surface, d_rect)
 
     def quit(self):
         sdl2.sdlttf.TTF_CloseFont(self.font)
-        sdl2.SDL_DestroyWindow(self.__c_window)
+        sdl2.SDL_DestroyWindow(self.window)
         sdl2.SDL_Quit()

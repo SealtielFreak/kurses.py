@@ -21,7 +21,7 @@ class PygameVirtualConsole(pyrogue.virtual_console.VirtualConsole):
     def clear_cache(self):
         pass
 
-    def draw(self):
+    def present(self):
         pass
 
     def events(self):

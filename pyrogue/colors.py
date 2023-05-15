@@ -56,4 +56,17 @@ def rgb_to_bit_depth(rgb: TupleColor, bit_depth: int) -> int:
     g = g // factor * factor
     b = b // factor * factor
 
-    return (r << 16) + (g << 8)
+    return (r << 16) + (g << 8) + (b << 4)
+
+
+def cast_depth_colors(rgb: TupleColor, bits: int):
+    r, g, b = rgb
+    factor = 2 ** (8 - bits)
+
+    r = (r // factor) * factor
+    g = (g // factor) * factor
+    b = (b // factor) * factor
+
+    color = tuple(map(int, (r, g, b)))
+
+    return color

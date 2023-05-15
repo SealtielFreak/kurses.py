@@ -1,12 +1,28 @@
+import enum
 import abc
 import typing
+
 
 import pyrogue.buffer_term
 
 T = typing.TypeVar("T", bound="VirtualConsole")
 
 
+class QualityFont(enum.Enum):
+    SOLID = 0
+    SHADED = 1
+    LCD = 2
+    BLENDED = 3
+
+
 class VirtualConsole(abc.ABC, typing.Generic[T]):
+    @abc.abstractmethod
+    def __init__(self, depth_colors: int = 8, quality: QualityFont = QualityFont.LCD):
+        self.running = True
+        self.depth_colors = depth_colors
+        self.quality_font = quality
+
+
     @property
     @abc.abstractmethod
     def buffer(self) -> pyrogue.buffer_term.BufferTerm: ...
@@ -47,10 +63,10 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
     def clear_cache(self): ...
 
     @abc.abstractmethod
-    def draw(self): ...
+    def events(self, event: T): ...
 
     @abc.abstractmethod
-    def events(self): ...
+    def present(self): ...
 
     @abc.abstractmethod
     def quit(self): ...

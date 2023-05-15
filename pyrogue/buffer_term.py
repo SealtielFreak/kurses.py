@@ -24,7 +24,7 @@ class CharacterAttribute:
         return hash(
             (
                 self.code,
-                self.foreign,
+                self.foreign, self.background,
                 self.bold, self.italic, self.underline, self.strikethrough
             )
         )
@@ -33,7 +33,13 @@ class CharacterAttribute:
         return not self.code == ' '
 
 
-DequeCharacterAttribute = typing.Deque[CharacterAttribute]
+@dataclasses.dataclass
+class RectangleAttribute:
+    x: int
+    y: int
+    w: int
+    h: int
+    color: pyrogue.colors.TupleColor
 
 
 class BufferTerm:
@@ -122,7 +128,7 @@ class BufferTerm:
 
     def cputs(self, _chr: chr):
         x, y = self.__current_position
-        self.__queue.append(self.__create_character_attr(_chr, x, y))
+        self.__queue.appendleft(self.__create_character_attr(_chr, x, y))
 
     def print(self, _str: str):
         x, y = self.wherex(), self.wherey()
@@ -133,9 +139,18 @@ class BufferTerm:
 
     def putchxy(self, x: int, y: int, _chr: chr) -> None:
         self.__current_position = x, y
-        self.__queue.append(self.__create_character_attr(_chr, x, y))
+        self.__queue.appendleft(self.__create_character_attr(_chr, x, y))
 
     def cputsxy(self, x: int, y: int, _str: str) -> None:
         for _chr in _str:
             self.putchxy(x, y, _chr)
             x += 1
+
+    def putrect(self, x: int, y: int, w: int, h: int):
+        self.__queue.appendleft(
+            RectangleAttribute(
+                x, y,
+                w, h,
+                self.__background_color
+            )
+        )
