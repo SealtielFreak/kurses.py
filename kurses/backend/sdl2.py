@@ -150,7 +150,7 @@ class SDL2VirtualConsole(kurses.virtual_console.VirtualConsole):
     def __del__(self):
         self.__del_sdl2()
 
-    def set_resizable(self, _bool: bool) -> bool:
+    def set_resizable(self, _bool: bool):
         self._resizable = _bool
         sdl2.SDL_SetWindowResizable(self.window, _bool)
 
@@ -159,6 +159,9 @@ class SDL2VirtualConsole(kurses.virtual_console.VirtualConsole):
             ptsize = DEFAULT_PTSIZE
 
         self.__c_font = sdl2.sdlttf.TTF_OpenFont(filename.encode(), ptsize=ptsize)
+
+        if self.__c_font is None:
+            raise FileNotFoundError("Font no found")
 
         render_method = get_render_font_method_sdl2(self.encoding, self.quality_font)
         empty_texture = create_texture_chr_sdl2(self.font, render_method, self.surface, ' ')
