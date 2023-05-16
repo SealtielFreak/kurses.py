@@ -1,7 +1,6 @@
-import enum
 import abc
+import enum
 import typing
-
 
 import pyrogue.buffer_term
 
@@ -28,12 +27,20 @@ class Rendering(enum.Enum):
 
 class VirtualConsole(abc.ABC, typing.Generic[T]):
     @abc.abstractmethod
-    def __init__(self, depth_colors: int = 8, encoding: EncodingFont = EncodingFont.ASCII, quality: QualityFont = QualityFont.SOLID, render: Rendering = Rendering.SOFTWARE):
+    def __init__(self, depth_colors: int = 8, **kwargs):
         self.running = True
-        self.depth_colors = depth_colors
-        self.encoding = encoding
-        self.quality_font = quality
-        self.render = render
+        self.depth_colors = kwargs["depth_colors"] if depth_colors in kwargs else 8
+        self.encoding = kwargs["encoding"] if "encoding" in kwargs else EncodingFont.ASCII
+        self.quality_font = kwargs["quality"] if "quality" in kwargs else QualityFont.SHADED
+        self.render = kwargs["render"] if "render" in kwargs else Rendering.SOFTWARE
+        self.automatic_cleaner = kwargs["automatic_cleaner"] if "automatic_cleaner" in kwargs else True
+        self.fps = kwargs["fps"] if "fps" in kwargs else 30
+
+        self._dt = 1.0
+
+    @property
+    def dt(self) -> float:
+        return self._dt
 
     @property
     @abc.abstractmethod

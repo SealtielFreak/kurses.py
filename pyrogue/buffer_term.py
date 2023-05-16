@@ -16,6 +16,7 @@ class CharacterAttribute:
     italic: bool = False
     underline: bool = False
     strikethrough: bool = False
+    blink: int = 0
 
     def __eq__(self, other):
         return self.code == other.code

@@ -2,6 +2,7 @@ import collections
 import ctypes
 import string
 import typing
+import time
 
 import sdl2
 import sdl2.sdlttf
@@ -71,13 +72,14 @@ def cast_render_method(_render_method):
     def inner(font, _chr, fg, bg):
         _surface_font = _render_method(font, _chr, fg)
 
-        _surface_bg = sdl2.SDL_CreateRGBSurface(0, _surface_font.contents.w, _surface_font.contents.h, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000)
-        _color_bg = sdl2.SDL_MapRGB(_surface_bg.contents.format.contents, bg.r, bg.g, bg.b)
-        sdl2.SDL_FillRect(_surface_bg, None, _color_bg)
+        _surface = sdl2.SDL_CreateRGBSurface(
+            0, _surface_font.contents.w, _surface_font.contents.h, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000)
+        _color_bg = sdl2.SDL_MapRGB(_surface.contents.format.contents, bg.r, bg.g, bg.b)
+        sdl2.SDL_FillRect(_surface, None, _color_bg)
 
-        sdl2.SDL_BlitSurface(_surface_font, None, _surface_bg, None)
+        sdl2.SDL_BlitSurface(_surface_font, None, _surface, None)
 
-        return _surface_bg
+        return _surface
 
     return inner
 
@@ -177,6 +179,9 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
     def main_loop(self):
         while self.running:
+            frame_time = 1.0 / self.fps
+            frame_start = time.time()
+
             event = sdl2.SDL_Event()
             while sdl2.SDL_PollEvent(ctypes.byref(event)) != 0:
                 self.events(event)
@@ -195,6 +200,14 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
                 self.present()
 
                 sdl2.SDL_RenderPresent(self.surface)
+
+            if self.automatic_cleaner:
+                self.clear_cache()
+
+            self._dt = time.time() - frame_start
+            wait_time = max(0, frame_time - self._dt)
+
+            sdl2.SDL_Delay(int(wait_time * 1000))
 
         self.clear_cache()
 
