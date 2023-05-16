@@ -71,13 +71,13 @@ def cast_render_method(_render_method):
     def inner(font, _chr, fg, bg):
         _surface_font = _render_method(font, _chr, fg)
 
-        _surface_bg = sdl2.SDL_CreateRGBSurface(0, _surface_font.contents.w, _surface_font.contents.h, 32, 0, 0, 0, 0)
+        _surface_bg = sdl2.SDL_CreateRGBSurface(0, _surface_font.contents.w, _surface_font.contents.h, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000)
         _color_bg = sdl2.SDL_MapRGB(_surface_bg.contents.format.contents, bg.r, bg.g, bg.b)
         sdl2.SDL_FillRect(_surface_bg, None, _color_bg)
 
         sdl2.SDL_BlitSurface(_surface_font, None, _surface_bg, None)
 
-        return _surface_font
+        return _surface_bg
 
     return inner
 
@@ -236,7 +236,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         w, h = self.__size_texture
 
         if event.type == sdl2.SDL_QUIT:
-            self.running = False
+            self.quit()
 
         elif event.type == sdl2.SDL_WINDOWEVENT:
             if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:

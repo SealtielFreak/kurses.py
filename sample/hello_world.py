@@ -33,11 +33,8 @@ if __name__ == "__main__":
             term.cputs(_c)
             x += 1
 
-
         term.resetall()
 
 
     console.set_target(main)
     console.main_loop()
-
-    exit()
