@@ -1,8 +1,8 @@
-import pyrogue.virtual_console
-from pyrogue.virtual_console import T
+import kurses.virtual_console
+from kurses.virtual_console import T
 
 
-class PygameVirtualConsole(pyrogue.virtual_console.VirtualConsole):
+class PygameVirtualConsole(kurses.virtual_console.VirtualConsole):
     def keyspressed(self) -> list[chr]:
         pass
 
@@ -21,17 +21,17 @@ class PygameVirtualConsole(pyrogue.virtual_console.VirtualConsole):
     def clear_cache(self):
         pass
 
-    def draw(self):
+    def present(self):
         pass
 
-    def events(self):
+    def push_events(self):
         pass
 
     def quit(self):
         pass
 
     @property
-    def buffer(self) -> pyrogue.buffer_matrix.BufferTerm:
+    def buffer(self) -> kurses.buffer_matrix.BufferTerm:
         pass
 
     def set_target(self, target):
