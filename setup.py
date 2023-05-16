@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-MODULE_TITLE = "pyrogue"
+MODULE_TITLE = "kurses"
 MODULE_VERSION = "0.1"
 MODULE_DESCRIPTION = """\
 This module provides a cross-platform solution for simulating the functionality of the 'conio' and 'curses' libraries. 
@@ -28,7 +28,7 @@ setup(
     license="LGPL 2.1",
 
     url="https://github.com/SealtielFreak/pyrogue",
-    packages=["pyrogue"],
+    packages=["kurses"],
     install_requires=[""],
     data_files=[
         ('', ['LICENSE']),

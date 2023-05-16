@@ -1,6 +1,6 @@
 import random
 
-from pyrogue import Console
+from kurses import Console
 
 if __name__ == "__main__":
     console = Console()

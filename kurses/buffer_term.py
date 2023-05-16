@@ -2,7 +2,7 @@ import collections
 import dataclasses
 import typing
 
-import pyrogue.colors
+import kurses.colors
 
 
 @dataclasses.dataclass
@@ -10,8 +10,8 @@ class CharacterAttribute:
     code: chr = ''
     x: int = 0
     y: int = 0
-    foreign: pyrogue.colors.TupleColor = (255, 255, 255)
-    background: pyrogue.colors.TupleColor = (0, 0, 0)
+    foreign: kurses.colors.TupleColor = (255, 255, 255)
+    background: kurses.colors.TupleColor = (0, 0, 0)
     bold: bool = False
     italic: bool = False
     underline: bool = False
@@ -37,7 +37,7 @@ class RectangleAttribute:
     y: int
     w: int
     h: int
-    color: pyrogue.colors.TupleColor
+    color: kurses.colors.TupleColor
 
 
 class BufferTerm:
@@ -93,15 +93,15 @@ class BufferTerm:
         self.__foreign_color = (255, 255, 255)
         self.__background_color = (0, 0, 0)
 
-    def set_background_color(self, color: pyrogue.colors.Color) -> None:
+    def set_background_color(self, color: kurses.colors.Color) -> None:
         if isinstance(color, int):
-            color = pyrogue.colors.hex_to_rgb(color)
+            color = kurses.colors.hex_to_rgb(color)
 
         self.__background_color = color
 
-    def set_foreign_color(self, color: pyrogue.colors.Color) -> None:
+    def set_foreign_color(self, color: kurses.colors.Color) -> None:
         if isinstance(color, int):
-            color = pyrogue.colors.hex_to_rgb(color)
+            color = kurses.colors.hex_to_rgb(color)
 
         self.__foreign_color = color
 

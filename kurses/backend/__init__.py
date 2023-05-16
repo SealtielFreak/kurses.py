@@ -2,14 +2,14 @@
 
 try:
     import sdl2
-    from pyrogue.backend.sdl2 import SDL2VirtualConsole
+    from kurses.backend.sdl2 import SDL2VirtualConsole
 
     Console = SDL2VirtualConsole
 
 except ImportError:
     try:
         import pygame
-        from pyrogue.backend.pygame import PygameVirtualConsole
+        from kurses.backend.pygame import PygameVirtualConsole
 
         Console = PygameVirtualConsole
     except ImportError:

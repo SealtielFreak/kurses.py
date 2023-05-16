@@ -2,7 +2,7 @@ import abc
 import enum
 import typing
 
-import pyrogue.buffer_term
+import kurses.buffer_term
 
 T = typing.TypeVar("T", bound="VirtualConsole")
 
@@ -55,7 +55,7 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
 
     @property
     @abc.abstractmethod
-    def buffer(self) -> pyrogue.buffer_term.BufferTerm: ...
+    def buffer(self) -> kurses.buffer_term.BufferTerm: ...
 
     @abc.abstractmethod
     def set_target(self, target: typing.Callable[[None], None]): ...

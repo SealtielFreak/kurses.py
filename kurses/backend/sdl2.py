@@ -7,9 +7,9 @@ import time
 import sdl2
 import sdl2.sdlttf
 
-import pyrogue.buffer_term
-import pyrogue.colors
-import pyrogue.virtual_console
+import kurses.buffer_term
+import kurses.colors
+import kurses.virtual_console
 
 DEFAULT_PTSIZE = 16
 DEFAULT_ALL_ASCII = string.printable
@@ -43,7 +43,7 @@ def get_size_texture_sdl2(texture: sdl2.SDL_Texture):
     return w.value, h.value
 
 
-def get_style_sdl2(chr_attr: pyrogue.buffer_term.CharacterAttribute) -> int:
+def get_style_sdl2(chr_attr: kurses.buffer_term.CharacterAttribute) -> int:
     all_styles = {
         "bold": sdl2.sdlttf.TTF_STYLE_BOLD,
         "italic": sdl2.sdlttf.TTF_STYLE_ITALIC,
@@ -77,25 +77,25 @@ def cast_render_method(_render_method):
     return inner
 
 
-def get_render_font_method_sdl2(encoding: pyrogue.virtual_console.EncodingFont, quality: pyrogue.virtual_console.QualityFont) -> RenderMethodSDL2:
+def get_render_font_method_sdl2(encoding: kurses.virtual_console.EncodingFont, quality: kurses.virtual_console.QualityFont) -> RenderMethodSDL2:
     _render_f = {
-        pyrogue.virtual_console.EncodingFont.ASCII: {
-            pyrogue.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderText_Solid),
-            pyrogue.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderText_Shaded,
-            pyrogue.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderText_LCD,
-            pyrogue.virtual_console.QualityFont.BLENDED: cast_render_method(sdl2.sdlttf.TTF_RenderText_Blended)
+        kurses.virtual_console.EncodingFont.ASCII: {
+            kurses.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderText_Solid),
+            kurses.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderText_Shaded,
+            kurses.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderText_LCD,
+            kurses.virtual_console.QualityFont.BLENDED: cast_render_method(sdl2.sdlttf.TTF_RenderText_Blended)
         },
-        pyrogue.virtual_console.EncodingFont.UTF_8: {
-            pyrogue.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderUTF8_Solid),
-            pyrogue.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderUTF8_Shaded,
-            pyrogue.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderUTF8_LCD,
-            pyrogue.virtual_console.QualityFont.BLENDED: cast_render_method(sdl2.sdlttf.TTF_RenderUTF8_Blended)
+        kurses.virtual_console.EncodingFont.UTF_8: {
+            kurses.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderUTF8_Solid),
+            kurses.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderUTF8_Shaded,
+            kurses.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderUTF8_LCD,
+            kurses.virtual_console.QualityFont.BLENDED: cast_render_method(sdl2.sdlttf.TTF_RenderUTF8_Blended)
         },
-        pyrogue.virtual_console.EncodingFont.UNICODE: {
-            pyrogue.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderUNICODE_Solid),
-            pyrogue.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderUNICODE_Shaded,
-            pyrogue.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderUNICODE_LCD,
-            pyrogue.virtual_console.QualityFont.BLENDED: cast_render_method(sdl2.sdlttf.TTF_RenderUNICODE_Blended)
+        kurses.virtual_console.EncodingFont.UNICODE: {
+            kurses.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderUNICODE_Solid),
+            kurses.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderUNICODE_Shaded,
+            kurses.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderUNICODE_LCD,
+            kurses.virtual_console.QualityFont.BLENDED: cast_render_method(sdl2.sdlttf.TTF_RenderUNICODE_Blended)
         },
     }[encoding][quality]
 
@@ -107,11 +107,11 @@ def get_render_font_method_sdl2(encoding: pyrogue.virtual_console.EncodingFont, 
     return render_method
 
 
-class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
+class SDL2VirtualConsole(kurses.virtual_console.VirtualConsole):
     def __init_sdl2(self):
         _type_render = {
-            pyrogue.virtual_console.Rendering.HARDWARE: sdl2.SDL_RENDERER_ACCELERATED,
-            pyrogue.virtual_console.Rendering.SOFTWARE: sdl2.SDL_RENDERER_SOFTWARE,
+            kurses.virtual_console.Rendering.HARDWARE: sdl2.SDL_RENDERER_ACCELERATED,
+            kurses.virtual_console.Rendering.SOFTWARE: sdl2.SDL_RENDERER_SOFTWARE,
         }
 
         if not sdl2.SDL_WasInit(sdl2.SDL_INIT_EVERYTHING):
@@ -141,7 +141,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
         self.__c_font = None
         self.__background_color = 0, 0, 0
-        self.__buffer = pyrogue.buffer_term.BufferTerm(80, 30)
+        self.__buffer = kurses.buffer_term.BufferTerm(80, 30)
         self.__target = None
         self.__textures_allocate = {}
         self.__chr_format_key = lambda _str: _str.decode().lower()
@@ -278,20 +278,20 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
                 x = x - (limit_w + 1)
                 y += 1
 
-            if isinstance(_obj, pyrogue.buffer_term.CharacterAttribute):
+            if isinstance(_obj, kurses.buffer_term.CharacterAttribute):
                 d_rect = sdl2.SDL_Rect(x * w, y * h, w, h)
 
                 if _obj not in self.__textures_allocate.keys():
                     self.__textures_allocate[_obj] = create_texture_chr_sdl2(
                         self.font, render_method, self.surface, _obj.code,
-                        pyrogue.colors.cast_depth_colors(_obj.foreign, self.depth_colors),
-                        pyrogue.colors.cast_depth_colors(_obj.background, self.depth_colors),
+                        kurses.colors.cast_depth_colors(_obj.foreign, self.depth_colors),
+                        kurses.colors.cast_depth_colors(_obj.background, self.depth_colors),
                         get_style_sdl2(_obj)
                     )
 
                 sdl2.SDL_SetRenderDrawColor(self.surface, *_obj.background, 255)
                 sdl2.SDL_RenderCopy(self.surface, self.__textures_allocate[_obj], None, d_rect)
-            elif isinstance(_obj, pyrogue.buffer_term.RectangleAttribute):
+            elif isinstance(_obj, kurses.buffer_term.RectangleAttribute):
                 d_rect = sdl2.SDL_Rect(x, y, _obj.w * w, _obj.h * h)
 
                 sdl2.SDL_SetRenderDrawColor(self.surface, *_obj.color, 255)
