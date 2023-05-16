@@ -15,13 +15,25 @@ class QualityFont(enum.Enum):
     BLENDED = 3
 
 
+class EncodingFont(enum.Enum):
+    ASCII = 0
+    UTF_8 = 1
+    UNICODE = 2
+
+
+class Rendering(enum.Enum):
+    HARDWARE = 0
+    SOFTWARE = 1
+
+
 class VirtualConsole(abc.ABC, typing.Generic[T]):
     @abc.abstractmethod
-    def __init__(self, depth_colors: int = 8, quality: QualityFont = QualityFont.LCD):
+    def __init__(self, depth_colors: int = 8, encoding: EncodingFont = EncodingFont.ASCII, quality: QualityFont = QualityFont.SOLID, render: Rendering = Rendering.SOFTWARE):
         self.running = True
         self.depth_colors = depth_colors
+        self.encoding = encoding
         self.quality_font = quality
-
+        self.render = render
 
     @property
     @abc.abstractmethod

@@ -25,16 +25,23 @@ WINDOW_DEFAULT_TITLE = "SDL2"
 WINDOW_DEFAULT_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
 WINDOW_DEFAULT_SIZE = 640, 480
 
+RenderMethod = typing.Callable[[sdl2.sdlttf.TTF_Font, chr, sdl2.SDL_Color, sdl2.SDL_Color], typing.Any]
 
-def create_texture_chr_sdl2(font: sdl2.sdlttf.TTF_Font, renderer: sdl2.SDL_Renderer, _chr: chr, fg=(0, 0, 0), bg=(0, 0, 0), style: int = 0):
+
+def color_sdl2(color=(0, 0, 0)) -> sdl2.SDL_Color:
+    return sdl2.SDL_Color(*color)
+
+
+def create_texture_chr_sdl2(font: sdl2.sdlttf.TTF_Font, render_method: RenderMethod, renderer: sdl2.SDL_Renderer,
+                            _chr: chr, fg=(0, 0, 0), bg=(0, 0, 0), style: int = 0):
     sdl2.sdlttf.TTF_SetFontStyle(font, style)
 
-    chr_surface = sdl2.sdlttf.TTF_RenderText_Shaded(font, _chr.encode(), sdl2.SDL_Color(*fg), sdl2.SDL_Color(*bg))
-    chr_texture = sdl2.SDL_CreateTextureFromSurface(renderer, chr_surface)
+    _surface = render_method(font, _chr, color_sdl2(fg), color_sdl2(bg))
+    _texture = sdl2.SDL_CreateTextureFromSurface(renderer, _surface)
 
-    sdl2.SDL_FreeSurface(chr_surface)
+    sdl2.SDL_FreeSurface(_surface)
 
-    return chr_texture
+    return _texture
 
 
 def get_size_texture_sdl2(texture: sdl2.SDL_Texture):
@@ -60,19 +67,60 @@ def get_style_sdl2(chr_attr: pyrogue.buffer_term.CharacterAttribute) -> int:
     return style
 
 
-def get_font_quality_sdl2(quality: pyrogue.virtual_console.QualityFont):
-    quality_format = {
-        pyrogue.virtual_console.QualityFont.SOLID: sdl2.sdlttf.TTF_RenderText_Solid,
-        pyrogue.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderText_Shaded,
-        pyrogue.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderText_LCD,
-        pyrogue.virtual_console.QualityFont.BLENDED: sdl2.sdlttf.TTF_RenderText_Blended,
-    }[quality]
+def cast_render_method(_render_method):
+    def inner(font, _chr, fg, bg):
+        _surface_font = _render_method(font, _chr, fg)
 
-    return lambda font, code, fg, bg: quality_format(font, code, fg, bg)
+        _surface_bg = sdl2.SDL_CreateRGBSurface(0, _surface_font.contents.w, _surface_font.contents.h, 32, 0, 0, 0, 0)
+        _color_bg = sdl2.SDL_MapRGB(_surface_bg.contents.format.contents, bg.r, bg.g, bg.b)
+        sdl2.SDL_FillRect(_surface_bg, None, _color_bg)
+
+        sdl2.SDL_BlitSurface(_surface_font, None, _surface_bg, None)
+
+        return _surface_font
+
+    return inner
+
+
+def get_render_font_method_sdl2(encoding: pyrogue.virtual_console.EncodingFont, quality: pyrogue.virtual_console.QualityFont) -> RenderMethod:
+    _render_f = {
+        pyrogue.virtual_console.EncodingFont.ASCII: {
+            pyrogue.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderText_Solid),
+            pyrogue.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderText_Shaded,
+            pyrogue.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderText_LCD,
+            pyrogue.virtual_console.QualityFont.BLENDED: sdl2.sdlttf.TTF_RenderText_Blended
+        },
+        pyrogue.virtual_console.EncodingFont.UTF_8: {
+            pyrogue.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderUTF8_Solid),
+            pyrogue.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderUTF8_Shaded,
+            pyrogue.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderUTF8_LCD,
+            pyrogue.virtual_console.QualityFont.BLENDED: sdl2.sdlttf.TTF_RenderUTF8_Blended
+        },
+        pyrogue.virtual_console.EncodingFont.UNICODE: {
+            pyrogue.virtual_console.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderUNICODE_Solid),
+            pyrogue.virtual_console.QualityFont.SHADED: sdl2.sdlttf.TTF_RenderUNICODE_Shaded,
+            pyrogue.virtual_console.QualityFont.LCD: sdl2.sdlttf.TTF_RenderUNICODE_LCD,
+            pyrogue.virtual_console.QualityFont.BLENDED: sdl2.sdlttf.TTF_RenderUNICODE_Blended
+        },
+    }[encoding][quality]
+
+    _arg_count = _render_f.__code__.co_argcount
+
+    def render_method(font, _chr, fg, bg):
+        _chr = _chr.encode()
+
+        return _render_f(font, _chr, fg, bg)
+
+    return render_method
 
 
 class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
-    def __instance_all_service(self):
+    def __init_sdl2(self):
+        _type_render = {
+            pyrogue.virtual_console.Rendering.HARDWARE: sdl2.SDL_RENDERER_ACCELERATED,
+            pyrogue.virtual_console.Rendering.SOFTWARE: sdl2.SDL_RENDERER_SOFTWARE,
+        }
+
         if not sdl2.SDL_WasInit(sdl2.SDL_INIT_EVERYTHING):
             sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING)
 
@@ -83,17 +131,22 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
             WINDOW_DEFAULT_TITLE.encode(),
             *WINDOW_DEFAULT_POSITION,
             *WINDOW_DEFAULT_SIZE,
-            sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_RESIZABLE
-        )
-        self.__c_renderer = sdl2.SDL_CreateRenderer(self.__c_window, -1, sdl2.SDL_RENDERER_ACCELERATED)
+            sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_RESIZABLE)
+        self.__c_renderer = sdl2.SDL_CreateRenderer(self.__c_window, -1, _type_render[self.render])
         self.__c_font = sdl2.sdlttf.TTF_OpenFont(DEFAULT_FONT.encode(), ptsize=DEFAULT_PTSIZE)
+
+    def __del_sdl2(self):
+        sdl2.sdlttf.TTF_CloseFont(self.font)
+        sdl2.SDL_DestroyWindow(self.window)
+        sdl2.SDL_Quit()
 
     def __init__(self):
         super().__init__()
 
-        self.__instance_all_service()
+        self.__init_sdl2()
 
-        empty_texture = create_texture_chr_sdl2(self.font, self.surface, ' ')
+        render_method = get_render_font_method_sdl2(self.encoding, self.quality_font)
+        empty_texture = create_texture_chr_sdl2(self.font, render_method, self.surface, ' ')
 
         self.__background_color = 0, 0, 0
         self.__buffer = pyrogue.buffer_term.BufferTerm(80, 30)
@@ -105,7 +158,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         sdl2.SDL_DestroyTexture(empty_texture)
 
     def __del__(self):
-        self.quit()
+        self.__del_sdl2()
 
     @property
     def buffer(self):
@@ -135,12 +188,13 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
                     self.running = False
                     raise e
 
-            sdl2.SDL_SetRenderDrawColor(self.surface, *self.background, 255)
-            sdl2.SDL_RenderClear(self.surface)
+            if self.surface is not None:
+                sdl2.SDL_SetRenderDrawColor(self.surface, *self.background, 255)
+                sdl2.SDL_RenderClear(self.surface)
 
-            self.present()
+                self.present()
 
-            sdl2.SDL_RenderPresent(self.surface)
+                sdl2.SDL_RenderPresent(self.surface)
 
         self.clear_cache()
 
@@ -191,6 +245,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
     def present(self):
         w, h = self.__size_texture
+        render_method = get_render_font_method_sdl2(self.encoding, self.quality_font)
 
         for _obj in self.__buffer:
             x, y = _obj.x, _obj.y
@@ -200,7 +255,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
                 if _obj not in self.__textures_allocate.keys():
                     self.__textures_allocate[_obj] = create_texture_chr_sdl2(
-                        self.font, self.surface, _obj.code,
+                        self.font, render_method, self.surface, _obj.code,
                         pyrogue.colors.cast_depth_colors(_obj.foreign, self.depth_colors),
                         pyrogue.colors.cast_depth_colors(_obj.background, self.depth_colors),
                         get_style_sdl2(_obj)
@@ -215,6 +270,4 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
                 sdl2.SDL_RenderFillRect(self.surface, d_rect)
 
     def quit(self):
-        sdl2.sdlttf.TTF_CloseFont(self.font)
-        sdl2.SDL_DestroyWindow(self.window)
-        sdl2.SDL_Quit()
+        self.running = False
