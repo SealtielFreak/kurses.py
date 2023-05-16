@@ -27,7 +27,7 @@ setup(
 
     license="LGPL 2.1",
 
-    url="https://github.com/SealtielFreak/pyrogue",
+    url="https://github.com/SealtielFreak/kurses.py",
     packages=["kurses"],
     install_requires=[""],
     data_files=[
