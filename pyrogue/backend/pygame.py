@@ -24,7 +24,7 @@ class PygameVirtualConsole(pyrogue.virtual_console.VirtualConsole):
     def present(self):
         pass
 
-    def events(self):
+    def push_events(self):
         pass
 
     def quit(self):

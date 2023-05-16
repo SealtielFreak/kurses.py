@@ -28,15 +28,18 @@ class Rendering(enum.Enum):
 class VirtualConsole(abc.ABC, typing.Generic[T]):
     @abc.abstractmethod
     def __init__(self, depth_colors: int = 8, **kwargs):
+        self._dt = 1.0
+
         self.running = True
         self.depth_colors = kwargs["depth_colors"] if depth_colors in kwargs else 8
         self.encoding = kwargs["encoding"] if "encoding" in kwargs else EncodingFont.ASCII
-        self.quality_font = kwargs["quality"] if "quality" in kwargs else QualityFont.SHADED
+        self.quality_font = kwargs["quality"] if "quality" in kwargs else QualityFont.BLENDED
         self.render = kwargs["render"] if "render" in kwargs else Rendering.SOFTWARE
         self.automatic_cleaner = kwargs["automatic_cleaner"] if "automatic_cleaner" in kwargs else True
         self.fps = kwargs["fps"] if "fps" in kwargs else 30
 
-        self._dt = 1.0
+    @abc.abstractmethod
+    def set_font(self, filename: str, ptsize=None): ...
 
     @property
     def dt(self) -> float:
@@ -82,7 +85,7 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
     def clear_cache(self): ...
 
     @abc.abstractmethod
-    def events(self, event: T): ...
+    def push_events(self, event: T): ...
 
     @abc.abstractmethod
     def present(self): ...

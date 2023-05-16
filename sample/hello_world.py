@@ -4,6 +4,7 @@ from pyrogue import Console
 
 if __name__ == "__main__":
     console = Console()
+    console.set_font("ModernDOS8x16.ttf", 16)
 
     def main():
         term = console.buffer

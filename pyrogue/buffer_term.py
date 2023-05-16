@@ -22,13 +22,10 @@ class CharacterAttribute:
         return self.code == other.code
 
     def __hash__(self):
-        return hash(
-            (
-                self.code,
-                self.foreign, self.background,
-                self.bold, self.italic, self.underline, self.strikethrough
-            )
-        )
+        _hash_tuple = (
+            self.code, self.foreign, self.background, self.bold, self.italic, self.underline, self.strikethrough)
+
+        return hash(_hash_tuple)
 
     def __bool__(self):
         return not self.code == ' '
@@ -46,6 +43,7 @@ class RectangleAttribute:
 class BufferTerm:
     def __init__(self, columns: int, rows: int):
         self.resetall()
+        self.__current_position = 0, 0
         self.__shape = rows, columns
         self.__queue = collections.deque()
 
