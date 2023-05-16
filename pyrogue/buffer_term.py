@@ -114,6 +114,9 @@ class BufferTerm:
     def underline(self, _bool: bool):
         self.__underline = _bool
 
+    def strikethrough(self, _bool: bool):
+        self.__strikethrough = _bool
+
     def __create_character_attr(self, _chr, x, y):
         return CharacterAttribute(
             _chr, x, y,

@@ -5,9 +5,11 @@ from pyrogue import Console
 if __name__ == "__main__":
     console = Console()
     console.set_font("ModernDOS8x16.ttf", 16)
+    console.set_resizable(True)
 
     def main():
         term = console.buffer
+
         term.set_background_color((0, 255, 0))
         term.set_foreign_color((225, 23, 155))
         term.putrect(0, 0, 5, 30)
@@ -17,7 +19,7 @@ if __name__ == "__main__":
         term.bold(True)
         term.set_background_color((255, 255, 255))
         term.set_foreign_color((0, 0, 0))
-        term.cputsxy(6, 1, "Hello world")
+        term.cputsxy(6, 1, "Italic and bold text")
 
         term.resetall()
 
@@ -33,6 +35,12 @@ if __name__ == "__main__":
             term.gotoxy(x, 12)
             term.cputs(_c)
             x += 1
+
+        term.resetall()
+
+        term.strikethrough(True)
+        term.set_foreign_color((255, 0, 0))
+        term.cputsxy(24, 24, "Strikethrough text")
 
         term.resetall()
 

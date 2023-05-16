@@ -29,6 +29,7 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
     @abc.abstractmethod
     def __init__(self, depth_colors: int = 8, **kwargs):
         self._dt = 1.0
+        self._resizable = True
 
         self.running = True
         self.depth_colors = kwargs["depth_colors"] if depth_colors in kwargs else 8
@@ -37,6 +38,13 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
         self.render = kwargs["render"] if "render" in kwargs else Rendering.SOFTWARE
         self.automatic_cleaner = kwargs["automatic_cleaner"] if "automatic_cleaner" in kwargs else True
         self.fps = kwargs["fps"] if "fps" in kwargs else 30
+
+    @property
+    def resizable(self) -> bool:
+        return self._resizable
+
+    @abc.abstractmethod
+    def set_resizable(self, _bool: bool) -> bool: ...
 
     @abc.abstractmethod
     def set_font(self, filename: str, ptsize=None): ...

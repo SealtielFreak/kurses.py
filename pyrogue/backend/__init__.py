@@ -1,13 +1,18 @@
+# So, I need work her
+
 try:
     import sdl2
     from pyrogue.backend.sdl2 import SDL2VirtualConsole
 
     Console = SDL2VirtualConsole
 
-except ImportError as e:
-    import pygame
-    from pyrogue.backend.pygame import PygameVirtualConsole
+except ImportError:
+    try:
+        import pygame
+        from pyrogue.backend.pygame import PygameVirtualConsole
 
-    Console = PygameVirtualConsole
+        Console = PygameVirtualConsole
+    except ImportError:
+        raise ImportError("You need install pySDL2 or Pygame for this module work!")
 
 __all__ = ["Console"]

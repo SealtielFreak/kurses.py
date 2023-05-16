@@ -124,16 +124,18 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
             WINDOW_DEFAULT_TITLE.encode(),
             *WINDOW_DEFAULT_POSITION,
             *WINDOW_DEFAULT_SIZE,
-            sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_RESIZABLE)
+            sdl2.SDL_WINDOW_SHOWN)
         self.__c_renderer = sdl2.SDL_CreateRenderer(self.__c_window, -1, _type_render[self.render])
+
+        self.set_resizable(self.resizable)
 
     def __del_sdl2(self):
         sdl2.sdlttf.TTF_CloseFont(self.font)
         sdl2.SDL_DestroyWindow(self.window)
         sdl2.SDL_Quit()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self.__init_sdl2()
 
@@ -147,6 +149,10 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
     def __del__(self):
         self.__del_sdl2()
+
+    def set_resizable(self, _bool: bool) -> bool:
+        self._resizable = _bool
+        sdl2.SDL_SetWindowResizable(self.window, _bool)
 
     def set_font(self, filename: str, ptsize=None):
         if ptsize is None:
@@ -178,7 +184,7 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
 
     def main_loop(self):
         if self.font is None:
-            return
+            raise RuntimeError("You need load a font source")
 
         while self.running:
             frame_time = 1.0 / self.fps
@@ -256,14 +262,21 @@ class SDL2VirtualConsole(pyrogue.virtual_console.VirtualConsole):
         elif event.type == sdl2.SDL_WINDOWEVENT:
             if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
                 width, height = event.window.data1, event.window.data2
-                self.__buffer.resize(width // w, height // h)
+
+                if self._resizable:
+                    self.buffer.resize(width // w, height // h)
 
     def present(self):
         w, h = self.__size_texture
         render_method = get_render_font_method_sdl2(self.encoding, self.quality_font)
 
-        for _obj in self.__buffer:
+        for _obj in self.buffer:
             x, y = _obj.x, _obj.y
+            limit_h, limit_w = self.buffer.buffersize
+
+            while x > limit_w:
+                x = x - (limit_w + 1)
+                y += 1
 
             if isinstance(_obj, pyrogue.buffer_term.CharacterAttribute):
                 d_rect = sdl2.SDL_Rect(x * w, y * h, w, h)
