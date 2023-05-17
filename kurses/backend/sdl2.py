@@ -7,7 +7,7 @@ import time
 import sdl2
 import sdl2.sdlttf
 
-import kurses.buffer_term
+import kurses.buffer_terminal
 import kurses.colors
 import kurses.virtual_console
 
@@ -18,7 +18,7 @@ WINDOW_DEFAULT_TITLE = "Virtual Console"
 WINDOW_DEFAULT_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
 WINDOW_DEFAULT_SIZE = 640, 480
 
-RenderMethodSDL2 = typing.Callable[[sdl2.sdlttf.TTF_Font, chr, sdl2.SDL_Color, sdl2.SDL_Color], typing.Any]
+RenderMethodSDL2 = typing.Callable[[sdl2.sdlttf.TTF_Font, str, sdl2.SDL_Color, sdl2.SDL_Color], typing.Any]
 
 
 def color_sdl2(color=(0, 0, 0)) -> sdl2.SDL_Color:
@@ -26,7 +26,7 @@ def color_sdl2(color=(0, 0, 0)) -> sdl2.SDL_Color:
 
 
 def create_texture_chr_sdl2(font: sdl2.sdlttf.TTF_Font, render_method: RenderMethodSDL2, renderer: sdl2.SDL_Renderer,
-                            _chr: chr, fg=(0, 0, 0), bg=(0, 0, 0), style: int = 0):
+                            _chr: str, fg=(0, 0, 0), bg=(0, 0, 0), style: int = 0):
     sdl2.sdlttf.TTF_SetFontStyle(font, style)
 
     _surface = render_method(font, _chr, color_sdl2(fg), color_sdl2(bg))
@@ -43,7 +43,7 @@ def get_size_texture_sdl2(texture: sdl2.SDL_Texture):
     return w.value, h.value
 
 
-def get_style_sdl2(chr_attr: kurses.buffer_term.CharacterAttribute) -> int:
+def get_style_sdl2(chr_attr: kurses.buffer_terminal.CharacterAttribute) -> int:
     all_styles = {
         "bold": sdl2.sdlttf.TTF_STYLE_BOLD,
         "italic": sdl2.sdlttf.TTF_STYLE_ITALIC,
@@ -141,7 +141,7 @@ class SDL2VirtualConsole(kurses.virtual_console.VirtualConsole):
 
         self.__c_font = None
         self.__background_color = 0, 0, 0
-        self.__buffer = kurses.buffer_term.BufferTerm(80, 30)
+        self.__buffer = kurses.buffer_terminal.BufferTerminal(80, 30)
         self.__target = None
         self.__textures_allocate = {}
         self.__chr_format_key = lambda _str: _str.decode().lower()
@@ -281,7 +281,7 @@ class SDL2VirtualConsole(kurses.virtual_console.VirtualConsole):
                 x = x - (limit_w + 1)
                 y += 1
 
-            if isinstance(_obj, kurses.buffer_term.CharacterAttribute):
+            if isinstance(_obj, kurses.buffer_terminal.CharacterAttribute):
                 d_rect = sdl2.SDL_Rect(x * w, y * h, w, h)
 
                 if _obj not in self.__textures_allocate.keys():
@@ -294,7 +294,7 @@ class SDL2VirtualConsole(kurses.virtual_console.VirtualConsole):
 
                 sdl2.SDL_SetRenderDrawColor(self.surface, *_obj.background, 255)
                 sdl2.SDL_RenderCopy(self.surface, self.__textures_allocate[_obj], None, d_rect)
-            elif isinstance(_obj, kurses.buffer_term.RectangleAttribute):
+            elif isinstance(_obj, kurses.buffer_terminal.RectangleAttribute):
                 d_rect = sdl2.SDL_Rect(x, y, _obj.w * w, _obj.h * h)
 
                 sdl2.SDL_SetRenderDrawColor(self.surface, *_obj.color, 255)

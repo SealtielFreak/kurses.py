@@ -7,7 +7,7 @@ import kurses.colors
 
 @dataclasses.dataclass
 class CharacterAttribute:
-    code: chr = ''
+    code: str = ''
     x: int = 0
     y: int = 0
     foreign: kurses.colors.TupleColor = (255, 255, 255)
@@ -40,12 +40,12 @@ class RectangleAttribute:
     color: kurses.colors.TupleColor
 
 
-class BufferTerm:
+class BufferTerminal:
     def __init__(self, columns: int, rows: int):
         self.resetall()
         self.__current_position = 0, 0
         self.__shape = rows, columns
-        self.__queue = collections.deque()
+        self.__queue: typing.Deque = collections.deque()
 
     def __iter__(self):
         while len(self.__queue) != 0:
@@ -128,25 +128,30 @@ class BufferTerm:
             self.__strikethrough
         )
 
-    def cputs(self, _chr: chr):
+    def cputs(self, _chr: str):
         x, y = self.__current_position
         self.__queue.appendleft(self.__create_character_attr(_chr, x, y))
 
     def print(self, _str: str):
-        x, y = self.wherex(), self.wherey()
-        for _chr in _str:
-            self.gotoxy(x, y)
-            self.cputs(_chr)
-            x += 1
+        self.cputsxy(self.wherex(), self.wherey(), _str)
 
-    def putchxy(self, x: int, y: int, _chr: chr) -> None:
+    def putchxy(self, x: int, y: int, _chr: str) -> None:
         self.__current_position = x, y
         self.__queue.appendleft(self.__create_character_attr(_chr, x, y))
 
     def cputsxy(self, x: int, y: int, _str: str) -> None:
+        _x, _y = self.wherex(), self.wherey()
+
         for _chr in _str:
+            if _chr in "\n":
+                y += 1
+                continue
+
             self.putchxy(x, y, _chr)
+
             x += 1
+
+        self.gotoxy(_x, _y)
 
     def putrect(self, x: int, y: int, w: int, h: int):
         self.__queue.appendleft(

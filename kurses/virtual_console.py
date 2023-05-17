@@ -2,12 +2,15 @@ import abc
 import enum
 import typing
 
-import kurses.buffer_term
+import kurses.buffer_terminal
 
 T = typing.TypeVar("T", bound="VirtualConsole")
 
 
 class QualityFont(enum.Enum):
+    """
+    A
+    """
     SOLID = 0
     SHADED = 1
     LCD = 2
@@ -55,7 +58,7 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
 
     @property
     @abc.abstractmethod
-    def buffer(self) -> kurses.buffer_term.BufferTerm: ...
+    def buffer(self) -> kurses.buffer_terminal.BufferTerminal: ...
 
     @abc.abstractmethod
     def set_target(self, target: typing.Callable[[None], None]): ...
@@ -75,7 +78,7 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
     def set_title(self, _str: str): ...
 
     @abc.abstractmethod
-    def keyspressed(self) -> typing.List[chr]: ...
+    def keyspressed(self) -> typing.List[str]: ...
 
     @property
     @abc.abstractmethod
