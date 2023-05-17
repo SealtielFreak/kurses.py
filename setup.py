@@ -6,9 +6,10 @@ MODULE_VERSION = "0.1.1.2"
 MODULE_DESCRIPTION = """\
 This module simulates the ‘conio’ and ‘curses’ libraries to create text interfaces with color and cursor.
 """
+MODULE_PYTHON_REQUIRES = ">=3.8"
 MODULE_LONG_DESCRIPTION = ""
 MODULE_DIRECTORY_SOURCE = "kurses"
-MODULE_DIRECTORY_SAMPLE = "sample"
+MODULE_DIRECTORY_SAMPLE = "examples"
 MODULE_SOURCE = []
 MODULE_SAMPLE_SOURCE = []
 
@@ -31,6 +32,7 @@ setup(
     name=MODULE_TITLE,
     version=MODULE_VERSION,
     description=MODULE_DESCRIPTION,
+    python_requires=MODULE_PYTHON_REQUIRES,
 
     author='SealtielFreak',
     author_email="sealtielfreak@yandex.com",
@@ -47,6 +49,6 @@ setup(
     data_files=[
         ('', ['LICENSE']),
         ('docs', ['requirements.txt']),
-        ('sample', MODULE_SAMPLE_SOURCE)
+        ('examples', MODULE_SAMPLE_SOURCE)
     ],
 )
