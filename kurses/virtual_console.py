@@ -2,15 +2,15 @@ import abc
 import enum
 import typing
 
-import kurses.buffer_terminal
+import kurses.buffer
+import kurses.colors
+
+DEFAULT_WINDOW_TITLE = "Virtual console"
 
 T = typing.TypeVar("T", bound="VirtualConsole")
 
 
 class QualityFont(enum.Enum):
-    """
-    A
-    """
     SOLID = 0
     SHADED = 1
     LCD = 2
@@ -28,6 +28,11 @@ class Rendering(enum.Enum):
     SOFTWARE = 1
 
 
+class TypeCursor(enum.Enum):
+    LINE = 0
+    RECT = 1
+
+
 class VirtualConsole(abc.ABC, typing.Generic[T]):
     @abc.abstractmethod
     def __init__(self, depth_colors: int = 8, **kwargs):
@@ -39,8 +44,13 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
         self.encoding = kwargs["encoding"] if "encoding" in kwargs else EncodingFont.ASCII
         self.quality_font = kwargs["quality"] if "quality" in kwargs else QualityFont.BLENDED
         self.render = kwargs["render"] if "render" in kwargs else Rendering.SOFTWARE
-        self.automatic_cleaner = kwargs["automatic_cleaner"] if "automatic_cleaner" in kwargs else True
+        self.auto_clean_cache = kwargs["auto_clean_cache"] if "auto_clean_cache" in kwargs else True
         self.fps = kwargs["fps"] if "fps" in kwargs else 30
+        self.auto_clean_buffer = kwargs["auto_clean_buffer"] if "auto_clean_buffer" in kwargs else True
+        self.time_blink_cursor = kwargs["time_blink_cursor"] if "time_blink_cursor" in kwargs else 1
+        self.time_wait_blink_cursor = kwargs["time_wait_blink_cursor"] if "time_wait_blink_cursor" in kwargs else 25
+        self.type_cursor = kwargs["type_cursor"] if "type_cursor" in kwargs else TypeCursor.RECT
+        self.cursor_color: kurses.colors.TupleColor = kwargs["cursor_color"] if "cursor_color" in kwargs else (128, 128, 128)
 
     @property
     def resizable(self) -> bool:
@@ -58,7 +68,7 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
 
     @property
     @abc.abstractmethod
-    def buffer(self) -> kurses.buffer_terminal.BufferTerminal: ...
+    def buffer(self) -> kurses.buffer.VirtualBuffer: ...
 
     @abc.abstractmethod
     def set_target(self, target: typing.Callable[[None], None]): ...

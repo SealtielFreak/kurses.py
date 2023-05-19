@@ -5,6 +5,9 @@ import typing
 import kurses.colors
 
 
+DEFAULT_PTSIZE = 16
+
+
 @dataclasses.dataclass
 class CharacterAttribute:
     code: str = ''
@@ -40,7 +43,7 @@ class RectangleAttribute:
     color: kurses.colors.TupleColor
 
 
-class BufferTerminal:
+class VirtualBuffer:
     def __init__(self, columns: int, rows: int):
         self.resetall()
         self.__current_position = 0, 0
@@ -48,8 +51,8 @@ class BufferTerminal:
         self.__queue: typing.Deque = collections.deque()
 
     def __iter__(self):
-        while len(self.__queue) != 0:
-            yield self.__queue.pop()
+        for _obj in reversed(self.__queue):
+            yield _obj
 
     def resize(self, columns: int, rows: int) -> None:
         self.__shape = rows, columns
