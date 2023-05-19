@@ -44,11 +44,11 @@ setup(
     scripts=MODULE_SOURCE,
 
     long_description=MODULE_LONG_DESCRIPTION,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
 
     data_files=[
-        ('', ['LICENSE']),
-        ('docs', ['requirements.txt']),
-        ('examples', MODULE_SAMPLE_SOURCE)
+        ("", ["LICENSE", "README.md", "*.png"]),
+        ("docs", ["requirements.txt"]),
+        ("examples", MODULE_SAMPLE_SOURCE)
     ],
 )
