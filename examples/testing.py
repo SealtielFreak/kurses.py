@@ -10,6 +10,8 @@ if __name__ == "__main__":
     def main():
         term = console.buffer
 
+
+        term.resetall()
         term.set_background_color((0, 255, 0))
         term.set_foreign_color((225, 23, 155))
         term.putrect(0, 0, 5, 30)
@@ -28,6 +30,11 @@ if __name__ == "__main__":
 
         term.resetall()
 
+        term.strikethrough(True)
+        term.set_foreign_color((255, 0, 0))
+        term.cputsxy(24, 24, "Strikethrough text")
+
+        term.resetall()
         x = 3
         for _c in "Random color":
             term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
@@ -36,14 +43,7 @@ if __name__ == "__main__":
             term.cputs(_c)
             x += 1
 
-        term.resetall()
-
-        term.strikethrough(True)
-        term.set_foreign_color((255, 0, 0))
-        term.cputsxy(24, 24, "Strikethrough text")
-
-        term.resetall()
-
+        print(term.current_cursor)
 
     console.set_target(main)
     console.main_loop()

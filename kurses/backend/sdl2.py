@@ -107,7 +107,10 @@ def get_render_font_method_sdl2(encoding: kurses.virtual_console.EncodingFont, q
 def get_cursor(_type: kurses.virtual_console.TypeCursor):
     _cursor = {
         kurses.virtual_console.TypeCursor.LINE: lambda x, y, w, h: sdl2.SDL_Rect(x, y + ((h // 4) * 3), w, (h // 4)),
-        kurses.virtual_console.TypeCursor.RECT: lambda x, y, w, h: sdl2.SDL_Rect(x, y, w, h)
+        kurses.virtual_console.TypeCursor.RECT: lambda x, y, w, h: sdl2.SDL_Rect(x, y, w, h),
+        kurses.virtual_console.TypeCursor.SOLID_RECT: lambda x, y, w, h: sdl2.SDL_Rect(x, y, w, h),
+        kurses.virtual_console.TypeCursor.VERTICAL: lambda x, y, w, h: sdl2.SDL_Rect(x, y, w // 6, h),
+        kurses.virtual_console.TypeCursor.UNDERSCORE: lambda x, y, w, h: sdl2.SDL_Rect(x, y + ((h // 8) * 7), w, (h // 8)),
     }
 
     return _cursor[_type]
@@ -313,7 +316,7 @@ class SDL2VirtualConsole(kurses.virtual_console.VirtualConsole):
 
         if self.__blink_cursor > self.time_blink_cursor:
             _cursor_type = get_cursor(self.type_cursor)
-            x, y = self.buffer.current_cursor
+            x, y = self.buffer.wherex() * w, self.buffer.wherey() * h
 
             sdl2.SDL_SetRenderDrawColor(self.surface, *self.cursor_color, 255)
             sdl2.SDL_RenderFillRect(self.surface, _cursor_type(x, y, w, h))

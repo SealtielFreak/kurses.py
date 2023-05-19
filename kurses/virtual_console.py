@@ -31,6 +31,9 @@ class Rendering(enum.Enum):
 class TypeCursor(enum.Enum):
     LINE = 0
     RECT = 1
+    SOLID_RECT = 2
+    VERTICAL = 3
+    UNDERSCORE = 4
 
 
 class VirtualConsole(abc.ABC, typing.Generic[T]):
@@ -49,7 +52,7 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
         self.auto_clean_buffer = kwargs["auto_clean_buffer"] if "auto_clean_buffer" in kwargs else True
         self.time_blink_cursor = kwargs["time_blink_cursor"] if "time_blink_cursor" in kwargs else 1
         self.time_wait_blink_cursor = kwargs["time_wait_blink_cursor"] if "time_wait_blink_cursor" in kwargs else 25
-        self.type_cursor = kwargs["type_cursor"] if "type_cursor" in kwargs else TypeCursor.RECT
+        self.type_cursor = kwargs["type_cursor"] if "type_cursor" in kwargs else TypeCursor.LINE
         self.cursor_color: kurses.colors.TupleColor = kwargs["cursor_color"] if "cursor_color" in kwargs else (128, 128, 128)
 
     @property
