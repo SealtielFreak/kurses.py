@@ -5,7 +5,13 @@ This module uses SDL2 (or Pygame) to emulate the functions of the [conio](https:
 It is designed to offer a cross-platform solution for creating text-based applications, independent of the system where they run.
 
 ## How to install it?
-`pip install kurses-py`
+You can install from pip:
+
+`pip install kurses-py` 
+
+Or from GitHub repository:
+
+`pip install git+https://github.com/SealtielFreak/kurses.py.git`
 
 ## Dependencies
 At the moment it is only implemented to work with SDL2 (PySDL2).
