@@ -34,6 +34,7 @@ class TypeCursor(enum.Enum):
     SOLID_RECT = 2
     VERTICAL = 3
     UNDERSCORE = 4
+    EMPTY = 5
 
 
 class VirtualConsole(abc.ABC, typing.Generic[T]):

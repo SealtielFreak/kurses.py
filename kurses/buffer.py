@@ -156,8 +156,8 @@ class VirtualBuffer:
         self.__italic = False
         self.__underline = False
         self.__strikethrough = False
-        self.__foreign_color = (255, 255, 255)
-        self.__background_color = (0, 0, 0)
+        self.__foreign_color = 255, 255, 255
+        self.__background_color = 0, 0, 0
 
     def set_background_color(self, color: kurses.colors.Color) -> None:
         """
@@ -242,6 +242,7 @@ class VirtualBuffer:
         """
         x, y = self.__current_position
         self.__queue.appendleft(self.__create_character_attr(_chr, x, y))
+        self.gotoxy(x + 1, y)
 
     def print(self, _str: str):
         """
@@ -280,7 +281,6 @@ class VirtualBuffer:
         :type _str: str
         :return: None
         """
-        _x, _y = self.wherex(), self.wherey()
 
         for _chr in _str:
             if _chr in "\n":
@@ -291,7 +291,7 @@ class VirtualBuffer:
 
             x += 1
 
-        self.gotoxy(_x, _y)
+        self.gotoxy(x, y)
 
     def putrect(self, x: int, y: int, w: int, h: int):
         """

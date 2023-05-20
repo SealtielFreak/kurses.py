@@ -111,6 +111,7 @@ def get_cursor(_type: kurses.virtual_console.TypeCursor):
         kurses.virtual_console.TypeCursor.SOLID_RECT: lambda x, y, w, h: sdl2.SDL_Rect(x, y, w, h),
         kurses.virtual_console.TypeCursor.VERTICAL: lambda x, y, w, h: sdl2.SDL_Rect(x, y, w // 6, h),
         kurses.virtual_console.TypeCursor.UNDERSCORE: lambda x, y, w, h: sdl2.SDL_Rect(x, y + ((h // 8) * 7), w, (h // 8)),
+        kurses.virtual_console.TypeCursor.EMPTY: lambda *args: sdl2.SDL_Rect(0, 0, 0, 0)
     }
 
     return _cursor[_type]
