@@ -8,11 +8,8 @@ try:
 
 except ImportError:
     try:
-        import pygame
-        from kurses.backend.pygame import PygameVirtualConsole
-
-        Console = PygameVirtualConsole
+        raise ImportError("The module for Pygame has not been implemented yet.")
     except ImportError:
-        raise ImportError("You need install pySDL2 or Pygame for this module work!")
+        raise ImportError("You need install pySDL2 for this module work!")
 
 __all__ = ["Console"]

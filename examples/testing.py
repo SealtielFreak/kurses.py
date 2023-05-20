@@ -7,9 +7,24 @@ if __name__ == "__main__":
     console.set_font("ModernDOS8x16.ttf", 16)
     console.set_resizable(True)
 
+    x, y = 0, 0
+
     def main():
+        global x, y
+
         term = console.buffer
 
+        if "w" in console.keyspressed():
+            y -= 1
+        elif "s" in console.keyspressed():
+            y += 1
+
+        if "a" in console.keyspressed():
+            x -= 1
+        elif "d" in console.keyspressed():
+            x += 1
+
+        term.resetall()
         term.set_background_color((0, 255, 0))
         term.set_foreign_color((225, 23, 155))
         term.putrect(0, 0, 5, 30)
@@ -28,22 +43,18 @@ if __name__ == "__main__":
 
         term.resetall()
 
-        x = 3
-        for _c in "Random color":
-            term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
-            term.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
-            term.gotoxy(x, 12)
-            term.cputs(_c)
-            x += 1
-
-        term.resetall()
-
         term.strikethrough(True)
         term.set_foreign_color((255, 0, 0))
         term.cputsxy(24, 24, "Strikethrough text")
 
         term.resetall()
-
+        _x = x
+        for _c in "Random color":
+            term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
+            term.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
+            term.gotoxy(_x, y)
+            term.cputs(_c)
+            _x += 1
 
     console.set_target(main)
     console.main_loop()
