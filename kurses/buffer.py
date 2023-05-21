@@ -151,7 +151,6 @@ class VirtualBuffer:
 
         :return: None
         """
-        self.__current_position = 0, 0
         self.__bold = False
         self.__italic = False
         self.__underline = False
@@ -281,10 +280,11 @@ class VirtualBuffer:
         :type _str: str
         :return: None
         """
-
+        _x = x
         for _chr in _str:
             if _chr in "\n":
                 y += 1
+                x = _x
                 continue
 
             self.putchxy(x, y, _chr)
