@@ -3,7 +3,7 @@ from kurses import Console
 
 # instance Virtual console
 console = Console()
-buffer = console.buffer  # get buffer console
+buffer = console.buffers[0]  # get main buffer console
 console.set_font("ModernDOS8x16.ttf")  # load font resources
 
 
@@ -12,6 +12,7 @@ def loop():
     buffer.resetall()  # restore default attributes in the buffer console
 
     # set attributes of first string
+    buffer.gotoxy(0, 0)  # go to position x: 0, y: 0
     buffer.set_background_color((255, 255, 255))  # set background color characters
     buffer.set_foreign_color((0, 0, 0))  # set foreign color
     buffer.print("Hello\n")  # print into buffer console

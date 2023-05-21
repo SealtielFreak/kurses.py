@@ -7,12 +7,12 @@ if __name__ == "__main__":
     console.set_font("ModernDOS8x16.ttf", 16)
     console.set_resizable(True)
 
-    x, y = 0, 0
+    x_ship, y_ship = 0, 0
 
     def main():
-        global x, y
+        global x_ship, y_ship
 
-        term = console.buffer
+        term = console.buffers[0]
 
         if "w" in console.keyspressed():
             y -= 1

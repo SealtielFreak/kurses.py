@@ -4,18 +4,16 @@ import random
 
 # instance Virtual console
 console = Console()
-buffer = console.buffer  # get buffer console
+buffer = console.buffers[0]  # get buffer console
 console.set_font("ModernDOS8x16.ttf")  # load font resources
 
 # define global variables
-x, y = 0, 0
+x_ship, y_ship = 0, 0
 
 
 # define loop function
 def loop():
-    global x, y
-
-    term = console.buffer
+    global x_ship, y_ship
 
     buffer.resetall()  # restore default attributes in the buffer console
 
@@ -32,10 +30,10 @@ def loop():
     # all draw runtime of string with random colors
     _x = x
     for _c in "Random color":
-        term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
-        term.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
-        term.gotoxy(_x, y) # set position
-        term.cputs(_c) # print character into buffer console
+        buffer.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
+        buffer.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
+        buffer.gotoxy(_x, y) # set position
+        buffer.cputs(_c) # print character into buffer console
         _x += 1
 
 

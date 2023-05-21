@@ -19,13 +19,14 @@ At the moment it is only implemented to work with SDL2 (PySDL2).
 
 ## Examples
 [hello_world.py](examples/hello_world.py)
+
 ```python
 # load module
 from kurses import Console
 
 # instance Virtual console
 console = Console()
-buffer = console.buffer  # get buffer console
+buffer = console.buffers  # get buffer console
 console.set_font("ModernDOS8x16.ttf")  # load font resources
 
 
@@ -51,6 +52,7 @@ console.set_target(loop)
 console.main_loop()
 ```
 [keypressed.py](examples/keypressed.py)
+
 ```python
 # load modules
 from kurses import Console
@@ -58,18 +60,18 @@ import random
 
 # instance Virtual console
 console = Console()
-buffer = console.buffer  # get buffer console
+buffer = console.buffers  # get buffer console
 console.set_font("ModernDOS8x16.ttf")  # load font resources
 
 # define global variables
-x, y = 0, 0
+x_ship, y_ship = 0, 0
 
 
 # define loop function
 def loop():
-    global x, y
+    global x_ship, y_ship
 
-    term = console.buffer
+    term = console.buffers
 
     buffer.resetall()  # restore default attributes in the buffer console
 
@@ -88,8 +90,8 @@ def loop():
     for _c in "Random color":
         term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
         term.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
-        term.gotoxy(_x, y) # set position
-        term.cputs(_c) # print character into buffer console
+        term.gotoxy(_x, y)  # set position
+        term.cputs(_c)  # print character into buffer console
         _x += 1
 
 

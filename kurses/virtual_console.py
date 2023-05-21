@@ -28,15 +28,6 @@ class Rendering(enum.Enum):
     SOFTWARE = 1
 
 
-class TypeCursor(enum.Enum):
-    LINE = 0
-    RECT = 1
-    SOLID_RECT = 2
-    VERTICAL = 3
-    UNDERSCORE = 4
-    EMPTY = 5
-
-
 class VirtualConsole(abc.ABC, typing.Generic[T]):
     def __init__(self, depth_colors: int = 8, **kwargs):
         """
@@ -79,10 +70,6 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
         self.auto_clean_cache = kwargs.get("auto_clean_cache", True)
         self.fps = kwargs.get("fps", 30)
         self.auto_clean_buffer = kwargs.get("auto_clean_buffer", True)
-        self.time_blink_cursor = kwargs.get("time_blink_cursor", 1)
-        self.time_wait_blink_cursor = kwargs.get("time_wait_blink_cursor", 25)
-        self.type_cursor = kwargs.get("type_cursor", TypeCursor.LINE)
-        self.cursor_color: kurses.colors.TupleColor = kwargs.get("cursor_color", (128, 128, 128))
 
     @property
     def resizable(self) -> bool:
@@ -112,11 +99,11 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
 
     @property
     @abc.abstractmethod
-    def buffer(self) -> kurses.buffer.VirtualBuffer:
+    def buffers(self) -> list[kurses.buffer.VirtualBuffer]:
         """
-        Get virtual buffer.
+        Get list of virtual buffers.
 
-        :return: kurses.buffer.VirtualBuffer
+        :return: list[kurses.buffer.VirtualBuffer]
         """
         ...
 

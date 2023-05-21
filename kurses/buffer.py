@@ -1,6 +1,7 @@
 import collections
 import dataclasses
 import typing
+import enum
 
 import kurses.colors
 
@@ -19,13 +20,17 @@ class CharacterAttribute:
     underline: bool = False
     strikethrough: bool = False
     blink: int = 0
+    sx: int = 1
+    sy: int = 1
 
     def __eq__(self, other):
         return self.code == other.code
 
     def __hash__(self):
         _hash_tuple = (
-            self.code, self.foreign, self.background, self.bold, self.italic, self.underline, self.strikethrough)
+            self.code, self.foreign, self.background, self.bold, self.italic, self.underline, self.strikethrough,
+            self.sx, self.sy
+        )
 
         return hash(_hash_tuple)
 
@@ -42,8 +47,17 @@ class RectangleAttribute:
     color: kurses.colors.TupleColor
 
 
+class TypeCursor(enum.Enum):
+    LINE = 0
+    RECT = 1
+    SOLID_RECT = 2
+    VERTICAL = 3
+    UNDERSCORE = 4
+    EMPTY = 5
+
+
 class VirtualBuffer:
-    def __init__(self, columns: int, rows: int):
+    def __init__(self, columns: int, rows: int, **kwargs):
         """
         Initialize a VirtualBuffer object with the specified number of columns and rows.
 
@@ -51,6 +65,16 @@ class VirtualBuffer:
         :param rows: Set number of rows.
         """
         self.resetall()
+        self.x = kwargs.get("x", 0)
+        self.y = kwargs.get("y", 0)
+        self.sx: int = kwargs.get("sx", 1)
+        self.sy: int = kwargs.get("sy", 1)
+        self.type_cursor = kwargs.get("type_cursor", TypeCursor.LINE)
+        self.blink_cursor = 0
+        self.time_blink_cursor = kwargs.get("time_blink_cursor", 10)
+        self.time_wait_blink_cursor = kwargs.get("time_wait_blink_cursor", 25)
+        self.cursor_color: kurses.colors.TupleColor = kwargs.get("cursor_color", (128, 128, 128))
+
         self.__current_position = 0, 0
         self.__shape = rows, columns
         self.__queue: typing.Deque = collections.deque()
@@ -228,7 +252,8 @@ class VirtualBuffer:
             self.__bold,
             self.__italic,
             self.__underline,
-            self.__strikethrough
+            self.__strikethrough,
+            self.sx, self.sy
         )
 
     def cputs(self, _chr: str):
