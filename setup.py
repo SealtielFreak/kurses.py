@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 MODULE_TITLE = "kurses_py"
-MODULE_VERSION = "0.1.1.2"
+MODULE_VERSION = "0.1.1.3"
 MODULE_DESCRIPTION = """\
 This module simulates the ‘conio’ and ‘curses’ libraries to create text interfaces with color and cursor.
 """
