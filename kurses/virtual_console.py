@@ -48,16 +48,6 @@ class VirtualConsole(abc.ABC, typing.Generic[T]):
         :type fps: int
         :keyword auto_clean_buffer: Auto cleaner console buffer, with default value True.
         :type auto_clean_buffer: bool
-        :keyword time_blink_cursor: Time blinking for cursor, with default value 1.
-        :type time_blink_cursor: int
-        :keyword time_blink_cursor: Time blinking for cursor, with default value 1.
-        :type time_blink_cursor: int
-        :keyword time_wait_blink_cursor: Time waiting blink for cursor, with default value 25.
-        :type time_wait_blink_cursor: int
-        :keyword type_cursor: Select type cursor, with default value Line.
-        :type type_cursor: TypeCursor
-        :keyword cursor_color: Color cursor, with default value 128, 128, 128 or gray color.
-        :type cursor_color: kurses.colors.TupleColor
         """
         self._dt = 1.0
         self._resizable = True

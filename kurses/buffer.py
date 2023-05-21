@@ -63,17 +63,35 @@ class VirtualBuffer:
 
         :param columns: Set number of columns.
         :param rows: Set number of rows.
+        :keyword x: X-axis offset position, with default value 0.
+        :type x: int
+        :keyword y: Y-axis offset position, with default value 0.
+        :type y: int
+        :keyword sx: X-axis scale, with default value 1.
+        :type sx: int
+        :keyword sy: Y-axis scale, with default value 1.
+        :type sy: int
+        :keyword time_blink_cursor: Time blinking for cursor, with default value 1.
+        :type time_blink_cursor: int
+        :keyword time_blink_cursor: Time blinking for cursor, with default value 1.
+        :type time_blink_cursor: int
+        :keyword time_wait_blink_cursor: Time waiting blink for cursor, with default value 25.
+        :type time_wait_blink_cursor: int
+        :keyword cursor_color: Color cursor, with default value 128, 128, 128 or gray color.
+        :type cursor_color: kurses.colors.TupleColor
+        :keyword type_cursor: Select type cursor, with default value Line.
+        :type type_cursor: TypeCursor
         """
         self.resetall()
+        self.blink_cursor = 0
         self.x = kwargs.get("x", 0)
         self.y = kwargs.get("y", 0)
         self.sx: int = kwargs.get("sx", 1)
         self.sy: int = kwargs.get("sy", 1)
-        self.type_cursor = kwargs.get("type_cursor", TypeCursor.LINE)
-        self.blink_cursor = 0
         self.time_blink_cursor = kwargs.get("time_blink_cursor", 10)
         self.time_wait_blink_cursor = kwargs.get("time_wait_blink_cursor", 25)
         self.cursor_color: kurses.colors.TupleColor = kwargs.get("cursor_color", (128, 128, 128))
+        self.type_cursor: TypeCursor = kwargs.get("type_cursor", TypeCursor.LINE)
 
         self.__current_position = 0, 0
         self.__shape = rows, columns
