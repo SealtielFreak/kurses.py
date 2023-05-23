@@ -54,6 +54,14 @@ class RectangleAttribute:
     h: int
     color: kurses.colors.TupleColor
 
+    @property
+    def size(self):
+        return self.w, self.h
+
+    @property
+    def position(self):
+        return self.x, self.y
+
 
 class TypeCursor(enum.Enum):
     LINE = 0

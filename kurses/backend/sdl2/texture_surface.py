@@ -14,7 +14,8 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
         self.__dst_texture = None
 
     def __del__(self):
-        pass
+        if self.current is not None:
+            sdl2.SDL_DestroyTexture(self.current)
 
     def present(self, surface: sdl2.SDL_Renderer) -> sdl2.SDL_Texture:
         w, h = self.font.size
@@ -28,14 +29,17 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
         sdl2.SDL_SetRenderTarget(surface, self.current)
 
         for _data in self.stream:
+            x, y = _data.position
             if isinstance(_data, kurses.stream.CharacterAttribute):
-                x, y = _data.position
                 texture = self.font.present_chr(surface, _data)
 
                 sdl2.SDL_RenderCopy(surface, texture, None, sdl2.SDL_Rect(x * w, y * h, w, h))
 
             elif isinstance(_data, kurses.stream.RectangleAttribute):
-                pass
+                d_rect = sdl2.SDL_Rect(x, y, _data.w * w, _data.h * h)
+
+                sdl2.SDL_SetRenderDrawColor(surface, *_data.color, 255)
+                sdl2.SDL_RenderFillRect(surface, d_rect)
 
         sdl2.SDL_SetRenderTarget(surface, None)
 

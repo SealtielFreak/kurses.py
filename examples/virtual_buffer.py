@@ -3,8 +3,8 @@ import kurses.stream
 from kurses import VirtualTerminal, StreamBuffer
 
 # instance Virtual console
-term = VirtualTerminal()
-buffer_0 = term.buffers[0]  # get main buffer console
+term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")
+buffer_0 = term.stream  # get main buffer console
 buffer_1 = StreamBuffer(80, 30, sx=2, sy=2)
 
 buffer_0.type_cursor = kurses.stream.TypeCursor.VERTICAL
@@ -28,13 +28,13 @@ def loop():
 
 
 # load font resources
-console.set_font("ModernDOS8x16.ttf")
+term.set_font("ModernDOS8x16.ttf")
 
 # append virtual buffer
-console.buffers.append(buffer_1)
+term.buffers.append(buffer_1)
 
 # set loop function
-console.set_target(loop)
+term.set_target(loop)
 
 # run all program
-console.main_loop()
+term.main_loop()

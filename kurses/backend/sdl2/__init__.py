@@ -13,10 +13,11 @@ import kurses.colors
 import kurses.backend.sdl2.font_resources
 import kurses.backend.sdl2.texture_surface
 
-DEFAULT_WINDOW_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
-
 
 class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
+
+    __DEFAULT_WINDOW_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -27,9 +28,10 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             sdl2.sdlttf.TTF_Init()
 
         width, height = self.size
+        position_x, position_y = self.__DEFAULT_WINDOW_POSITION
         self.__c_window = sdl2.SDL_CreateWindow(
             kwargs.get("title", "Virtual terminal").encode(),
-            sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED,
+            position_x, position_y,
             width, height,
             sdl2.SDL_WINDOW_SHOWN
         )
@@ -45,8 +47,11 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__textures = kurses.backend.TextureSurface(self.__font, self.stream)
 
     def __del__(self):
-        sdl2.SDL_DestroyRenderer(self.surface)
-        sdl2.SDL_DestroyWindow(self.window)
+        if self.__c_renderer is not None:
+            sdl2.SDL_DestroyRenderer(self.__c_renderer)
+
+        if self.__c_window is not None:
+            sdl2.SDL_DestroyWindow(self.__c_window)
 
     @property
     def title(self):
@@ -64,22 +69,25 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             event = sdl2.SDL_Event()
 
             while sdl2.SDL_PollEvent(ctypes.byref(event)):
-                if event.type == sdl2.SDL_QUIT:
-                    self.quit()
-
                 self.push_events(event)
 
             if self.__target:
                 self.__target()
 
-            self.__textures.present(self.surface)
-
             sdl2.SDL_RenderClear(self.surface)
-            sdl2.SDL_RenderCopy(self.surface, self.__textures.current, None, None)
+            self.present()
             sdl2.SDL_RenderPresent(self.surface)
 
     def keyspressed(self) -> typing.List[str]:
-        pass
+        pressed_keys = collections.deque()
+        keyboard_state = sdl2.SDL_GetKeyboardState(None)
+        chr_format_key = lambda _str: _str.decode().lower()
+
+        for key_code in range(sdl2.SDL_NUM_SCANCODES):
+            if keyboard_state[key_code] == 1:
+                pressed_keys.append(chr_format_key(sdl2.SDL_GetScancodeName(key_code)))
+
+        return list(pressed_keys)
 
     @property
     def window(self) -> sdl2.SDL_Window:
@@ -90,10 +98,12 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         return self.__c_renderer
 
     def push_events(self, event: sdl2.SDL_Event):
-        pass
+        if event.type == sdl2.SDL_QUIT:
+            self.quit()
 
     def present(self):
-        pass
+        self.__textures.present(self.surface)
+        sdl2.SDL_RenderCopy(self.surface, self.__textures.current, None, None)
 
     def quit(self):
         self.running = False

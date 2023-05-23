@@ -144,6 +144,7 @@ class SDL2FontResources(kurses.font_resources.FontResources):
 
     def __del__(self):
         self.clean_cache()
+        sdl2.sdlttf.TTF_CloseFont(self.font)
 
     @property
     def size(self) -> typing.Tuple[int, int]:
@@ -154,7 +155,7 @@ class SDL2FontResources(kurses.font_resources.FontResources):
         return self.__c_font
 
     def clean_cache(self):
-        for texture in self.allocate_textures:
+        for _, texture in self.allocate_textures.items():
             sdl2.SDL_DestroyTexture(texture)
 
     def present_chr(self, surface: sdl2.SDL_Renderer, _chr: kurses.stream.CharacterAttribute) -> sdl2.SDL_Renderer:
