@@ -39,7 +39,6 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
         self.__main_stream = kurses.stream.StreamBuffer(cols, rows)
         self.__stream_list = []
-        self.__window_size = kwargs.get("size", (640, 480))
         self.__window_title = kwargs.get("title", "Virtual terminal")
         self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)
 
@@ -63,6 +62,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         return self.__main_stream.shape
 
     @property
+    @abc.abstractmethod
     def size(self) -> typing.Tuple[int, int]:
         """
         Get the size of Window.
@@ -70,7 +70,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :return: Size window.
         :rtype: typing.Tuple[int, int]
         """
-        return self.__window_size
+        ...
 
     @property
     def dt(self) -> float:

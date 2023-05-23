@@ -30,6 +30,11 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
 
         for _data in self.stream:
             x, y = _data.position
+
+            while x > cols:
+                x = x - (cols + 1)
+                y += 1
+
             if isinstance(_data, kurses.stream.CharacterAttribute):
                 texture = self.font.present_chr(surface, _data)
 

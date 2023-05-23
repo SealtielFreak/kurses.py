@@ -15,7 +15,6 @@ import kurses.backend.sdl2.texture_surface
 
 
 class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
-
     __DEFAULT_WINDOW_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
 
     def __init__(self, *args, **kwargs):
@@ -27,7 +26,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         if sdl2.sdlttf.TTF_WasInit() == 0:
             sdl2.sdlttf.TTF_Init()
 
-        width, height = self.size
+        width, height = kwargs.get("size", (640, 480))
         position_x, position_y = self.__DEFAULT_WINDOW_POSITION
         self.__c_window = sdl2.SDL_CreateWindow(
             kwargs.get("title", "Virtual terminal").encode(),
@@ -60,6 +59,12 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     @title.setter
     def title(self, _str: str):
         sdl2.SDL_SetWindowTitle(self.window, _str.encode())
+
+    @property
+    def size(self) -> typing.Tuple[int, int]:
+        w, h = ctypes.c_int(), ctypes.c_int()
+        sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
+        return w.value, h.value
 
     def set_target(self, target: typing.Callable[[None], None]):
         self.__target = target
@@ -100,6 +105,13 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def push_events(self, event: sdl2.SDL_Event):
         if event.type == sdl2.SDL_QUIT:
             self.quit()
+        elif event.type == sdl2.SDL_WINDOWEVENT:
+            if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
+                w, h = self.__font.size
+                width, height = event.window.data1, event.window.data2
+
+                self.stream.resize(width // w, height // h)
+                print(self.__textures.size, self.stream.shape, self.size)
 
     def present(self):
         self.__textures.present(self.surface)

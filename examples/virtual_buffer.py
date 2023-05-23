@@ -3,7 +3,7 @@ import kurses.stream
 from kurses import VirtualTerminal, StreamBuffer
 
 # instance Virtual console
-term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")
+term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources
 buffer_0 = term.stream  # get main buffer console
 buffer_1 = StreamBuffer(80, 30, sx=2, sy=2)
 
@@ -26,9 +26,6 @@ def loop():
     buffer_1.set_foreign_color((0, 0, 0))  # set foreign color
     buffer_1.print("Hello")  # print into buffer console
 
-
-# load font resources
-term.set_font("ModernDOS8x16.ttf")
 
 # append virtual buffer
 term.buffers.append(buffer_1)

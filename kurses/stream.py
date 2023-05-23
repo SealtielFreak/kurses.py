@@ -119,7 +119,7 @@ class StreamBuffer:
 
     def resize(self, columns: int, rows: int) -> None:
         """
-        Resize (columns and rows) virtual console.
+        Resize (columns and rows) virtual stream.
 
         :param columns: Set number of columns.
         :param rows: Set number of rows.
@@ -129,16 +129,25 @@ class StreamBuffer:
 
     def getbuffersize(self) -> typing.Tuple[int, int]:
         """
-        Get buffer size (rows and columns) of Virtual buffer.
+        Get buffer size (rows and columns) of virtual stream.
 
         :return: typing.Tuple[int, int]
         """
         return self.__shape
 
     @property
+    def offset(self) -> typing.Tuple[int, int]:
+        """
+        Get offset position of virtual stream.
+
+        :return: typing.Tuple[int, int]
+        """
+        return self.x, self.y
+
+    @property
     def shape(self) -> typing.Tuple[int, int]:
         """
-        Get buffer size (columns and rows) of Virtual buffer.
+        Get buffer size (columns and rows) of virtual stream.
 
         :return: typing.Tuple[int, int]
         """
@@ -147,7 +156,7 @@ class StreamBuffer:
     @property
     def buffersize(self) -> typing.Tuple[int, int]:
         """
-        Get buffer size (rows and columns) of Virtual buffer.
+        Get buffer size (rows and columns) of virtual stream.
 
         :return: typing.Tuple[int, int]
         """
@@ -156,7 +165,7 @@ class StreamBuffer:
     @buffersize.setter
     def buffersize(self, shape: typing.Tuple[int, int]):
         """
-        Set buffer size (rows and columns) of virtual buffer.
+        Set buffer size (rows and columns) of virtual stream.
 
         :param shape: Shape of virtual buffer (rows and columns).
         :type shape:  typing.Tuple[int, int]
@@ -169,7 +178,7 @@ class StreamBuffer:
 
     def clrscr(self) -> None:
         """
-        Clear all character from virtual buffer.
+        Clear all character from virtual stream.
 
         :return: None
         """
@@ -214,7 +223,7 @@ class StreamBuffer:
 
     def resetall(self):
         """
-        Reset all attributes of virutal buffer.
+        Reset all attributes of virtual stream.
 
         :return: None
         """
@@ -301,7 +310,7 @@ class StreamBuffer:
 
     def cputs(self, _chr: str):
         """
-        Put char value into virtual buffer.
+        Put char value into virtual stream.
 
         :param _chr: Character.
         :type _chr: str
@@ -313,7 +322,7 @@ class StreamBuffer:
 
     def print(self, _str: str):
         """
-        Put string value into virtual buffer.
+        Put string value into virtual stream.
 
         :param _str: String.
         :type _str: str
@@ -323,7 +332,7 @@ class StreamBuffer:
 
     def putchxy(self, x: int, y: int, _chr: str) -> None:
         """
-        Put character value into virtual buffer, with a position.
+        Put character value into virtual stream, with a position.
 
         :param x: X-axis position.
         :type x: int
@@ -338,7 +347,7 @@ class StreamBuffer:
 
     def cputsxy(self, x: int, y: int, _str: str) -> None:
         """
-        Put string value into virtual buffer, with a position.
+        Put string value into virtual stream, with a position.
 
         :param x: X-axis position.
         :type x: int
@@ -363,7 +372,7 @@ class StreamBuffer:
 
     def putrect(self, x: int, y: int, w: int, h: int):
         """
-        Put rect into virtual buffer, with a position.
+        Put rect into virtual stream, with a position.
 
         :param x: X-axis position.
         :type x: int
