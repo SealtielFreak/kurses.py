@@ -1,30 +1,29 @@
 # load module
-from kurses import Console
+from kurses import VirtualTerminal
 
 # instance Virtual console
-console = Console()
-buffer = console.buffers[0]  # get main buffer console
-console.set_font("ModernDOS8x16.ttf")  # load font resources
+term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources
+stream = term.stream  # get main buffer console
 
 
 # define loop function
 def loop():
-    buffer.resetall()  # restore default attributes in the buffer console
+    stream.resetall()  # restore default attributes in the buffer console
 
     # set attributes of first string
-    buffer.gotoxy(0, 0)  # go to position x: 0, y: 0
-    buffer.set_background_color((255, 255, 255))  # set background color characters
-    buffer.set_foreign_color((0, 0, 0))  # set foreign color
-    buffer.print("Hello\n")  # print into buffer console
+    stream.gotoxy(0, 0)  # go to position x: 0, y: 0
+    stream.set_background_color((255, 255, 255))  # set background color characters
+    stream.set_foreign_color((0, 0, 0))  # set foreign color
+    stream.print("Hello\n")  # print into buffer console
 
     # set attributes of second string
-    buffer.gotoxy(5, 1)  # go to position x: 5, y: 1
-    buffer.italic(True)  # set true italic
-    buffer.print("world!")  # print into buffer console, again
+    stream.gotoxy(5, 1)  # go to position x: 5, y: 1
+    stream.italic(True)  # set true italic
+    stream.print("world!")  # print into buffer console, again
 
 
 # set loop function
-console.set_target(loop)
+term.set_target(loop)
 
 # run all program
-console.main_loop()
+term.main_loop()

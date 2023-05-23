@@ -10,7 +10,7 @@ DEFAULT_PTSIZE = 16
 
 @dataclasses.dataclass
 class CharacterAttribute:
-    code: str = ''
+    code: int = ord(' ')
     x: int = 0
     y: int = 0
     foreign: kurses.colors.TupleColor = (255, 255, 255)
@@ -35,7 +35,15 @@ class CharacterAttribute:
         return hash(_hash_tuple)
 
     def __bool__(self):
-        return not self.code == ' '
+        return not self.code == ord(' ')
+
+    @property
+    def chr(self) -> str:
+        return chr(self.code)
+
+    @property
+    def position(self):
+        return self.x, self.y
 
 
 @dataclasses.dataclass
@@ -56,7 +64,7 @@ class TypeCursor(enum.Enum):
     EMPTY = 5
 
 
-class VirtualBuffer:
+class StreamBuffer:
     def __init__(self, columns: int, rows: int, **kwargs):
         """
         Initialize a VirtualBuffer object with the specified number of columns and rows.
@@ -118,6 +126,15 @@ class VirtualBuffer:
         :return: typing.Tuple[int, int]
         """
         return self.__shape
+
+    @property
+    def shape(self) -> typing.Tuple[int, int]:
+        """
+        Get buffer size (columns and rows) of Virtual buffer.
+
+        :return: typing.Tuple[int, int]
+        """
+        return self.__shape[1], self.__shape[0]
 
     @property
     def buffersize(self) -> typing.Tuple[int, int]:
@@ -309,7 +326,7 @@ class VirtualBuffer:
         :return: None
         """
         self.__current_position = x, y
-        self.__queue.appendleft(self.__create_character_attr(_chr, x, y))
+        self.__queue.appendleft(self.__create_character_attr(ord(_chr), x, y))
 
     def cputsxy(self, x: int, y: int, _str: str) -> None:
         """

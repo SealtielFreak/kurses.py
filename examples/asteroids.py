@@ -1,9 +1,9 @@
 import math
 import random
 
-import kurses.virtual_console
-import kurses.buffer
-from kurses import Console, VirtualBuffer
+import kurses.term
+import kurses.stream
+from kurses import Console, StreamBuffer
 
 
 SHIP = """\
@@ -33,7 +33,7 @@ console = Console(quality=kurses.virtual_console.QualityFont.LCD)
 
 main_buffer = console.buffers[0]
 
-score_buffer = VirtualBuffer(40, 15, sx=2, sy=2, type_cursor=kurses.buffer.TypeCursor.RECT)
+score_buffer = StreamBuffer(40, 15, sx=2, sy=2, type_cursor=kurses.buffer.TypeCursor.RECT)
 score_buffer.x = 0
 score_buffer.y = 0
 score_buffer.type_cursor = kurses.buffer.TypeCursor.EMPTY

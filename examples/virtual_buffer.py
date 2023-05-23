@@ -1,14 +1,14 @@
 # load module
-import kurses.buffer
-from kurses import Console, VirtualBuffer
+import kurses.stream
+from kurses import VirtualTerminal, StreamBuffer
 
 # instance Virtual console
-console = Console()
-buffer_0 = console.buffers[0]  # get main buffer console
-buffer_1 = VirtualBuffer(80, 30, sx=2, sy=2)
+term = VirtualTerminal()
+buffer_0 = term.buffers[0]  # get main buffer console
+buffer_1 = StreamBuffer(80, 30, sx=2, sy=2)
 
-buffer_0.type_cursor = kurses.buffer.TypeCursor.VERTICAL
-buffer_1.type_cursor = kurses.buffer.TypeCursor.VERTICAL
+buffer_0.type_cursor = kurses.stream.TypeCursor.VERTICAL
+buffer_1.type_cursor = kurses.stream.TypeCursor.VERTICAL
 
 
 # define loop function

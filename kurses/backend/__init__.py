@@ -2,9 +2,9 @@
 
 try:
     import sdl2
-    from kurses.backend.sdl2 import SDL2VirtualConsole
+    from kurses.backend.sdl2 import SDL2VirtualTerminal
 
-    Console = SDL2VirtualConsole
+    VirtualTerminal = SDL2VirtualTerminal
 
 except ImportError:
     try:
@@ -12,4 +12,4 @@ except ImportError:
     except ImportError:
         raise ImportError("You need install pySDL2 for this module work!")
 
-__all__ = ["Console"]
+__all__ = ["VirtualTerminal"]

@@ -56,16 +56,16 @@ class FontResources(abc.ABC, typing.Generic[R]):
     def encoding(self) -> EncodingFont:
         return self.__encoding
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def size(self) -> typing.Tuple[int, int]: ...
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def font(self) -> R: ...
 
     @abc.abstractmethod
     def clean_cache(self): ...
 
     @abc.abstractmethod
-    def present_chr(self, surface: R, _chr: kurses.buffer.CharacterAttribute) -> R: ...
+    def present_chr(self, surface: R, _chr: kurses.stream.CharacterAttribute) -> R: ...

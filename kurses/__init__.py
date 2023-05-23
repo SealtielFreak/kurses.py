@@ -1,2 +1,2 @@
-from kurses.backend import Console
-from kurses.buffer import VirtualBuffer
+from kurses.backend import VirtualTerminal
+from kurses.stream import StreamBuffer
