@@ -18,8 +18,9 @@ def cast_render_method(_render_method) -> RenderMethodSDL2:
         r, g, b, a = 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
         _surface_font = _render_method(font, _chr, fg)
 
+        w, h = get_size_from_surface_sdl2(_surface_font)
         _surface = sdl2.SDL_CreateRGBSurface(
-            0, _surface_font.contents.w, _surface_font.contents.h, 32, r, g, b, a
+            0, w, h, 32, r, g, b, a
         )
         _color_bg = sdl2.SDL_MapRGB(_surface.contents.format.contents, bg.r, bg.g, bg.b)
         sdl2.SDL_FillRect(_surface, None, _color_bg)
@@ -133,12 +134,12 @@ class SDL2FontResources(kurses.font_resources.FontResources):
         if self.__c_font is None:
             raise FileNotFoundError("Font no found")
 
-        self.__size = get_size_surface_from_font(
-            self.__c_font, get_render_font_method_sdl2(self.encoding, self.quality, self.__ALL_RENDER_METHODS_SDL2)
-        )
-
         self.__default_render_method = lambda: get_render_font_method_sdl2(
             self.encoding, self.quality, self.__ALL_RENDER_METHODS_SDL2
+        )
+
+        self.__size = get_size_surface_from_font(
+            self.__c_font, self.__default_render_method()
         )
 
     def __del__(self):

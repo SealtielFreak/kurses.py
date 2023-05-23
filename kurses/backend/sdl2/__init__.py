@@ -20,14 +20,17 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if sdl2.SDL_WasInit(sdl2.SDL_INIT_EVERYTHING) != 0:
+        if sdl2.SDL_WasInit(sdl2.SDL_INIT_EVERYTHING) == 0:
             sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING)
+
+        if sdl2.sdlttf.TTF_WasInit() == 0:
+            sdl2.sdlttf.TTF_Init()
 
         width, height = self.size
         self.__c_window = sdl2.SDL_CreateWindow(
             kwargs.get("title", "Virtual terminal").encode(),
-            width, height,
             sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED,
+            width, height,
             sdl2.SDL_WINDOW_SHOWN
         )
 
@@ -38,8 +41,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         )
 
         self.__target = None
-        self.__font = kurses.backend.sdl2.font_resources.SDL2FontResources(self._font_filename)
-        self.__textures = kurses.backend.sdl2.texture_surface.texture_surface.SDL2TextureSurface(self.surface, self.__font)
+        self.__font = kurses.backend.FontResources(self._font_filename)
+        self.__textures = kurses.backend.TextureSurface(self.__font, self.stream)
 
     def __del__(self):
         sdl2.SDL_DestroyRenderer(self.surface)
@@ -69,6 +72,10 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             if self.__target:
                 self.__target()
 
+            self.__textures.present(self.surface)
+
+            sdl2.SDL_RenderClear(self.surface)
+            sdl2.SDL_RenderCopy(self.surface, self.__textures.current, None, None)
             sdl2.SDL_RenderPresent(self.surface)
 
     def keyspressed(self) -> typing.List[str]:
