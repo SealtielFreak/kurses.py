@@ -2,25 +2,11 @@ import abc
 import enum
 import typing
 
-import kurses.buffer
 import kurses.colors
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
 
 T = typing.TypeVar("T", bound="VirtualConsole")
-
-
-class QualityFont(enum.Enum):
-    SOLID = 0
-    SHADED = 1
-    LCD = 2
-    BLENDED = 3
-
-
-class EncodingFont(enum.Enum):
-    ASCII = 0
-    UTF_8 = 1
-    UNICODE = 2
 
 
 class Rendering(enum.Enum):
@@ -29,37 +15,18 @@ class Rendering(enum.Enum):
 
 
 class VirtualConsole(abc.ABC, typing.Generic[T]):
-    def __init__(self, depth_colors: int = 8, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         VirtualConsole constructor
 
-        :param depth_colors: Depth colors of all characters, with default value 8.
-        :type depth_colors: int
-        :param kwargs: Optional arguments
-        :keyword encoding: Select type encoding (ASCII, UTF-8 or UNICODE).
-        :type encoding: EncodingFont
-        :keyword quality_font: Select type quality textures of characters (Solid, shaded, LCD or Blended).
-        :type quality_font: QualityFont
-        :keyword render: Select type rendering between Hardware (only default SDL2) or Software (optional in SDL2 for old computers and only default in Pygame).
-        :type render: Rendering
-        :keyword auto_clean_cache: Auto cleaner textures cache, with default value True.
-        :type auto_clean_cache: bool
         :keyword fps: Limit frames per second, with default value 30.
         :type fps: int
-        :keyword auto_clean_buffer: Auto cleaner console buffer, with default value True.
-        :type auto_clean_buffer: bool
         """
         self._dt = 1.0
         self._resizable = True
 
-        self.running = True
-        self.depth_colors = depth_colors
-        self.encoding = kwargs.get("encoding", EncodingFont.ASCII)
-        self.quality_font = kwargs.get("quality", QualityFont.BLENDED)
-        self.render = kwargs.get("render", Rendering.SOFTWARE)
-        self.auto_clean_cache = kwargs.get("auto_clean_cache", True)
         self.fps = kwargs.get("fps", 30)
-        self.auto_clean_buffer = kwargs.get("auto_clean_buffer", True)
+        self.running = True
 
     @property
     def resizable(self) -> bool:
