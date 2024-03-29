@@ -1,4 +1,9 @@
 # kurses.py
+![Python - Version](https://img.shields.io/badge/python-%3E%3D3.8-brightgreen)
+![PyPI - Version](https://img.shields.io/pypi/v/kurses-py?color=green&label=pip%20install%20kurses)
+![Python - Implementation](https://img.shields.io/pypi/implementation/kurses-py)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/kurses-py)
+
 This module uses SDL2 (or Pygame) to emulate the functions of the [conio](https://en.wikipedia.org/wiki/Conio.h) and [curses](https://en.wikipedia.org/wiki/Curses_(programming_library)) libraries, which are used to create text-based user interfaces. You can control the color and cursor of the text, as well as the position and size of the window, the bit depth, typography and text styles (underline, bold, italic and strikethrough).
 
 It is designed to offer a cross-platform solution for creating text-based applications, independent of the system where they run.
@@ -6,16 +11,22 @@ It is designed to offer a cross-platform solution for creating text-based applic
 ## How to install it?
 You can install from pip:
 
-`pip install kurses-py` 
+```
+pip install kurses-py
+```
 
 Or from GitHub repository:
 
-`pip install git+https://github.com/SealtielFreak/kurses.py.git`
+```
+pip install git+https://github.com/SealtielFreak/kurses.py.git
+```
 
 ### Dependencies
 At the moment it is only implemented to work with SDL2 (PySDL2).
 
-`pip install pysdl2 pysdl2-dll`
+```
+pip install pysdl2 pysdl2-dll
+```
 
 ## Examples
 [hello_world.py](examples/hello_world.py)
