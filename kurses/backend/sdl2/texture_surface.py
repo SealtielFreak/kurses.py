@@ -29,11 +29,10 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
         sdl2.SDL_SetRenderTarget(surface, self.current)
 
         for stream in self.streams:
+            sx, sy = stream.sx, stream.sy
+
             for _data in stream:
                 x, y = _data.position
-                sx, sy = _data.sx, _data.sy
-
-                print(sx, sy)
 
                 while x > cols:
                     x = x - (cols + 1)
@@ -42,7 +41,8 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
                 if isinstance(_data, kurses.stream.CharacterAttribute):
                     texture = self.font.present_chr(surface, _data)
 
-                    sdl2.SDL_RenderCopy(surface, texture, None, sdl2.SDL_Rect(x * (w * sx), y * (h * sy), w * sx, h * sy))
+                    d_rect = sdl2.SDL_Rect(x * (w * sx), y * (h * sy), w * sx, h * sy)
+                    sdl2.SDL_RenderCopy(surface, texture, None, d_rect)
 
                 elif isinstance(_data, kurses.stream.RectangleAttribute):
                     d_rect = sdl2.SDL_Rect(x, y, (_data.w * w) * sx, (_data.h * h) * sy)
