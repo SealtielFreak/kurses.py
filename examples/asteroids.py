@@ -3,8 +3,8 @@ import random
 
 import kurses.term
 import kurses.stream
-from kurses import Console, StreamBuffer
-
+from kurses import VirtualTerminal, StreamBuffer
+from kurses.font_resources import QualityFont
 
 SHIP = """\
  |
@@ -29,14 +29,14 @@ def random_asteroid(_x=(0, 80), _y=(0, 30)):
     )
 
 
-console = Console(quality=kurses.virtual_console.QualityFont.LCD)
+console = VirtualTerminal(font_filename="ModernDOS8x16.ttf", quality=QualityFont.LCD)
 
-main_buffer = console.buffers[0]
+main_buffer = console.stream
 
-score_buffer = StreamBuffer(40, 15, sx=2, sy=2, type_cursor=kurses.buffer.TypeCursor.RECT)
+score_buffer = StreamBuffer(40, 15, sx=2, sy=2, type_cursor=kurses.stream.TypeCursor.RECT)
 score_buffer.x = 0
 score_buffer.y = 0
-score_buffer.type_cursor = kurses.buffer.TypeCursor.EMPTY
+score_buffer.type_cursor = kurses.stream.TypeCursor.EMPTY
 
 asteroids = [random_asteroid() for _ in range(15)]
 
@@ -49,6 +49,8 @@ shoots = []
 def loop():
     global x_ship, y_ship, life, score
     rows, columns = main_buffer.buffersize
+
+    main_buffer.clrscr()
 
     if life > 0:
         if score >= 10:
@@ -157,9 +159,8 @@ def loop():
 
 
 if __name__ == '__main__':
-    console.buffers.append(score_buffer)
+    console.streams.append(score_buffer)
 
-    console.set_title("Asteroids")
-    console.set_font("ModernDOS8x16.ttf")
+    console.title = "Asteroids"
     console.set_target(loop)
     console.main_loop()

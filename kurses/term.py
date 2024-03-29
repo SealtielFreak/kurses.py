@@ -125,7 +125,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         """
 
     @abc.abstractmethod
-    def set_target(self, target: typing.Callable[[None], None]):
+    def set_target(self, target: typing.Callable[[], None]):
         """
         Set main loop function.
 

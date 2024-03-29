@@ -28,7 +28,7 @@ def loop():
 
 
 # append virtual buffer
-term.buffers.append(buffer_1)
+term.streams.append(buffer_1)
 
 # set loop function
 term.set_target(loop)

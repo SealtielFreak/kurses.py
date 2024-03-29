@@ -66,7 +66,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
         return w.value, h.value
 
-    def set_target(self, target: typing.Callable[[None], None]):
+    def set_target(self, target: typing.Callable[[], None]):
         self.__target = target
 
     def main_loop(self):
