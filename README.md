@@ -11,16 +11,22 @@ It is designed to offer a cross-platform solution for creating text-based applic
 ## How to install it?
 You can install from pip:
 
-`pip install kurses-py` 
+```
+pip install kurses-py
+```
 
 Or from GitHub repository:
 
-`pip install git+https://github.com/SealtielFreak/kurses.py.git`
+```
+pip install git+https://github.com/SealtielFreak/kurses.py.git
+```
 
 ### Dependencies
 At the moment it is only implemented to work with SDL2 (PySDL2).
 
-`pip install pysdl2 pysdl2-dll`
+```
+pip install pysdl2 pysdl2-dll
+```
 
 ## Examples
 [hello_world.py](examples/hello_world.py)
