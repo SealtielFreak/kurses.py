@@ -13,6 +13,8 @@ if __name__ == "__main__":
 
         term = console.streams[0]
 
+        term.clrscr()
+
         if "w" in console.keyspressed():
             y -= 1
         elif "s" in console.keyspressed():
@@ -48,6 +50,7 @@ if __name__ == "__main__":
 
         term.resetall()
         _x = x
+
         for _c in "Random color":
             term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
             term.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))

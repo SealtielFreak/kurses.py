@@ -91,7 +91,8 @@ def get_render_font_method_sdl2(encoding: kurses.font_resources.EncodingFont,
     render_method = render_methods[encoding][quality]
 
     def inner(font, _chr, fg, bg):
-        return render_method(font, chr(_chr).encode(), fg, bg)
+        _chr = chr(_chr).encode() if isinstance(_chr, int) else _chr.encode()
+        return render_method(font, _chr, fg, bg)
 
     return inner
 

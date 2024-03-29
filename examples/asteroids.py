@@ -53,7 +53,6 @@ def loop():
     for stream in console.streams:
         stream.clrscr()
 
-
     if life > 0:
         if score >= 10:
             _msg = "You win!"
