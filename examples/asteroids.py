@@ -38,7 +38,7 @@ score_buffer.x = 0
 score_buffer.y = 0
 score_buffer.type_cursor = kurses.stream.TypeCursor.EMPTY
 
-asteroids = [random_asteroid() for _ in range(15)]
+asteroids = [random_asteroid() for _ in range(5)]
 
 x_ship, y_ship = random.randint(0, 70), random.randint(0, 30)
 
