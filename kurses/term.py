@@ -202,3 +202,20 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :return: None
         """
         ...
+
+    @abc.abstractmethod
+    def draw(self):
+        """
+        Draw in virtual console
+        :return:
+        """
+        ...
+
+    @abc.abstractmethod
+    def clean(self):
+        """
+        Clean in virtual console
+
+        :return:
+        """
+        ...

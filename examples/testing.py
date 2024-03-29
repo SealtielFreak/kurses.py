@@ -1,18 +1,17 @@
 import random
 
-from kurses import Console
+from kurses import VirtualTerminal
 
 if __name__ == "__main__":
-    console = Console()
-    console.set_font("ModernDOS8x16.ttf", 16)
-    console.set_resizable(True)
+    console = VirtualTerminal("ModernDOS8x16.ttf")
+    # console.resizable = True
 
-    x_ship, y_ship = 0, 0
+    x, y = 0, 0
 
     def main():
-        global x_ship, y_ship
+        global x, y
 
-        term = console.buffers[0]
+        term = console.streams[0]
 
         if "w" in console.keyspressed():
             y -= 1

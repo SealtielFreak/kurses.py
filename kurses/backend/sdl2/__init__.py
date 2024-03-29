@@ -79,9 +79,9 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             if self.__target:
                 self.__target()
 
-            sdl2.SDL_RenderClear(self.surface)
-            self.present()
-            sdl2.SDL_RenderPresent(self.surface)
+            self.clean()
+            self.draw()
+            time.sleep(.05)
 
     def keyspressed(self) -> typing.List[str]:
         pressed_keys = collections.deque()
@@ -119,3 +119,11 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
     def quit(self):
         self.running = False
+
+    def draw(self):
+        self.present()
+        sdl2.SDL_RenderPresent(self.surface)
+
+    def clean(self):
+        sdl2.SDL_RenderClear(self.surface)
+        self.__textures.clear(self.surface)

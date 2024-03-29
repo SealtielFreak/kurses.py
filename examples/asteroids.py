@@ -50,7 +50,9 @@ def loop():
     global x_ship, y_ship, life, score
     rows, columns = main_buffer.buffersize
 
-    main_buffer.clrscr()
+    for stream in console.streams:
+        stream.clrscr()
+
 
     if life > 0:
         if score >= 10:
