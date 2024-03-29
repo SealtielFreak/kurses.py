@@ -8,9 +8,9 @@ K = typing.TypeVar("K", bound="TextureSurface")
 
 
 class TextureSurface(abc.ABC, typing.Generic[K]):
-    def __init__(self, font: kurses.font_resources.FontResources, stream: kurses.stream.StreamBuffer):
+    def __init__(self, font: kurses.font_resources.FontResources, streams: list[kurses.stream.StreamBuffer]):
         self.__font = font
-        self.__stream = stream
+        self.__streams = streams
 
     @property
     def font(self) -> kurses.font_resources.FontResources:
@@ -18,7 +18,15 @@ class TextureSurface(abc.ABC, typing.Generic[K]):
 
     @property
     def stream(self) -> kurses.stream.StreamBuffer:
-        return self.__stream
+        return self.__streams[0]
+
+    @property
+    def streams(self) -> list[kurses.stream.StreamBuffer]:
+        return self.__streams
+
+    @streams.setter
+    def streams(self, streams: list[kurses.stream.StreamBuffer]):
+        self.__streams = streams
 
     @abc.abstractmethod
     def present(self, surface: K) -> K: ...

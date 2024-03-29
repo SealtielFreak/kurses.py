@@ -8,8 +8,8 @@ import kurses.stream
 
 
 class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
-    def __init__(self, font: kurses.font_resources.FontResources, stream: kurses.stream.StreamBuffer):
-        super().__init__(font, stream)
+    def __init__(self, font: kurses.font_resources.FontResources, streams: list[kurses.stream.StreamBuffer]):
+        super().__init__(font, streams)
 
         self.__dst_texture = None
 
@@ -28,23 +28,24 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
 
         sdl2.SDL_SetRenderTarget(surface, self.current)
 
-        for _data in self.stream:
-            x, y = _data.position
+        for stream in self.streams:
+            for _data in stream:
+                x, y = _data.position
 
-            while x > cols:
-                x = x - (cols + 1)
-                y += 1
+                while x > cols:
+                    x = x - (cols + 1)
+                    y += 1
 
-            if isinstance(_data, kurses.stream.CharacterAttribute):
-                texture = self.font.present_chr(surface, _data)
+                if isinstance(_data, kurses.stream.CharacterAttribute):
+                    texture = self.font.present_chr(surface, _data)
 
-                sdl2.SDL_RenderCopy(surface, texture, None, sdl2.SDL_Rect(x * w, y * h, w, h))
+                    sdl2.SDL_RenderCopy(surface, texture, None, sdl2.SDL_Rect(x * w, y * h, w, h))
 
-            elif isinstance(_data, kurses.stream.RectangleAttribute):
-                d_rect = sdl2.SDL_Rect(x, y, _data.w * w, _data.h * h)
+                elif isinstance(_data, kurses.stream.RectangleAttribute):
+                    d_rect = sdl2.SDL_Rect(x, y, _data.w * w, _data.h * h)
 
-                sdl2.SDL_SetRenderDrawColor(surface, *_data.color, 255)
-                sdl2.SDL_RenderFillRect(surface, d_rect)
+                    sdl2.SDL_SetRenderDrawColor(surface, *_data.color, 255)
+                    sdl2.SDL_RenderFillRect(surface, d_rect)
 
         sdl2.SDL_SetRenderTarget(surface, None)
 

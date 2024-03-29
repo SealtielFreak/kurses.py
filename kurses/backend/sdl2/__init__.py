@@ -43,7 +43,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
         self.__target = None
         self.__font = kurses.backend.FontResources(self._font_filename)
-        self.__textures = kurses.backend.TextureSurface(self.__font, self.stream)
+        self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
 
     def __del__(self):
         if self.__c_renderer is not None:

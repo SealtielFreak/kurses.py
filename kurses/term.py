@@ -38,7 +38,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         cols, rows = shape
 
         self.__main_stream = kurses.stream.StreamBuffer(cols, rows)
-        self.__stream_list = []
+        self.__stream_list = [self.__main_stream]
         self.__window_title = kwargs.get("title", "Virtual terminal")
         self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)
 
@@ -55,11 +55,11 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
     @property
     def stream(self) -> kurses.stream.StreamBuffer:
-        return self.__main_stream
+        return self.__stream_list[0]
 
     @property
     def shape(self) -> typing.Tuple[int, int]:
-        return self.__main_stream.shape
+        return self.stream.shape
 
     @property
     @abc.abstractmethod
