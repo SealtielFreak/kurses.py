@@ -55,6 +55,11 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
     @property
     def stream(self) -> kurses.stream.StreamBuffer:
+        """
+        Get main stream buffer of Virtual term
+
+        :return: Main buffer
+        """
         return self.__stream_list[0]
 
     @property

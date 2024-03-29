@@ -29,61 +29,60 @@ pip install pysdl2 pysdl2-dll
 ```
 
 ## Examples
-[hello_world.py](examples/hello_world.py)
+### [hello_world.py](examples/hello_world.py)
 
 ```python
 # load module
-from kurses import Console
+from kurses import VirtualTerminal
 
 # instance Virtual console
-console = Console()
-buffer = console.buffers  # get buffer console
-console.set_font("ModernDOS8x16.ttf")  # load font resources
+term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources
+stream = term.stream  # get main buffer console
 
 
 # define loop function
 def loop():
+    stream.resetall()  # restore default attributes in the buffer console
+
     # set attributes of first string
-    buffer.set_background_color((255, 255, 255))  # set background color characters
-    buffer.set_foreign_color((0, 0, 0))  # set foreign color
-    buffer.print("Hello\n")  # print into buffer console
+    stream.gotoxy(0, 0)  # go to position x: 0, y: 0
+    stream.set_background_color((255, 255, 255))  # set background color characters
+    stream.set_foreign_color((0, 0, 0))  # set foreign color
+    stream.print("Hello\n")  # print into buffer console
 
     # set attributes of second string
-    buffer.gotoxy(5, 1)  # go to position x: 5, y: 1
-    buffer.italic(True)  # set true italic
-    buffer.print("world!")  # print into buffer console, again
-
-    buffer.resetall()  # restore default attributes in the buffer console
+    stream.gotoxy(5, 1)  # go to position x: 5, y: 1
+    stream.italic(True)  # set true italic
+    stream.print("world!")  # print into buffer console, again
 
 
 # set loop function
-console.set_target(loop)
+term.set_target(loop)
 
 # run all program
-console.main_loop()
+term.main_loop()
 ```
-[keypressed.py](examples/keypressed.py)
+### [keypressed.py](examples/keypressed.py)
 
 ```python
 # load modules
-from kurses import Console
 import random
 
+from kurses import VirtualTerminal
+
 # instance Virtual console
-console = Console()
-buffer = console.buffers  # get buffer console
-console.set_font("ModernDOS8x16.ttf")  # load font resources
+console = VirtualTerminal("ModernDOS8x16.ttf")
+buffer = console.stream  # get buffer console
 
 # define global variables
-x_ship, y_ship = 0, 0
+x, y = 0, 0
 
 
 # define loop function
 def loop():
-    global x_ship, y_ship
+    global x, y
 
-    term = console.buffers
-
+    buffer.clrscr()
     buffer.resetall()  # restore default attributes in the buffer console
 
     # check key pressed
@@ -98,11 +97,12 @@ def loop():
 
     # all draw runtime of string with random colors
     _x = x
+
     for _c in "Random color":
-        term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
-        term.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
-        term.gotoxy(_x, y)  # set position
-        term.cputs(_c)  # print character into buffer console
+        buffer.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
+        buffer.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
+        buffer.gotoxy(_x, y)  # set position
+        buffer.cputs(_c)  # print character into buffer console
         _x += 1
 
 
@@ -111,5 +111,12 @@ console.set_target(loop)
 
 # run all program
 console.main_loop()
+```
 
+### [asteroids.py](examples/asteroids.py)
+```python
+```
+
+### [testing.py](examples/testing.py)
+```python
 ```
