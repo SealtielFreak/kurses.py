@@ -32,7 +32,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             kwargs.get("title", "Virtual terminal").encode(),
             position_x, position_y,
             width, height,
-            sdl2.SDL_WINDOW_SHOWN
+            sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_RESIZABLE
         )
 
         self.__c_renderer = sdl2.SDL_CreateRenderer(
@@ -44,6 +44,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__target = None
         self.__font = kurses.backend.FontResources(self._font_filename)
         self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
+
+        self.resizable_window = kwargs.get("resizable_window", True)
 
     def __del__(self):
         if self.__c_renderer is not None:
@@ -66,6 +68,17 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
         return w.value, h.value
 
+    @property
+    def resizable_window(self) -> bool:
+        return True
+
+    @resizable_window.setter
+    def resizable_window(self, resizable: bool):
+        sdl2.SDL_SetWindowResizable(
+            self.__c_window,
+            resizable
+        )
+
     def set_target(self, target: typing.Callable[[], None]):
         self.__target = target
 
@@ -81,7 +94,6 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
             self.clean()
             self.draw()
-            time.sleep(.05)
 
     def keyspressed(self) -> typing.List[str]:
         pressed_keys = collections.deque()
@@ -105,13 +117,18 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def push_events(self, event: sdl2.SDL_Event):
         if event.type == sdl2.SDL_QUIT:
             self.quit()
+        elif event.type == sdl2.SDL_WINDOWEVENT_EXPOSED:
+            pass
         elif event.type == sdl2.SDL_WINDOWEVENT:
             if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
-                w, h = self.__font.size
                 width, height = event.window.data1, event.window.data2
+                w, h = self.__font.size
 
-                self.stream.resize(width // w, height // h)
-                print(self.__textures.size, self.stream.shape, self.size)
+                sdl2.SDL_SetWindowSize(self.window, width, height)
+
+                if self.resizable:
+                    for stream in self.streams:
+                        stream.resize(width // w, height // h)
 
     def present(self):
         self.__textures.present(self.surface)

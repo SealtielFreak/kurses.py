@@ -29,6 +29,7 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
         sdl2.SDL_SetRenderTarget(surface, self.current)
 
         for stream in self.streams:
+            cols, rows = stream.shape
             sx, sy = stream.sx, stream.sy
 
             for _data in stream:

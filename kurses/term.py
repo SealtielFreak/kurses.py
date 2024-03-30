@@ -44,7 +44,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
         self._font_filename = font_filename
         self._dt = 1.0
-        self._resizable = True
+        self._resizable = kwargs.get("resizable", False)
 
         self.fps = kwargs.get("fps", 30)
         self.running = True
@@ -96,6 +96,35 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :rtype: bool
         """
         return self._resizable
+
+    @resizable.setter
+    def resizable(self, resizable: bool):
+        """
+        Set the resizable property of the console.
+
+        :param resizable:
+        :return:
+        """
+        self._resizable = resizable
+
+    @property
+    @abc.abstractmethod
+    def resizable_window(self) -> bool:
+        """
+        Get the resizable property of the window.
+
+        :return: bool
+        """
+
+    @resizable_window.setter
+    @abc.abstractmethod
+    def resizable_window(self, resizable: bool):
+        """
+        Set the resizable property of the window.
+
+        :param resizable: bool
+        :return:
+        """
 
     @property
     def streams(self) -> typing.List[kurses.stream.StreamBuffer]:

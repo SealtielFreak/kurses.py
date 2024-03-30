@@ -4,7 +4,7 @@ from kurses import VirtualTerminal
 
 if __name__ == "__main__":
     console = VirtualTerminal("ModernDOS8x16.ttf")
-    # console.resizable = True
+    console.resizable = True
 
     x, y = 0, 0
 
