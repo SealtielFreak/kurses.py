@@ -2,7 +2,7 @@ import abc
 import enum
 import typing
 
-import kurses.colors
+import kurses.stream
 
 R = typing.TypeVar("R", bound="FontResources")
 
