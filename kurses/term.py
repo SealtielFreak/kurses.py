@@ -175,7 +175,6 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :return: None
         """
         ...
-        ...
 
     @abc.abstractmethod
     def keyspressed(self) -> typing.List[str]:

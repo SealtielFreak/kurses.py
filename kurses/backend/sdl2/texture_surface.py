@@ -8,6 +8,14 @@ import kurses.texture_surface
 
 
 class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
+    def __init__(self, font: kurses.font_resources.FontResources, streams: typing.List[kurses.stream.StreamBuffer]):
+        super().__init__(font, streams)
+
+        self.__dst_texture = None
+
+    def __del__(self):
+        self.destroy()
+
     def destroy(self):
         if self.current is not None:
             sdl2.SDL_DestroyTexture(self.current)
@@ -20,14 +28,6 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
         self.__dst_texture = sdl2.SDL_CreateTexture(
             surface, sdl2.SDL_PIXELFORMAT_RGBA8888, sdl2.SDL_TEXTUREACCESS_TARGET, width, height
         )
-
-    def __init__(self, font: kurses.font_resources.FontResources, streams: typing.List[kurses.stream.StreamBuffer]):
-        super().__init__(font, streams)
-
-        self.__dst_texture = None
-
-    def __del__(self):
-        self.destroy()
 
     def present(self, surface: sdl2.SDL_Renderer) -> sdl2.SDL_Texture:
         w, h = self.font.size
