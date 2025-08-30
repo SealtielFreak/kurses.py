@@ -3,8 +3,8 @@ import typing
 import sdl2
 
 import kurses.font_resources
-import kurses.texture_surface
 import kurses.stream
+import kurses.texture_surface
 
 
 class SDL2TextureSurface(kurses.texture_surface.TextureSurface):

@@ -1,7 +1,7 @@
 import collections
 import dataclasses
-import typing
 import enum
+import typing
 
 import kurses.colors
 

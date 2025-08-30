@@ -1,7 +1,6 @@
 import abc
 import typing
 
-
 import kurses.font_resources
 import kurses.stream
 

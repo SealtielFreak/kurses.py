@@ -1,17 +1,15 @@
 import collections
 import ctypes
-import functools
-import time
 import typing
 
 import sdl2
 import sdl2.sdlttf
 
-import kurses.term
-import kurses.stream
-import kurses.colors
 import kurses.backend.sdl2.font_resources
 import kurses.backend.sdl2.texture_surface
+import kurses.colors
+import kurses.stream
+import kurses.term
 
 
 class SDL2VirtualTerminal(kurses.term.VirtualTerminal):

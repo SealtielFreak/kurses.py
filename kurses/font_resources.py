@@ -4,7 +4,6 @@ import typing
 
 import kurses.colors
 
-
 R = typing.TypeVar("R", bound="FontResources")
 
 

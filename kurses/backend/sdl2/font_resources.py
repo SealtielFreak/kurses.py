@@ -98,7 +98,6 @@ def get_render_font_method_sdl2(encoding: kurses.font_resources.EncodingFont,
 
 
 class SDL2FontResources(kurses.font_resources.FontResources):
-
     __ALL_RENDER_METHODS_SDL2 = {
         kurses.font_resources.EncodingFont.ASCII: {
             kurses.font_resources.QualityFont.SOLID: cast_render_method(sdl2.sdlttf.TTF_RenderText_Solid),
