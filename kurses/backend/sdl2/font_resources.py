@@ -148,6 +148,10 @@ class SDL2FontResources(kurses.font_resources.FontResources):
 
     @property
     def size(self) -> typing.Tuple[int, int]:
+        self.__size = get_size_surface_from_font(
+            self.__c_font, self.__default_render_method()
+        )
+
         return self.__size
 
     @property

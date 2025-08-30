@@ -1,5 +1,6 @@
 import collections
 import ctypes
+import math
 import typing
 
 import sdl2
@@ -30,7 +31,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             kwargs.get("title", "Virtual terminal").encode(),
             position_x, position_y,
             width, height,
-            sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_RESIZABLE
+            sdl2.SDL_WINDOW_SHOWN
         )
 
         self.__c_renderer = sdl2.SDL_CreateRenderer(
@@ -43,7 +44,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__font = kurses.backend.FontResources(self._font_filename)
         self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
 
-        self.resizable_window = kwargs.get("resizable_window", True)
+        self.__current_resizable_window = kwargs.get("resizable_window", True)
+        self.resizable_window = self.__current_resizable_window
 
     def __del__(self):
         if self.__c_renderer is not None:
@@ -68,13 +70,14 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
     @property
     def resizable_window(self) -> bool:
-        return True
+        return self.__current_resizable_window
 
     @resizable_window.setter
     def resizable_window(self, resizable: bool):
+        self.__current_resizable_window = resizable
         sdl2.SDL_SetWindowResizable(
             self.__c_window,
-            resizable
+            self.__current_resizable_window
         )
 
     def set_target(self, target: typing.Callable[[], None]):

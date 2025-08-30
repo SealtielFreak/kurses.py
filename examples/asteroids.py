@@ -1,7 +1,6 @@
-import math
 import random
+import time
 
-import kurses.term
 import kurses.stream
 from kurses import VirtualTerminal, StreamBuffer
 from kurses.font_resources import QualityFont
@@ -49,6 +48,8 @@ shoots = []
 def loop():
     global x_ship, y_ship, life, score
     rows, columns = main_buffer.buffersize
+
+    time.sleep(0.05)
 
     for stream in console.streams:
         stream.clrscr()

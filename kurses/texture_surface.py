@@ -12,6 +12,12 @@ class TextureSurface(abc.ABC, typing.Generic[K]):
         self.__font = font
         self.__streams = streams
 
+    @abc.abstractmethod
+    def create(self, surface: K): ...
+
+    @abc.abstractmethod
+    def destroy(self): ...
+
     @property
     def font(self) -> kurses.font_resources.FontResources:
         return self.__font

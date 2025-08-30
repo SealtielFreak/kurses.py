@@ -8,23 +8,31 @@ import kurses.texture_surface
 
 
 class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
+    def destroy(self):
+        if self.current is not None:
+            sdl2.SDL_DestroyTexture(self.current)
+
+    def create(self, surface: sdl2.SDL_Renderer):
+        width, height = self.size
+
+        self.destroy()
+
+        self.__dst_texture = sdl2.SDL_CreateTexture(
+            surface, sdl2.SDL_PIXELFORMAT_RGBA8888, sdl2.SDL_TEXTUREACCESS_TARGET, width, height
+        )
+
     def __init__(self, font: kurses.font_resources.FontResources, streams: typing.List[kurses.stream.StreamBuffer]):
         super().__init__(font, streams)
 
         self.__dst_texture = None
 
     def __del__(self):
-        if self.current is not None:
-            sdl2.SDL_DestroyTexture(self.current)
+        self.destroy()
 
     def present(self, surface: sdl2.SDL_Renderer) -> sdl2.SDL_Texture:
         w, h = self.font.size
-        cols, rows = self.stream.shape
 
-        if self.current is None:
-            self.__dst_texture = sdl2.SDL_CreateTexture(
-                surface, sdl2.SDL_PIXELFORMAT_RGBA8888, sdl2.SDL_TEXTUREACCESS_TARGET, w * cols, h * rows
-            )
+        self.create(surface)
 
         sdl2.SDL_SetRenderTarget(surface, self.current)
 
@@ -70,4 +78,4 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
         cols, rows = self.stream.shape
         w, h = self.font.size
 
-        return w * rows, h * cols
+        return w * cols, h * rows
