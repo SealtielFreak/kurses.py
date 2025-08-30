@@ -8,7 +8,7 @@ import kurses.stream
 
 
 class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
-    def __init__(self, font: kurses.font_resources.FontResources, streams: list[kurses.stream.StreamBuffer]):
+    def __init__(self, font: kurses.font_resources.FontResources, streams: typing.List[kurses.stream.StreamBuffer]):
         super().__init__(font, streams)
 
         self.__dst_texture = None

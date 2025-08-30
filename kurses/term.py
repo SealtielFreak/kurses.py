@@ -139,11 +139,9 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
     @abc.abstractmethod
     def title(self) -> str:
         """
-        Set title of virtual console (Windows).
+        Get title of virtual console (Windows).
 
-        :type _str: String of title.
-        :type _str: str
-        :return: None
+        :return: str
         """
         return self.__window_title
 
