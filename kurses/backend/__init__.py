@@ -2,6 +2,7 @@
 
 try:
     import sdl2
+
     from kurses.backend.sdl2.font_resources import SDL2FontResources
     from kurses.backend.sdl2.texture_surface import SDL2TextureSurface
     from kurses.backend.sdl2 import SDL2VirtualTerminal

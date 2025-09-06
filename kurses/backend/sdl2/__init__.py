@@ -2,6 +2,7 @@ import collections
 import ctypes
 import math
 import typing
+import threading
 
 import sdl2
 import sdl2.sdlttf
@@ -18,6 +19,9 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.__thread = None
+        # self.__lock = threading.Lock()
 
         if sdl2.SDL_WasInit(sdl2.SDL_INIT_EVERYTHING) == 0:
             sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING)
@@ -83,7 +87,23 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def set_target(self, target: typing.Callable[[], None]):
         self.__target = target
 
+    def set_thread_target(self, target: typing.Callable[[kurses.stream.StreamBuffer], None]):
+        if self.__thread is not None:
+            raise ValueError("Thread target is ready.")
+
+        def target_wrapper(console: kurses.term.VirtualTerminal, buffer: kurses.stream.StreamBuffer):
+            try:
+                target(buffer)
+            except Exception as e:
+                console.quit()
+                raise e
+
+        self.__thread = threading.Thread(target=target_wrapper, args=(self, self.streams))
+
     def main_loop(self):
+        if self.__thread is not None:
+            self.__thread.start()
+
         while self.running:
             event = sdl2.SDL_Event()
 
