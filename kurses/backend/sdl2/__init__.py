@@ -104,8 +104,6 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         if self.__thread is not None:
             self.__thread.start()
 
-        print(self.stream.shape)
-
         while self.running:
             event = sdl2.SDL_Event()
 
