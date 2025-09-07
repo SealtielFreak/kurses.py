@@ -27,8 +27,10 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         position_x, position_y = self.__DEFAULT_WINDOW_POSITION
         self.__c_window = sdl2.SDL_CreateWindow(
             kwargs.get("title", "Virtual terminal").encode(),
-            position_x, position_y,
-            width, height,
+            position_x,
+            position_y,
+            width,
+            height,
             sdl2.SDL_WINDOW_SHOWN
         )
 
