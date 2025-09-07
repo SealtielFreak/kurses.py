@@ -168,10 +168,6 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         ...
 
     @abc.abstractmethod
-    def set_thread_target(self, target: typing.Callable[[kurses.stream.StreamBuffer], None]):
-        ...
-
-    @abc.abstractmethod
     def main_loop(self):
         """
         Run virtual console, with all background service (SDL2 or Pygame).
