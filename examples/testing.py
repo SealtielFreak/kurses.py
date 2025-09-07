@@ -26,8 +26,6 @@ if __name__ == "__main__":
         elif "d" in console.keyspressed():
             x += 1
 
-        print(x, y)
-
         term.resetall()
         term.set_background_color((0, 255, 0))
         term.set_foreign_color((225, 23, 155))

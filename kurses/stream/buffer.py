@@ -3,8 +3,36 @@ import typing
 from kurses.stream import CharacterAttribute, RectangleAttribute
 
 
+def fix_position_attribute(shape: typing.Tuple[int, int], index: typing.Tuple[int, int], attr: typing.Union[CharacterAttribute, RectangleAttribute]):
+    rows, columns = shape
+    x, y = index
+
+    while x >= columns:
+        x = x - (columns + 1)
+        y += 1
+
+    while x < 0:
+        x = x + (columns + 1)
+        y -= 1
+
+    attr.x = x
+    attr.y = y
+
+    return (x, y), attr
+
+
+def protect_buffer_matrix(shape: typing.Tuple[int, int], index: typing.Tuple[int, int], buffer: typing.List[typing.List[typing.Union[CharacterAttribute, RectangleAttribute, None]]], attr: typing.Union[CharacterAttribute, RectangleAttribute]):
+    rows, columns = shape
+    x, y = index
+
+    if 0 <= x < columns and 0 <= y < rows:
+        buffer[y][x] = attr
+
+    return buffer
+
+
 class BufferMatrix:
-    def __init__(self, shape):
+    def __init__(self, shape: typing.Tuple[int, int]):
         rows, columns = shape
 
         self.__rows, self.__cols = rows, columns
@@ -24,19 +52,9 @@ class BufferMatrix:
         if isinstance(index, tuple):
             x, y = index
 
-        while x >= self.cols:
-            x = x - (self.cols + 1)
-            y += 1
+        (x, y), value = fix_position_attribute(self.shape, (x, y), value)
 
-        while x < 0:
-            x = x + (self.cols + 1)
-            y -= 1
-
-        value.x = x
-        value.y = y
-
-        if 0 <= x < self.cols and 0 <= y < self.rows:
-            self.__buffer_matrix[y][x] = value
+        protect_buffer_matrix(self.shape, (x, y), self.__buffer_matrix, value)
 
     def __getitem__(self, index: typing.Tuple[int, int]) -> typing.Union[CharacterAttribute, RectangleAttribute, None]:
         x, y = index
@@ -47,8 +65,17 @@ class BufferMatrix:
         self.__buffer_matrix = [[None] * self.__cols for _ in range(self.__rows)]
 
     def reshape(self, shape: typing.Tuple[int, int]):
+        all_buff_objects = [obj for obj in self]
+
         self.__rows, self.__cols = shape
-        self.clear()
+        self.__buffer_matrix = [[None] * self.__cols for _ in range(self.__rows)]
+
+        for obj in all_buff_objects:
+            x, y = obj.x, obj.y
+
+            (x, y), value = fix_position_attribute(self.shape, (x, y), obj)
+
+            protect_buffer_matrix(self.shape, (x, y), self.__buffer_matrix, value)
 
     @property
     def shape(self) -> typing.Tuple[int, int]:
@@ -58,7 +85,7 @@ class BufferMatrix:
     def shape(self, shape: typing.Tuple[int, int]):
         self.__rows, self.__cols = shape
 
-    def __iter__(self):
+    def __iter__(self) -> typing.Generator[typing.Union[CharacterAttribute, RectangleAttribute], None, None]:
         for i in range(self.__rows):
             for j in range(self.__cols):
                 attr = self.__buffer_matrix[i][j]
