@@ -9,7 +9,6 @@ from kurses.stream.attributes import TypeCursor, CharacterAttribute, RectangleAt
 DEFAULT_PTSIZE = 16
 
 
-
 class StreamBuffer:
     def __init__(self, columns: int, rows: int, **kwargs):
         """
@@ -36,7 +35,13 @@ class StreamBuffer:
         :keyword type_cursor: Select type cursor, with default value Line.
         :type type_cursor: TypeCursor
         """
-        self.resetall()
+        self.__bold = False
+        self.__italic = False
+        self.__underline = False
+        self.__strikethrough = False
+        self.__foreign_color = 255, 255, 255
+        self.__background_color = 0, 0, 0
+
         self.blink_cursor = 0
         self.x = kwargs.get("x", 0)
         self.y = kwargs.get("y", 0)
