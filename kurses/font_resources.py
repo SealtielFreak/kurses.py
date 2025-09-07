@@ -3,6 +3,7 @@ import enum
 import typing
 
 import kurses.stream
+from kurses.stream import CharacterAttribute
 
 R = typing.TypeVar("R", bound="FontResources")
 
@@ -22,7 +23,7 @@ class EncodingFont(enum.Enum):
 
 class FontResources(abc.ABC, typing.Generic[R]):
     def __init__(self, filename: str, ptsize: int = 16, depth_colors: int = 8, **kwargs):
-        self.__allocate_textures = {}
+        self.__allocate_textures: typing.Dict[CharacterAttribute, typing.Any] = {}
         self.__filename = filename
         self.__ptsize = ptsize
         self.__depth_colors = depth_colors

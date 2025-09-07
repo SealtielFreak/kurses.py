@@ -21,7 +21,7 @@ def fix_position_attribute(shape: typing.Tuple[int, int], index: typing.Tuple[in
     return (x, y), attr
 
 
-def protect_buffer_matrix(shape: typing.Tuple[int, int], index: typing.Tuple[int, int], buffer: typing.List[typing.List[typing.Union[CharacterAttribute, RectangleAttribute, None]]], attr: typing.Union[CharacterAttribute, RectangleAttribute]):
+def protect_buffer_matrix(shape: typing.Tuple[int, int], index: typing.Tuple[int, int], buffer: typing.List[typing.List[typing.Optional[typing.Union[CharacterAttribute, RectangleAttribute]]]], attr: typing.Union[CharacterAttribute, RectangleAttribute]):
     rows, columns = shape
     x, y = index
 
@@ -35,8 +35,9 @@ class BufferMatrix:
     def __init__(self, shape: typing.Tuple[int, int]):
         rows, columns = shape
 
-        self.__rows, self.__cols = rows, columns
-        self.__buffer_matrix = [[None] * columns for _ in range(rows)]
+        self.__rows: int = rows
+        self.__cols: int = columns
+        self.__buffer_matrix: typing.List[typing.List[typing.Optional[typing.Union[CharacterAttribute, RectangleAttribute]]]] = [[None] * columns for _ in range(rows)]
 
     @property
     def cols(self) -> int:

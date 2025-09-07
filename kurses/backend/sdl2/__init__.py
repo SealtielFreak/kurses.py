@@ -117,7 +117,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             self.draw()
 
     def keyspressed(self) -> typing.List[str]:
-        pressed_keys = collections.deque()
+        pressed_keys = []
         keyboard_state = sdl2.SDL_GetKeyboardState(None)
         chr_format_key = lambda _str: _str.decode().lower()
 
@@ -125,7 +125,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             if keyboard_state[key_code] == 1:
                 pressed_keys.append(chr_format_key(sdl2.SDL_GetScancodeName(key_code)))
 
-        return list(pressed_keys)
+        return pressed_keys
 
     @property
     def window(self) -> sdl2.SDL_Window:
