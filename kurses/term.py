@@ -35,9 +35,9 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :keyword fps: Limit frames per second, with default value 30.
         :type fps: int
         """
-        cols, rows = shape
+        rows, cols = shape
 
-        self.__main_stream = kurses.stream.StreamBuffer(cols, rows)
+        self.__main_stream = kurses.stream.StreamBuffer(rows, cols)
         self.__stream_list = [self.__main_stream]
         self.__window_title = kwargs.get("title", "Virtual terminal")
         self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)

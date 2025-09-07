@@ -49,7 +49,7 @@ def loop():
     global x_ship, y_ship, life, score
     rows, columns = main_buffer.buffersize
 
-    time.sleep(0.05)
+    time.sleep(0.025)
 
     for stream in console.streams:
         stream.clrscr()
