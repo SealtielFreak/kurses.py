@@ -1,13 +1,11 @@
 import collections
-import dataclasses
-import enum
 import typing
 
 import kurses.colors
 from kurses.stream.attributes import TypeCursor, CharacterAttribute, RectangleAttribute
+from kurses.stream.buffer import BufferMatrix
 
 DEFAULT_PTSIZE = 16
-
 
 
 class StreamBuffer:
@@ -36,7 +34,13 @@ class StreamBuffer:
         :keyword type_cursor: Select type cursor, with default value Line.
         :type type_cursor: TypeCursor
         """
-        self.resetall()
+        self.__bold = False
+        self.__italic = False
+        self.__underline = False
+        self.__strikethrough = False
+        self.__foreign_color = 255, 255, 255
+        self.__background_color = 0, 0, 0
+
         self.blink_cursor = 0
         self.x = kwargs.get("x", 0)
         self.y = kwargs.get("y", 0)
@@ -48,13 +52,22 @@ class StreamBuffer:
         self.type_cursor: TypeCursor = kwargs.get("type_cursor", TypeCursor.LINE)
 
         self.__current_position = 0, 0
-        self.__shape = rows, columns
         self.__queue: typing.Deque = collections.deque()
         self.__flag_ready = False
 
+        shape = rows, columns
+        self.__buffer_matrix = BufferMatrix(shape)
+
     def __iter__(self):
-        for _obj in reversed(self.__queue):
-            yield _obj
+        while len(self.__queue) > 0:
+            yield self.__queue.popleft()
+
+    @property
+    def buffer(self):
+        for attr in self:
+            self.__buffer_matrix[attr.x, attr.y] = attr
+
+        return self.__buffer_matrix
 
     def resize(self, columns: int, rows: int) -> None:
         """
@@ -64,7 +77,7 @@ class StreamBuffer:
         :param rows: Set number of rows.
         :return: None
         """
-        self.__shape = rows, columns
+        self.__buffer_matrix.reshape((rows, columns))
 
     def getbuffersize(self) -> typing.Tuple[int, int]:
         """
@@ -72,7 +85,7 @@ class StreamBuffer:
 
         :return: typing.Tuple[int, int]
         """
-        return self.__shape
+        return self.__buffer_matrix.shape
 
     @property
     def offset(self) -> typing.Tuple[int, int]:
@@ -90,7 +103,7 @@ class StreamBuffer:
 
         :return: typing.Tuple[int, int]
         """
-        return self.__shape[1], self.__shape[0]
+        return self.getbuffersize()
 
     @property
     def buffersize(self) -> typing.Tuple[int, int]:
@@ -122,6 +135,7 @@ class StreamBuffer:
         :return: None
         """
         self.__queue.clear()
+        self.__buffer_matrix.clear()
 
     def wherex(self):
         """
@@ -237,14 +251,17 @@ class StreamBuffer:
 
     def __create_character_attr(self, _chr, x, y):
         return CharacterAttribute(
-            _chr, x, y,
-            self.__foreign_color,
-            self.__background_color,
-            self.__bold,
-            self.__italic,
-            self.__underline,
-            self.__strikethrough,
-            self.sx, self.sy
+            code=_chr,
+            x=x,
+            y=y,
+            foreign=self.__foreign_color,
+            background=self.__background_color,
+            bold=self.__bold,
+            italic=self.__italic,
+            underline=self.__underline,
+            strikethrough=self.__strikethrough,
+            sx=self.sx,
+            sy=self.sy
         )
 
     def cputs(self, _chr: str):
@@ -297,6 +314,7 @@ class StreamBuffer:
         :return: None
         """
         _x = x
+
         for _chr in _str:
             if _chr in "\n":
                 y += 1
@@ -306,6 +324,9 @@ class StreamBuffer:
             self.putchxy(x, y, _chr)
 
             x += 1
+
+        if isinstance(_x, str):
+            raise ""
 
         self.gotoxy(x, y)
 

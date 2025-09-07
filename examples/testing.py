@@ -4,7 +4,7 @@ from kurses import VirtualTerminal
 from kurses.term import Rendering
 
 if __name__ == "__main__":
-    console = VirtualTerminal("ModernDOS8x16.ttf", type_rendering=Rendering.SOFTWARE)
+    console = VirtualTerminal("ModernDOS8x16.ttf", type_rendering=Rendering.HARDWARE)
     console.resizable = True
 
     x, y = 0, 0

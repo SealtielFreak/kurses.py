@@ -9,10 +9,14 @@ DEFAULT_PTSIZE = 16
 
 
 @dataclasses.dataclass
-class CharacterAttribute:
+class Attribute:
+    x: int
+    y: int
+
+
+@dataclasses.dataclass
+class CharacterAttribute(Attribute):
     code: int = ord(' ')
-    x: int = 0
-    y: int = 0
     foreign: kurses.colors.TupleColor = (255, 255, 255)
     background: kurses.colors.TupleColor = (0, 0, 0)
     bold: bool = False
@@ -47,9 +51,7 @@ class CharacterAttribute:
 
 
 @dataclasses.dataclass
-class RectangleAttribute:
-    x: int
-    y: int
+class RectangleAttribute(Attribute):
     w: int
     h: int
     color: kurses.colors.TupleColor

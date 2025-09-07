@@ -37,15 +37,10 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
         sdl2.SDL_SetRenderTarget(surface, self.current)
 
         for stream in self.streams:
-            cols, rows = stream.shape
             sx, sy = stream.sx, stream.sy
 
-            for _data in stream:
+            for _data in stream.buffer:
                 x, y = _data.position
-
-                while x > cols:
-                    x = x - (cols + 1)
-                    y += 1
 
                 if isinstance(_data, kurses.stream.CharacterAttribute):
                     texture = self.font.present_chr(surface, _data)
@@ -75,7 +70,7 @@ class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
 
     @property
     def size(self):
-        cols, rows = self.stream.shape
+        rows, cols = self.stream.shape
         w, h = self.font.size
 
         return w * cols, h * rows
