@@ -44,6 +44,6 @@ class MyTarget(EventTargetRuntime):
 
 
 if __name__ == "__main__":
-    term.set_runtime(MyRuntime)
+    term.set_runtime(MyTarget)
 
     term.main_loop()
