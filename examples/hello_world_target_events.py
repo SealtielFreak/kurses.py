@@ -40,7 +40,10 @@ class MyTarget(EventTargetRuntime):
         self.position = position
 
     def exit(self):
-        pass
+        stream.resetall()
+        stream.gotoxy(0, 0)
+        stream.set_foreign_color((255, 255, 255))
+        stream.print("Goodbye")
 
 
 if __name__ == "__main__":
