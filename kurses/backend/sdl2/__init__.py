@@ -20,6 +20,17 @@ def chr_format_key_sdl2(s):
 class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     __DEFAULT_WINDOW_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
 
+    __ALL_NAME_CLICK_STATE: typing.List[typing.List[str]] = [
+        [],
+        ['left'],
+        ['middle'],
+        ['left', 'middle'],
+        ['right'],
+        ['left', 'right'],
+        ['right', 'middle'],
+        ['left', 'right', 'middle']
+    ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -176,18 +187,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             x, y = motion.x, motion.y
             x, y = (math.ceil((x / width) * cols), math.ceil((y / height) * rows))
 
-            all_click_state = (
-                [],
-                ['left'],
-                ['middle'],
-                ['left', 'middle'],
-                ['right'],
-                ['left', 'right'],
-                ['right', 'middle'],
-                ['left', 'right', 'middle']
-            )
-
-            state = all_click_state[motion.state]
+            state = self.__ALL_NAME_CLICK_STATE[motion.state]
 
             self.__runtime.mouse((x, y), state)
 
