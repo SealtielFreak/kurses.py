@@ -2,9 +2,14 @@
 
 try:
     import sdl2
-    from kurses.backend.sdl2 import SDL2VirtualConsole
 
-    Console = SDL2VirtualConsole
+    from kurses.backend.sdl2.font_resources import SDL2FontResources
+    from kurses.backend.sdl2.texture_surface import SDL2TextureSurface
+    from kurses.backend.sdl2 import SDL2VirtualTerminal
+
+    VirtualTerminal = SDL2VirtualTerminal
+    FontResources = SDL2FontResources
+    TextureSurface = SDL2TextureSurface
 
 except ImportError:
     try:
@@ -12,4 +17,4 @@ except ImportError:
     except ImportError:
         raise ImportError("You need install pySDL2 for this module work!")
 
-__all__ = ["Console"]
+__all__ = ["VirtualTerminal"]

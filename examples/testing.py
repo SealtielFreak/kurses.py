@@ -1,18 +1,20 @@
 import random
 
-from kurses import Console
+from kurses import VirtualTerminal
+from kurses.term import Rendering
 
 if __name__ == "__main__":
-    console = Console()
-    console.set_font("ModernDOS8x16.ttf", 16)
-    console.set_resizable(True)
+    console = VirtualTerminal("ModernDOS8x16.ttf", type_rendering=Rendering.HARDWARE)
+    console.resizable = True
 
     x, y = 0, 0
 
     def main():
         global x, y
 
-        term = console.buffer
+        term = console.streams[0]
+
+        term.clrscr()
 
         if "w" in console.keyspressed():
             y -= 1
@@ -49,6 +51,7 @@ if __name__ == "__main__":
 
         term.resetall()
         _x = x
+
         for _c in "Random color":
             term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
             term.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))

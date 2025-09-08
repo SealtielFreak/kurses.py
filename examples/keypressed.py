@@ -1,11 +1,11 @@
 # load modules
-from kurses import Console
 import random
 
+from kurses import VirtualTerminal
+
 # instance Virtual console
-console = Console()
-buffer = console.buffer  # get buffer console
-console.set_font("ModernDOS8x16.ttf")  # load font resources
+console = VirtualTerminal("ModernDOS8x16.ttf")
+buffer = console.stream  # get buffer console
 
 # define global variables
 x, y = 0, 0
@@ -15,8 +15,7 @@ x, y = 0, 0
 def loop():
     global x, y
 
-    term = console.buffer
-
+    buffer.clrscr()
     buffer.resetall()  # restore default attributes in the buffer console
 
     # check key pressed
@@ -29,13 +28,14 @@ def loop():
     elif "d" in console.keyspressed():
         x += 1
 
-    # all draw runtime of string with random colors
+    # all draw events of string with random colors
     _x = x
+
     for _c in "Random color":
-        term.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
-        term.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
-        term.gotoxy(_x, y) # set position
-        term.cputs(_c) # print character into buffer console
+        buffer.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
+        buffer.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
+        buffer.gotoxy(_x, y)  # set position
+        buffer.cputs(_c)  # print character into buffer console
         _x += 1
 
 
