@@ -20,7 +20,7 @@ class Rendering(enum.Enum):
 class VirtualTerminal(abc.ABC, typing.Generic[T]):
     def __init__(self, font_filename: str, shape=(80, 30), **kwargs):
         """
-        VirtualTerminal constructor
+        VirtualTerminal constructor.
 
         :keyword font_filename: Font source filename.
         :type font_filename: str
