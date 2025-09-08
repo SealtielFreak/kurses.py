@@ -123,12 +123,12 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             while sdl2.SDL_PollEvent(ctypes.byref(event)):
                 self.push_events(event)
 
-            self.__runtime.update(self.dt)
-
-            if self.__target:
+            if self.running:
+                self.__runtime.update(self.dt)
                 self.__target()
 
             self.clean()
+            self.__runtime.draw()
             self.draw()
 
     def keyspressed(self) -> typing.List[str]:

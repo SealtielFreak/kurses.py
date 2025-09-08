@@ -10,6 +10,9 @@ class EventTargetRuntime(abc.ABC):
     def update(self, dt: typing.Union[int, float]):
         ...
 
+    def draw(self):
+        ...
+
     def resize(self, resizable: bool):
         ...
 
