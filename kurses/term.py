@@ -5,6 +5,7 @@ import typing
 import kurses.colors
 import kurses.stream
 import kurses.texture_surface
+import kurses.events
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
 
@@ -19,7 +20,7 @@ class Rendering(enum.Enum):
 class VirtualTerminal(abc.ABC, typing.Generic[T]):
     def __init__(self, font_filename: str, shape=(80, 30), **kwargs):
         """
-        VirtualTerminal constructor
+        VirtualTerminal constructor.
 
         :keyword font_filename: Font source filename.
         :type font_filename: str
@@ -168,7 +169,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         ...
 
     @abc.abstractmethod
-    def set_thread_target(self, target: typing.Callable[[kurses.stream.StreamBuffer], None]):
+    def set_runtime(self, target: typing.Type[kurses.events.EventTargetRuntime]):
         ...
 
     @abc.abstractmethod
