@@ -95,7 +95,7 @@ def loop():
     elif "d" in console.keyspressed():
         x += 1
 
-    # all draw runtime of string with random colors
+    # all draw events of string with random colors
     _x = x
 
     for _c in "Random color":

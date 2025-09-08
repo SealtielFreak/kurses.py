@@ -5,6 +5,7 @@ import typing
 import kurses.colors
 import kurses.stream
 import kurses.texture_surface
+import kurses.events
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
 
@@ -165,6 +166,10 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :type target: typing.Callable[[None], None]
         :return: None
         """
+        ...
+
+    @abc.abstractmethod
+    def set_runtime(self, target: typing.Type[kurses.events.EventTargetRuntime]):
         ...
 
     @abc.abstractmethod

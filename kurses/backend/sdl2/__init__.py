@@ -1,4 +1,5 @@
 import ctypes
+import math
 import typing
 
 import sdl2
@@ -7,11 +8,32 @@ import sdl2.sdlttf
 import kurses.backend.sdl2.font_resources
 import kurses.backend.sdl2.texture_surface
 import kurses.colors
+import kurses.events
 import kurses.stream
 import kurses.term
 
 
+def chr_format_key_sdl2(s):
+    return s.decode().lower()
+
+
 class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
+    __MOUSE_CLICK_STATE = [
+        'left',
+        'middle',
+        'left+middle',
+        'right',
+        'left+right',
+        'right+middle',
+        'right+middle+right',
+    ]
+
+    MOUSE_CLICK_STATE = (
+        'left',
+        'middle',
+        'right',
+    )
+
     __DEFAULT_WINDOW_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
 
     def __init__(self, *args, **kwargs):
@@ -40,7 +62,10 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             [sdl2.SDL_RENDERER_ACCELERATED, sdl2.SDL_RENDERER_SOFTWARE][self.type_rendering.value]
         )
 
-        self.__target = None
+        self.__target: typing.Callable[[], None] = kurses.events.empty_target
+        self.__runtime_class: typing.Optional[typing.Type[kurses.events.EventTargetRuntime]] = None
+        self.__runtime: kurses.events.EventTargetRuntime = kurses.events.EmptyTargetRuntime()
+
         self.__font = kurses.backend.FontResources(self._font_filename)
         self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
 
@@ -83,12 +108,22 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def set_target(self, target: typing.Callable[[], None]):
         self.__target = target
 
+    def set_runtime(self, target: typing.Type[kurses.events.EventTargetRuntime]):
+        self.__runtime_class = target
+
     def main_loop(self):
+        if self.__runtime_class is not None:
+            self.__runtime = self.__runtime_class()
+
+        self.__runtime.load()
+
         while self.running:
             event = sdl2.SDL_Event()
 
             while sdl2.SDL_PollEvent(ctypes.byref(event)):
                 self.push_events(event)
+
+            self.__runtime.update(self.dt)
 
             if self.__target:
                 self.__target()
@@ -99,11 +134,10 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def keyspressed(self) -> typing.List[str]:
         pressed_keys = []
         keyboard_state = sdl2.SDL_GetKeyboardState(None)
-        chr_format_key = lambda _str: _str.decode().lower()
 
         for key_code in range(sdl2.SDL_NUM_SCANCODES):
             if keyboard_state[key_code] == 1:
-                pressed_keys.append(chr_format_key(sdl2.SDL_GetScancodeName(key_code)))
+                pressed_keys.append(chr_format_key_sdl2(sdl2.SDL_GetScancodeName(key_code)))
 
         return pressed_keys
 
@@ -116,10 +150,14 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         return self.__c_renderer
 
     def push_events(self, event: sdl2.SDL_Event):
+        width, height = self.size
+        rows, cols = self.stream.shape
+
+        get_key_from_event = lambda e: chr_format_key_sdl2(sdl2.SDL_GetKeyName(e.key.keysym.sym))
+
         if event.type == sdl2.SDL_QUIT:
             self.quit()
-        elif event.type == sdl2.SDL_WINDOWEVENT_EXPOSED:
-            pass
+            self.__runtime.exit()
         elif event.type == sdl2.SDL_WINDOWEVENT:
             if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
                 width, height = event.window.data1, event.window.data2
@@ -127,9 +165,47 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
                 sdl2.SDL_SetWindowSize(self.window, width, height)
 
+                self.__runtime.resize(self.resizable)
+
                 if self.resizable:
                     for stream in self.streams:
                         stream.resize(width // w, height // h)
+
+                self.__runtime.resize(self.resizable)
+            elif event.window.event == sdl2.SDL_WINDOWEVENT_MINIMIZED:
+                self.__runtime.minimized()
+            elif event.window.event == sdl2.SDL_WINDOWEVENT_SHOWN:
+                self.__runtime.showed()
+            elif event.window.event == sdl2.SDL_WINDOWEVENT_EXPOSED:
+                self.__runtime.exposed()
+            elif event.window.event == sdl2.SDL_WINDOWEVENT_RESTORED:
+                self.__runtime.restored()
+        elif event.type == sdl2.SDL_KEYDOWN:
+            self.__runtime.key_down(get_key_from_event(event))
+        elif event.type == sdl2.SDL_KEYUP:
+            self.__runtime.key_up(get_key_from_event(event))
+        elif event.type == sdl2.SDL_MOUSEWHEEL:
+            self.__runtime.scroll(event.wheel.y)
+        elif event.type == sdl2.SDL_MOUSEMOTION:
+            motion = event.motion
+
+            x, y = motion.x, motion.y
+            x, y = (math.ceil((x / width) * cols), math.ceil((y / height) * rows))
+
+            all_click_state = (
+                [],
+                ['left'],
+                ['middle'],
+                ['left', 'middle'],
+                ['right'],
+                ['left', 'right'],
+                ['right', 'middle'],
+                ['left', 'right', 'middle']
+            )
+
+            state = all_click_state[motion.state]
+
+            self.__runtime.mouse((x, y), state)
 
     def present(self):
         self.__textures.present(self.surface)
