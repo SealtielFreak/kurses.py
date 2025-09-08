@@ -18,22 +18,6 @@ def chr_format_key_sdl2(s):
 
 
 class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
-    __MOUSE_CLICK_STATE = [
-        'left',
-        'middle',
-        'left+middle',
-        'right',
-        'left+right',
-        'right+middle',
-        'right+middle+right',
-    ]
-
-    MOUSE_CLICK_STATE = (
-        'left',
-        'middle',
-        'right',
-    )
-
     __DEFAULT_WINDOW_POSITION = sdl2.SDL_WINDOWPOS_UNDEFINED, sdl2.SDL_WINDOWPOS_UNDEFINED
 
     def __init__(self, *args, **kwargs):
