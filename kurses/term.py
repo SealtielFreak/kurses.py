@@ -7,6 +7,7 @@ import kurses.stream
 import kurses.graphics
 import kurses.surface.texture
 import kurses.events
+import kurses.interface.joystick
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
 
@@ -198,6 +199,10 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
         :return: typing.List[str]
         """
+        ...
+
+    @abc.abstractmethod
+    def joystick(self) -> typing.Tuple[kurses.interface.joystick.JoystickInput, ...]:
         ...
 
     @property

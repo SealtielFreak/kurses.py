@@ -1,5 +1,8 @@
+import typing
+
 from kurses import VirtualTerminal
 from kurses.events import EventTargetRuntime
+from kurses.interface.joystick import JoystickInput
 
 term = VirtualTerminal(font_filename="./ModernDOS8x16.ttf")
 stream = term.stream
@@ -18,7 +21,7 @@ class PrimitiveGraphicsDemo(EventTargetRuntime):
         x, y = self.position
         width, height = term.size
 
-        # graphics.circle(0, 0, 59, (255, 0, 0), filled=True)
+        graphics.circle(0, 0, 59, (255, 0, 0), filled=True)
         graphics.polygon([400, 100, 500, 300, 300, 300], (255, 0, 255), filled=True)
         graphics.line([0, 0], [width, height], (255, 0, 0), thickness=10)
         graphics.circle(x, y, 15, (255, 255, 0), filled=False)
@@ -27,20 +30,11 @@ class PrimitiveGraphicsDemo(EventTargetRuntime):
 
         term.purge()
 
-    def key_down(self, key: chr):
-        print(f"Key down: {key}")
-
-    def key_up(self, key: chr):
-        print(f"Key up: {key}")
-
     def mouse(self, click: int, position, motion):
         self.position = motion
 
-    def exit(self):
-        stream.resetall()
-        stream.gotoxy(0, 0)
-        stream.set_foreign_color((255, 255, 255))
-        stream.print("Goodbye")
+    def joystick(self, inputs: typing.Tuple[JoystickInput, ...]):
+        print(inputs)
 
 
 if __name__ == "__main__":

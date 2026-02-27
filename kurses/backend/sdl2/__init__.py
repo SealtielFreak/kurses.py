@@ -7,6 +7,7 @@ import sdl2.sdlttf
 
 import kurses.backend.sdl2.font_resources
 import kurses.backend.sdl2.texture_surface
+import kurses.backend.sdl2.interface.joystick
 import kurses.colors
 import kurses.events
 import kurses.stream
@@ -67,6 +68,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__font = kurses.backend.FontResources(self._font_filename)
         self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
         self.__bitmap = kurses.backend.BitmapSurface((width, height), self.graphics)
+        self.__joystick = kurses.backend.JoystickInterface()
 
         self.__current_resizable_window = kwargs.get("resizable_window", True)
         self.resizable_window = self.__current_resizable_window
@@ -117,11 +119,15 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__runtime.load()
         self.__bitmap.create(self.surface)
 
+        self.__joystick.open()
+
         while self.running:
             event = sdl2.SDL_Event()
 
             while sdl2.SDL_PollEvent(ctypes.byref(event)):
                 self.push_events(event)
+
+            self.__runtime.joystick(self.__joystick.inputs)
 
             if self.running:
                 self.__runtime.update(self.dt)
@@ -130,6 +136,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             self.clean()
             self.__runtime.draw()
             self.draw()
+
+        self.__joystick.close()
 
     def keyspressed(self) -> typing.List[str]:
         pressed_keys = []
@@ -140,6 +148,9 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
                 pressed_keys.append(chr_format_key_sdl2(sdl2.SDL_GetScancodeName(key_code)))
 
         return pressed_keys
+
+    def joystick(self):
+        return self.__joystick.inputs
 
     @property
     def window(self) -> sdl2.SDL_Window:
