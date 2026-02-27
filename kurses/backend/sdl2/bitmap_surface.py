@@ -49,10 +49,9 @@ class SDL2BitmapSurface(kurses.bitmap_surface.BitmapSurface):
         return surface
 
     def clear(self, surface: sdl2.SDL_Renderer) -> None:
-        self.graphics.clear()
-
         if self.current is not None:
             sdl2.SDL_SetRenderTarget(surface, self.current)
+            sdl2.SDL_SetRenderDrawColor(surface, 0, 0, 0, 0)
             sdl2.SDL_RenderClear(surface)
 
     @property

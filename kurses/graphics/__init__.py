@@ -24,9 +24,6 @@ class GraphicsBuffer:
     def background(self) -> kurses.colors.Color:
         return self.__background_color
 
-    def clear(self):
-        self.__primitives_figures.clear()
-
     def fill(self, color: kurses.colors.Color):
         self.__background_color = color
 

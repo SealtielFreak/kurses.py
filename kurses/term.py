@@ -265,3 +265,12 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :return:
         """
         ...
+
+    @abc.abstractmethod
+    def purge(self):
+        """
+        Clean bitmap
+
+        :return:
+        """
+        ...

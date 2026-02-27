@@ -21,9 +21,6 @@ graphics.circle(0, 0, 59, (255, 0, 0))
 def loop():
     global position, speed
 
-    graphics.clear()
-
-
     sx, sy = speed
     x, y = position
 
@@ -41,6 +38,8 @@ def loop():
 
     position = [x, y]
     speed = [sx, sy]
+
+    console.purge()
 
 
 if __name__ == "__main__":

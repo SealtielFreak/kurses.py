@@ -216,3 +216,6 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def clean(self):
         sdl2.SDL_RenderClear(self.surface)
         self.__textures.clear(self.surface)
+
+    def purge(self):
+        self.__bitmap.clear(self.surface)
