@@ -3,13 +3,13 @@ import typing
 import sdl2
 import sdl2.sdlgfx as gfx
 
-import kurses.bitmap_surface
+import kurses.surface.bitmap
 import kurses.graphics
 from kurses.graphics import CircleFigure, PolygonFigure
 from kurses.graphics.primitive import LineFigure, RectangleFigure
 
 
-class SDL2BitmapSurface(kurses.bitmap_surface.BitmapSurface):
+class SDL2BitmapSurface(kurses.surface.bitmap.BitmapSurface):
     def __init__(self, size: typing.Tuple[int, int], graphics: kurses.graphics.GraphicsBuffer):
         super().__init__(graphics)
 

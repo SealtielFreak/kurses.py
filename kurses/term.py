@@ -5,7 +5,7 @@ import typing
 import kurses.colors
 import kurses.stream
 import kurses.graphics
-import kurses.texture_surface
+import kurses.surface.texture
 import kurses.events
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
