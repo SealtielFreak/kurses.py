@@ -1,48 +1,48 @@
-import random
-
 from kurses import VirtualTerminal
-from kurses.font_resources import QualityFont
-from kurses.graphics import GraphicsBuffer
+from kurses.events import EventTargetRuntime
 
-console = VirtualTerminal(font_filename="./ModernDOS8x16.ttf", quality=QualityFont.SOLID)
-buffer = console.stream
-graphics = console.graphics
+term = VirtualTerminal(font_filename="./ModernDOS8x16.ttf")
+stream = term.stream
+graphics = term.graphics
 
-buffer.cputsxy(0, 0, "Hello world")
 
-width, height = console.size
-position = [width // 2, height // 2]
-speed = [
-    random.randint(-5, 5), random.randint(-5, 5)
-]
+class PrimitiveGraphicsDemo(EventTargetRuntime):
+    def __init__(self):
+        self.position = 0, 0
 
-graphics.circle(0, 0, 59, (255, 0, 0))
+    def load(self):
+        term.resizable = True
+        stream.resetall()
 
-def loop():
-    global position, speed
+    def update(self, dt):
+        x, y = self.position
+        width, height = term.size
 
-    sx, sy = speed
-    x, y = position
+        # graphics.circle(0, 0, 59, (255, 0, 0), filled=True)
+        graphics.polygon([400, 100, 500, 300, 300, 300], (255, 0, 255), filled=True)
+        graphics.line([0, 0], [width, height], (255, 0, 0), thickness=10)
+        graphics.circle(x, y, 15, (255, 255, 0), filled=False)
 
-    graphics.circle(x, y, 15, (255, 255, 0))
+        term.purge()
 
-    if x > width or x < 0:
-        sx *= -1
+    def key_down(self, key: chr):
+        print(f"Key down: {key}")
 
-    x += sx
+    def key_up(self, key: chr):
+        print(f"Key up: {key}")
 
-    if y > height or y < 0:
-        sy *= -1
+    def mouse(self, click: int, position, motion):
+        self.position = motion
 
-    y += sy
-
-    position = [x, y]
-    speed = [sx, sy]
-
-    console.purge()
+    def exit(self):
+        stream.resetall()
+        stream.gotoxy(0, 0)
+        stream.set_foreign_color((255, 255, 255))
+        stream.print("Goodbye")
 
 
 if __name__ == "__main__":
-    console.title = "Primitives graphics"
-    console.set_target(loop)
-    console.main_loop()
+    term.title = "Primitives graphics"
+    term.set_runtime(PrimitiveGraphicsDemo)
+
+    term.main_loop()

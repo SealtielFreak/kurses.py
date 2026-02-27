@@ -1,8 +1,9 @@
 import collections
 import math
+import typing
 
 import kurses.colors
-from kurses.graphics.primitive import PolygonFigure, CircleFigure
+from kurses.graphics.primitive import PolygonFigure, CircleFigure, RectangleFigure, LineFigure
 
 
 class GraphicsBuffer:
@@ -20,6 +21,9 @@ class GraphicsBuffer:
         while bool(self.__primitives_figures):
             yield self.__primitives_figures.popleft()
 
+    def clear(self):
+        self.__primitives_figures.clear()
+
     @property
     def background(self) -> kurses.colors.Color:
         return self.__background_color
@@ -30,17 +34,24 @@ class GraphicsBuffer:
     def rotate(self, angle):
         self.angle += math.radians(angle)
 
-    def rect(self, x: int, y: int, size, color: kurses.colors.Color):
-        w, h = size
+    def line(self, start: typing.Tuple[int, int], end: typing.Tuple[int, int], color: kurses.colors.Color, thickness: int = 1):
+        points = [*start, *end]
 
-        rect = PolygonFigure(
+        line = LineFigure(
+            points=tuple(points),
             color=color,
-            vertex=[
-                [x, y],
-                [x, y + h],
-                [x + w, y],
-                [x + w, y + h],
-            ]
+            thickness=thickness,
+            filled=False,
+        )
+
+        self.__primitives_figures.append(line)
+
+    def rect(self, x: int, y: int, size: typing.Tuple[int, int], color: kurses.colors.Color, filled: bool = False):
+        rect = RectangleFigure(
+            color=color,
+            position=(x, y),
+            size=size,
+            filled=filled,
         )
 
         self.__primitives_figures.append(rect)
@@ -55,5 +66,11 @@ class GraphicsBuffer:
 
         self.__primitives_figures.append(circle)
 
-    def polygon(self, color: kurses.colors.Color):
-        pass
+    def polygon(self, vertex: typing.List[typing.Union[int, float]], color: kurses.colors.Color, filled: bool = False):
+        poly = PolygonFigure(
+            color=color,
+            vertex=vertex,
+            filled=filled,
+        )
+
+        self.__primitives_figures.append(poly)

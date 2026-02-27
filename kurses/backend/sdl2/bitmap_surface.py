@@ -6,6 +6,7 @@ import sdl2.sdlgfx as gfx
 import kurses.bitmap_surface
 import kurses.graphics
 from kurses.graphics import CircleFigure, PolygonFigure
+from kurses.graphics.primitive import LineFigure, RectangleFigure
 
 
 class SDL2BitmapSurface(kurses.bitmap_surface.BitmapSurface):
@@ -33,16 +34,47 @@ class SDL2BitmapSurface(kurses.bitmap_surface.BitmapSurface):
     def present(self, surface: sdl2.SDL_Renderer) -> sdl2.SDL_Renderer:
         sdl2.SDL_SetRenderTarget(surface, self.current)
 
-        for fig in self.graphics:
-            if isinstance(fig, CircleFigure):
-                x, y = fig.position
+        def _draw_line(line: LineFigure):
+            x1, y1 = line.start
+            x2, y2 = line.end
 
-                if fig.filled:
-                    gfx.aacircleRGBA(surface, x, y, fig.radius, *fig.color, 255)
-                else:
-                    gfx.filledCircleRGBA(surface, x, y, fig.radius, *fig.color, 255)
-            elif isinstance(fig, PolygonFigure):
-                pass
+            gfx.thickLineRGBA(surface, x1, y1, x2, y2, line.thickness, *line.color, 255)
+
+        def _draw_rectangle(rect: RectangleFigure):
+            pass
+
+        def _draw_circle(circle: CircleFigure):
+            x, y = circle.position
+
+            if circle.filled:
+                gfx.filledCircleRGBA(surface, x, y, circle.radius, *circle.color, 255)
+            else:
+                gfx.aacircleRGBA(surface, x, y, circle.radius, *circle.color, 255)
+
+        def _draw_polygon(poly: PolygonFigure):
+            vx, vy = poly.points
+            length = poly.length
+
+            vx = (sdl2.Sint16 * length)(*vx)
+            vy = (sdl2.Sint16 * length)(*vy)
+
+            if poly.filled:
+                gfx.filledPolygonRGBA(surface, vx, vy, length, *poly.color, 255)
+            else:
+                gfx.aapolygonRGBA(surface, vx, vy, length, *poly.color, 255)
+
+        all_draw_method = {
+            LineFigure: _draw_line,
+            RectangleFigure: _draw_rectangle,
+            CircleFigure: _draw_circle,
+            PolygonFigure: _draw_polygon,
+        }
+
+        for fig in self.graphics:
+            draw = all_draw_method.get(type(fig), None)
+
+            if draw is not None:
+                draw(fig)
 
         sdl2.SDL_SetRenderTarget(surface, None)
 

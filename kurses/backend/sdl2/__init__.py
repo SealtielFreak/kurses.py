@@ -197,7 +197,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
             state = self.__ALL_NAME_CLICK_STATE[motion.state]
 
-            self.__runtime.mouse((x, y), state)
+            self.__runtime.mouse(state, (x, y), (motion.x, motion.y))
 
     def present(self):
         self.__textures.present(self.surface)

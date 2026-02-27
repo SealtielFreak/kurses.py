@@ -103,11 +103,12 @@ class EventTargetRuntime(abc.ABC):
         """
         ...
 
-    def mouse(self, position: typing.Tuple[int, int], click: typing.List[str]):
+    def mouse(self, click: typing.List[str], position: typing.Tuple[int, int], motion: typing.Tuple[int, int]):
         """
         Event when the mouse is clicked.
-        :param position:
         :param click:
+        :param position:
+        :param motion:
         :return:
         """
         ...
