@@ -205,6 +205,10 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
     def joystick(self) -> typing.Tuple[kurses.interface.joystick.JoystickInput, ...]:
         ...
 
+    @abc.abstractmethod
+    def mouse(self) -> typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]:
+        ...
+
     @property
     @abc.abstractmethod
     def window(self) -> T:

@@ -69,6 +69,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
         self.__bitmap = kurses.backend.BitmapSurface((width, height), self.graphics)
         self.__joystick = kurses.backend.JoystickInterface()
+        self.__mouse = [], (0, 0), (0, 0)
 
         self.__current_resizable_window = kwargs.get("resizable_window", True)
         self.resizable_window = self.__current_resizable_window
@@ -152,6 +153,9 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def joystick(self):
         return self.__joystick.inputs
 
+    def mouse(self):
+        return self.__mouse
+
     @property
     def window(self) -> sdl2.SDL_Window:
         return self.__c_window
@@ -208,6 +212,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
             state = self.__ALL_NAME_CLICK_STATE[motion.state]
 
+            self.__mouse = state, (x, y), (motion.x, motion.y)
             self.__runtime.mouse(state, (x, y), (motion.x, motion.y))
 
     def present(self):
