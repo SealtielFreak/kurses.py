@@ -206,7 +206,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         ...
 
     @abc.abstractmethod
-    def mouse(self) -> typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]:
+    def mouse(self) -> typing.Tuple[typing.List[str], typing.Tuple[int, int], typing.Tuple[int, int]]:
         ...
 
     @property

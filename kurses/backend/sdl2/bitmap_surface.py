@@ -99,3 +99,6 @@ class SDL2BitmapSurface(kurses.surface.bitmap.BitmapSurface):
     @property
     def size(self) -> typing.Tuple[int, int]:
         return self.__size
+
+    def resize(self, width: int, height: int):
+        self.__size = width, height

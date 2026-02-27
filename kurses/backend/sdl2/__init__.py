@@ -14,7 +14,6 @@ import kurses.stream
 import kurses.term
 
 from kurses.stream import StreamBuffer
-from kurses.graphics import GraphicsBuffer
 
 
 def chr_format_key_sdl2(s):
@@ -66,7 +65,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__runtime: kurses.events.EventTargetRuntime = kurses.events.EmptyTargetRuntime()
 
         self.__font = kurses.backend.FontResources(self._font_filename)
-        self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
+        self.__textures_font = kurses.backend.TextureSurface(self.__font, self.streams)
         self.__bitmap = kurses.backend.BitmapSurface((width, height), self.graphics)
         self.__joystick = kurses.backend.JoystickInterface()
         self.__mouse = [], (0, 0), (0, 0)
@@ -186,8 +185,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
                     for stream in self.streams:
                         if isinstance(stream, StreamBuffer):
                             stream.resize(width // w, height // h)
-                        elif isinstance(stream, GraphicsBuffer):
-                            continue
+
+                    self.__bitmap.resize(width, height)
 
                 self.__runtime.resize(self.resizable)
             elif event.window.event == sdl2.SDL_WINDOWEVENT_MINIMIZED:
@@ -216,11 +215,18 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             self.__runtime.mouse(state, (x, y), (motion.x, motion.y))
 
     def present(self):
-        self.__textures.present(self.surface)
-        self.__bitmap.present(self.surface)
+        def _render_textures_font():
+            self.__textures_font.present(self.surface)
+            sdl2.SDL_RenderCopy(self.surface, self.__textures_font.current, None, None)
 
-        sdl2.SDL_RenderCopy(self.surface, self.__textures.current, None, None)
-        sdl2.SDL_RenderCopy(self.surface, self.__bitmap.current, None, None)
+        def _render_bitmap():
+            self.__bitmap.present(self.surface)
+            sdl2.SDL_RenderCopy(self.surface, self.__bitmap.current, None, None)
+
+        render_order = [_render_textures_font, _render_bitmap]
+
+        for render_runtime in render_order:
+            render_runtime()
 
     def quit(self):
         self.running = False
@@ -231,7 +237,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
     def clean(self):
         sdl2.SDL_RenderClear(self.surface)
-        self.__textures.clear(self.surface)
+        self.__textures_font.clear(self.surface)
 
     def purge(self):
         self.__bitmap.clear(self.surface)

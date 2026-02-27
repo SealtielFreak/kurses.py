@@ -33,3 +33,6 @@ class BitmapSurface(abc.ABC, typing.Generic[H]):
     @property
     @abc.abstractmethod
     def size(self) -> typing.Tuple[int, int]: ...
+
+    @abc.abstractmethod
+    def resize(self, width: int, height: int) -> None: ...
