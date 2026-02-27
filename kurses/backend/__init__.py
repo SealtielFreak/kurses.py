@@ -1,4 +1,5 @@
 # So, I need work her
+from kurses.backend.sdl2.bitmap_surface import SDL2BitmapSurface
 
 try:
     import sdl2
@@ -10,6 +11,7 @@ try:
     VirtualTerminal = SDL2VirtualTerminal
     FontResources = SDL2FontResources
     TextureSurface = SDL2TextureSurface
+    BitmapSurface = SDL2BitmapSurface
 
 except ImportError:
     try:

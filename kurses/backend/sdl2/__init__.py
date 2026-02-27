@@ -12,6 +12,9 @@ import kurses.events
 import kurses.stream
 import kurses.term
 
+from kurses.stream import StreamBuffer
+from kurses.graphics import GraphicsBuffer
+
 
 def chr_format_key_sdl2(s):
     return s.decode().lower()
@@ -63,6 +66,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
         self.__font = kurses.backend.FontResources(self._font_filename)
         self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
+        self.__bitmap = kurses.backend.BitmapSurface((width, height), self.graphics)
 
         self.__current_resizable_window = kwargs.get("resizable_window", True)
         self.resizable_window = self.__current_resizable_window
@@ -111,6 +115,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             self.__runtime = self.__runtime_class()
 
         self.__runtime.load()
+        self.__bitmap.create(self.surface)
 
         while self.running:
             event = sdl2.SDL_Event()
@@ -164,7 +169,10 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
                 if self.resizable:
                     for stream in self.streams:
-                        stream.resize(width // w, height // h)
+                        if isinstance(stream, StreamBuffer):
+                            stream.resize(width // w, height // h)
+                        elif isinstance(stream, GraphicsBuffer):
+                            continue
 
                 self.__runtime.resize(self.resizable)
             elif event.window.event == sdl2.SDL_WINDOWEVENT_MINIMIZED:
@@ -193,7 +201,10 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
     def present(self):
         self.__textures.present(self.surface)
+        self.__bitmap.present(self.surface)
+
         sdl2.SDL_RenderCopy(self.surface, self.__textures.current, None, None)
+        sdl2.SDL_RenderCopy(self.surface, self.__bitmap.current, None, None)
 
     def quit(self):
         self.running = False

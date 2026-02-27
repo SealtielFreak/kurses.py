@@ -4,6 +4,7 @@ import typing
 
 import kurses.colors
 import kurses.stream
+import kurses.graphics
 import kurses.texture_surface
 import kurses.events
 
@@ -37,9 +38,10 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :type fps: int
         """
         rows, cols = shape
-
+        self.__main_bitmap = kurses.graphics.GraphicsBuffer()
         self.__main_stream = kurses.stream.StreamBuffer(rows, cols)
         self.__stream_list = [self.__main_stream]
+        self.__buffer_list = [self.__main_bitmap]
         self.__window_title = kwargs.get("title", "Virtual terminal")
         self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)
 
@@ -62,6 +64,10 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :return: Main buffer
         """
         return self.__stream_list[0]
+
+    @property
+    def graphics(self):
+        return self.__buffer_list[0]
 
     @property
     def shape(self) -> typing.Tuple[int, int]:
@@ -135,6 +141,10 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :return: typing.List[kurses.buffer.VirtualBuffer]
         """
         return self.__stream_list
+
+    @property
+    def buffers(self):
+        return self.__buffer_list
 
     @property
     @abc.abstractmethod
