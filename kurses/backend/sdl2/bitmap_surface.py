@@ -41,7 +41,13 @@ class SDL2BitmapSurface(kurses.surface.bitmap.BitmapSurface):
             gfx.thickLineRGBA(surface, x1, y1, x2, y2, line.thickness, *line.color, 255)
 
         def _draw_rectangle(rect: RectangleFigure):
-            pass
+            x, y = rect.position
+            w, h = rect.size
+
+            if rect.filled:
+                gfx.boxRGBA(surface, x, y, x + w, y + h, *rect.color, 255)
+            else:
+                gfx.rectangleRGBA(surface, x, y, x + w, y + h, *rect.color, 255)
 
         def _draw_circle(circle: CircleFigure):
             x, y = circle.position

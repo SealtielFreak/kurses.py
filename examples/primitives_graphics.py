@@ -22,6 +22,8 @@ class PrimitiveGraphicsDemo(EventTargetRuntime):
         graphics.polygon([400, 100, 500, 300, 300, 300], (255, 0, 255), filled=True)
         graphics.line([0, 0], [width, height], (255, 0, 0), thickness=10)
         graphics.circle(x, y, 15, (255, 255, 0), filled=False)
+        graphics.rect(0, 0, (10, 10), (0, 255, 0), filled=True)
+        graphics.rect(10, 10, (10, 10), (0, 255, 0), filled=False)
 
         term.purge()
 
