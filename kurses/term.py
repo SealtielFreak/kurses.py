@@ -9,6 +9,7 @@ import kurses.graphics
 import kurses.surface.texture
 import kurses.events
 import kurses.interface.joystick
+from kurses.resources.buzzer import Buzzer
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
 
@@ -40,6 +41,8 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :type fps: int
         :type bitmap_enabled: bool
         :keyword bitmap_enabled: Enable bitmap to be able to draw shapes on the terminal.
+        :type sound_enabled: bool
+        :keyword sound_enabled: Enable sound system in terminal.
         """
         rows, cols = shape
         self.__main_bitmap = kurses.graphics.GraphicsBuffer()
@@ -49,6 +52,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         self.__window_title = kwargs.get("title", "Virtual terminal")
         self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)
         self.__bitmap_enabled = kwargs.get("bitmap_enabled", False)
+        self.__sound_enabled = kwargs.get("sound_enabled", False)
 
         self._font_filename = font_filename
         self._dt = 1.0
@@ -59,6 +63,15 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
         if self.__bitmap_enabled:
             warnings.warn("The bitmap function is experimental; changes will likely occur in future versions.", FutureWarning)
+
+    @property
+    @abc.abstractmethod
+    def buzzer(self) -> Buzzer:
+        ...
+
+    @property
+    def sound_enabled(self):
+        return self.__sound_enabled
 
     @property
     def bitmap_enabled(self):

@@ -1,2 +1,2 @@
-from kurses.backend import VirtualTerminal
+from kurses.backend import VirtualTerminal, AudioSystem, Effect, Music
 from kurses.stream import StreamBuffer

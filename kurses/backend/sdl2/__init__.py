@@ -13,6 +13,9 @@ import kurses.events
 import kurses.stream
 import kurses.term
 
+from kurses.backend.sdl2.resources.mixer import SDL2Buzzer
+from kurses.backend.sdl2.resources import SDL2AudioSystem
+from kurses.resources.buzzer import Buzzer
 from kurses.stream import StreamBuffer
 
 
@@ -73,12 +76,21 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__current_resizable_window = kwargs.get("resizable_window", True)
         self.resizable_window = self.__current_resizable_window
 
+        if self.sound_enabled:
+            self.__system_sound = SDL2AudioSystem()
+
+        self.__buzzer = SDL2Buzzer()
+
     def __del__(self):
         if self.__c_renderer is not None:
             sdl2.SDL_DestroyRenderer(self.__c_renderer)
 
         if self.__c_window is not None:
             sdl2.SDL_DestroyWindow(self.__c_window)
+
+    @property
+    def buzzer(self) -> Buzzer:
+        return self.__buzzer
 
     @property
     def title(self):
