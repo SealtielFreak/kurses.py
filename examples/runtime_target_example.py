@@ -36,7 +36,7 @@ class MyTarget(EventTargetRuntime):
     def key_up(self, key: chr):
         print(f"Key up: {key}")
 
-    def mouse(self, position: typing.Tuple[int, int], click: int):
+    def mouse(self, click: int, position: typing.Tuple[int, int], motion: typing.Tuple[int, int]):
         self.position = position
 
     def exit(self):

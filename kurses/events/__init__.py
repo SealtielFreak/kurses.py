@@ -1,6 +1,8 @@
 import abc
 import typing
 
+from kurses.interface.joystick import JoystickInput
+
 
 class EventTargetRuntime(abc.ABC):
     """
@@ -103,11 +105,12 @@ class EventTargetRuntime(abc.ABC):
         """
         ...
 
-    def mouse(self, position: typing.Tuple[int, int], click: typing.List[str]):
+    def mouse(self, click: typing.List[str], position: typing.Tuple[int, int], motion: typing.Tuple[int, int]):
         """
         Event when the mouse is clicked.
-        :param position:
         :param click:
+        :param position:
+        :param motion:
         :return:
         """
         ...
@@ -118,6 +121,9 @@ class EventTargetRuntime(abc.ABC):
         :param move:
         :return:
         """
+        ...
+
+    def joystick(self, inputs: typing.Tuple[JoystickInput, ...]):
         ...
 
 

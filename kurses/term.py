@@ -1,11 +1,15 @@
 import abc
 import enum
 import typing
+import warnings
 
 import kurses.colors
-import kurses.stream
-import kurses.texture_surface
 import kurses.events
+import kurses.graphics
+import kurses.interface.joystick
+import kurses.stream
+import kurses.surface.texture
+from kurses.resources.buzzer import Buzzer
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
 
@@ -35,13 +39,20 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :type type_rendering: Rendering
         :keyword fps: Limit frames per second, with default value 30.
         :type fps: int
+        :type bitmap_enabled: bool
+        :keyword bitmap_enabled: Enable bitmap to be able to draw shapes on the terminal.
+        :type sound_enabled: bool
+        :keyword sound_enabled: Enable sound system in terminal.
         """
         rows, cols = shape
-
+        self.__main_bitmap = kurses.graphics.GraphicsBuffer()
         self.__main_stream = kurses.stream.StreamBuffer(rows, cols)
         self.__stream_list = [self.__main_stream]
+        self.__buffer_list = [self.__main_bitmap]
         self.__window_title = kwargs.get("title", "Virtual terminal")
         self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)
+        self.__bitmap_enabled = kwargs.get("bitmap_enabled", False)
+        self.__sound_enabled = kwargs.get("sound_enabled", False)
 
         self._font_filename = font_filename
         self._dt = 1.0
@@ -49,6 +60,23 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
         self.fps = kwargs.get("fps", 30)
         self.running = True
+
+        if self.__bitmap_enabled:
+            warnings.warn("The bitmap function is experimental; changes will likely occur in future versions.",
+                          FutureWarning)
+
+    @property
+    @abc.abstractmethod
+    def buzzer(self) -> Buzzer:
+        ...
+
+    @property
+    def sound_enabled(self):
+        return self.__sound_enabled
+
+    @property
+    def bitmap_enabled(self):
+        return self.__bitmap_enabled
 
     @property
     def type_rendering(self) -> Rendering:
@@ -62,6 +90,13 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :return: Main buffer
         """
         return self.__stream_list[0]
+
+    @property
+    def graphics(self):
+        if self.bitmap_enabled:
+            return self.__buffer_list[0]
+
+        raise RuntimeError("Access denied: It is in experimental mode and requires to be enabled to function.")
 
     @property
     def shape(self) -> typing.Tuple[int, int]:
@@ -137,6 +172,10 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         return self.__stream_list
 
     @property
+    def buffers(self):
+        return self.__buffer_list
+
+    @property
     @abc.abstractmethod
     def title(self) -> str:
         """
@@ -188,6 +227,14 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
         :return: typing.List[str]
         """
+        ...
+
+    @abc.abstractmethod
+    def joystick(self) -> typing.Tuple[kurses.interface.joystick.JoystickInput, ...]:
+        ...
+
+    @abc.abstractmethod
+    def mouse(self) -> typing.Tuple[typing.List[str], typing.Tuple[int, int], typing.Tuple[int, int]]:
         ...
 
     @property
@@ -251,6 +298,15 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
     def clean(self):
         """
         Clean in virtual console
+
+        :return:
+        """
+        ...
+
+    @abc.abstractmethod
+    def purge(self):
+        """
+        Clean bitmap
 
         :return:
         """

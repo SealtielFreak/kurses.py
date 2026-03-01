@@ -4,10 +4,10 @@ import sdl2
 
 import kurses.font_resources
 import kurses.stream
-import kurses.texture_surface
+import kurses.surface.texture
 
 
-class SDL2TextureSurface(kurses.texture_surface.TextureSurface):
+class SDL2TextureSurface(kurses.surface.texture.TextureSurface):
     def __init__(self, font: kurses.font_resources.FontResources, streams: typing.List[kurses.stream.StreamBuffer]):
         super().__init__(font, streams)
 

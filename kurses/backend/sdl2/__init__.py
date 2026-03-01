@@ -6,11 +6,16 @@ import sdl2
 import sdl2.sdlttf
 
 import kurses.backend.sdl2.font_resources
+import kurses.backend.sdl2.interface.joystick
 import kurses.backend.sdl2.texture_surface
 import kurses.colors
 import kurses.events
 import kurses.stream
 import kurses.term
+from kurses.backend.sdl2.resources import SDL2AudioSystem
+from kurses.backend.sdl2.resources.mixer import SDL2Buzzer
+from kurses.resources.buzzer import Buzzer
+from kurses.stream import StreamBuffer
 
 
 def chr_format_key_sdl2(s):
@@ -57,15 +62,23 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             [sdl2.SDL_RENDERER_ACCELERATED, sdl2.SDL_RENDERER_SOFTWARE][self.type_rendering.value]
         )
 
-        self.__target: typing.Callable[[], None] = kurses.events.empty_target
-        self.__runtime_class: typing.Optional[typing.Type[kurses.events.EventTargetRuntime]] = None
-        self.__runtime: kurses.events.EventTargetRuntime = kurses.events.EmptyTargetRuntime()
+        self.__target = kurses.events.empty_target
+        self.__runtime_class = None
+        self.__runtime = kurses.events.EmptyTargetRuntime()
 
         self.__font = kurses.backend.FontResources(self._font_filename)
-        self.__textures = kurses.backend.TextureSurface(self.__font, self.streams)
+        self.__textures_font = kurses.backend.TextureSurface(self.__font, self.streams)
+        self.__bitmap = kurses.backend.BitmapSurface((width, height), self.graphics) if self.bitmap_enabled else None
+        self.__joystick = kurses.backend.JoystickInterface()
+        self.__mouse = [], (0, 0), (0, 0)
 
         self.__current_resizable_window = kwargs.get("resizable_window", True)
         self.resizable_window = self.__current_resizable_window
+
+        if self.sound_enabled:
+            self.__system_sound = SDL2AudioSystem()
+
+        self.__buzzer = SDL2Buzzer()
 
     def __del__(self):
         if self.__c_renderer is not None:
@@ -73,6 +86,10 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
         if self.__c_window is not None:
             sdl2.SDL_DestroyWindow(self.__c_window)
+
+    @property
+    def buzzer(self) -> Buzzer:
+        return self.__buzzer
 
     @property
     def title(self):
@@ -112,11 +129,18 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
         self.__runtime.load()
 
+        if self.__bitmap:
+            self.__bitmap.create(self.surface)
+
+        self.__joystick.open()
+
         while self.running:
             event = sdl2.SDL_Event()
 
             while sdl2.SDL_PollEvent(ctypes.byref(event)):
                 self.push_events(event)
+
+            self.__runtime.joystick(self.__joystick.inputs)
 
             if self.running:
                 self.__runtime.update(self.dt)
@@ -125,6 +149,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             self.clean()
             self.__runtime.draw()
             self.draw()
+
+        self.__joystick.close()
 
     def keyspressed(self) -> typing.List[str]:
         pressed_keys = []
@@ -135,6 +161,12 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
                 pressed_keys.append(chr_format_key_sdl2(sdl2.SDL_GetScancodeName(key_code)))
 
         return pressed_keys
+
+    def joystick(self):
+        return self.__joystick.inputs
+
+    def mouse(self):
+        return self.__mouse
 
     @property
     def window(self) -> sdl2.SDL_Window:
@@ -164,7 +196,11 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
                 if self.resizable:
                     for stream in self.streams:
-                        stream.resize(width // w, height // h)
+                        if isinstance(stream, StreamBuffer):
+                            stream.resize(width // w, height // h)
+
+                    if self.__bitmap:
+                        self.__bitmap.resize(width, height)
 
                 self.__runtime.resize(self.resizable)
             elif event.window.event == sdl2.SDL_WINDOWEVENT_MINIMIZED:
@@ -189,11 +225,23 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
             state = self.__ALL_NAME_CLICK_STATE[motion.state]
 
-            self.__runtime.mouse((x, y), state)
+            self.__mouse = state, (x, y), (motion.x, motion.y)
+            self.__runtime.mouse(state, (x, y), (motion.x, motion.y))
 
     def present(self):
-        self.__textures.present(self.surface)
-        sdl2.SDL_RenderCopy(self.surface, self.__textures.current, None, None)
+        def _render_textures_font():
+            self.__textures_font.present(self.surface)
+            sdl2.SDL_RenderCopy(self.surface, self.__textures_font.current, None, None)
+
+        def _render_bitmap():
+            if self.__bitmap:
+                self.__bitmap.present(self.surface)
+                sdl2.SDL_RenderCopy(self.surface, self.__bitmap.current, None, None)
+
+        render_order = [_render_textures_font, _render_bitmap]
+
+        for render_runtime in render_order:
+            render_runtime()
 
     def quit(self):
         self.running = False
@@ -204,4 +252,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
     def clean(self):
         sdl2.SDL_RenderClear(self.surface)
-        self.__textures.clear(self.surface)
+        self.__textures_font.clear(self.surface)
+
+    def purge(self):
+        if self.__bitmap:
+            self.__bitmap.clear(self.surface)
