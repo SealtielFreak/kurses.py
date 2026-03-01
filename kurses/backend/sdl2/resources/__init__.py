@@ -1,4 +1,3 @@
-import sdl2
 import sdl2.sdlmixer as sdl2mixer
 
 from kurses.resources.mixer import AudioSystem

@@ -4,6 +4,7 @@ import typing
 
 J = typing.TypeVar("J", bound="JoystickInterface")
 
+
 @dataclasses.dataclass(frozen=True)
 class AxisValue:
     name: str

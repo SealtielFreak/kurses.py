@@ -4,11 +4,11 @@ import typing
 import warnings
 
 import kurses.colors
-import kurses.stream
-import kurses.graphics
-import kurses.surface.texture
 import kurses.events
+import kurses.graphics
 import kurses.interface.joystick
+import kurses.stream
+import kurses.surface.texture
 from kurses.resources.buzzer import Buzzer
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
@@ -62,7 +62,8 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         self.running = True
 
         if self.__bitmap_enabled:
-            warnings.warn("The bitmap function is experimental; changes will likely occur in future versions.", FutureWarning)
+            warnings.warn("The bitmap function is experimental; changes will likely occur in future versions.",
+                          FutureWarning)
 
     @property
     @abc.abstractmethod

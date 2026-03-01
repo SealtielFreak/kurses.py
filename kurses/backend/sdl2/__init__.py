@@ -6,15 +6,14 @@ import sdl2
 import sdl2.sdlttf
 
 import kurses.backend.sdl2.font_resources
-import kurses.backend.sdl2.texture_surface
 import kurses.backend.sdl2.interface.joystick
+import kurses.backend.sdl2.texture_surface
 import kurses.colors
 import kurses.events
 import kurses.stream
 import kurses.term
-
-from kurses.backend.sdl2.resources.mixer import SDL2Buzzer
 from kurses.backend.sdl2.resources import SDL2AudioSystem
+from kurses.backend.sdl2.resources.mixer import SDL2Buzzer
 from kurses.resources.buzzer import Buzzer
 from kurses.stream import StreamBuffer
 

@@ -3,8 +3,8 @@ import typing
 import sdl2
 import sdl2.sdlgfx as gfx
 
-import kurses.surface.bitmap
 import kurses.graphics
+import kurses.surface.bitmap
 from kurses.graphics import CircleFigure, PolygonFigure
 from kurses.graphics.primitive import LineFigure, RectangleFigure
 

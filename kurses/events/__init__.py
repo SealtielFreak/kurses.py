@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from kurses.interface.joystick import JoystickInterface, JoystickInput
+from kurses.interface.joystick import JoystickInput
 
 
 class EventTargetRuntime(abc.ABC):

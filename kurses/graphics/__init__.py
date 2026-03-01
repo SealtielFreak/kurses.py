@@ -34,7 +34,8 @@ class GraphicsBuffer:
     def rotate(self, angle):
         self.angle += math.radians(angle)
 
-    def line(self, start: typing.Tuple[int, int], end: typing.Tuple[int, int], color: kurses.colors.Color, thickness: int = 1):
+    def line(self, start: typing.Tuple[int, int], end: typing.Tuple[int, int], color: kurses.colors.Color,
+             thickness: int = 1):
         points = [*start, *end]
 
         line = LineFigure(

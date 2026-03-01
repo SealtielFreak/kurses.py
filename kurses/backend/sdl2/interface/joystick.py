@@ -52,10 +52,12 @@ class SDL2JoystickInterface(JoystickInterface):
 
         for controller in self.__controllers:
             def get_axis(axis_id):
-                return sdl2.SDL_GameControllerGetAxis(controller, axis_id) / SDL2JoystickInterface.__DEFAULT_VALUE_NORMALIZE
+                return sdl2.SDL_GameControllerGetAxis(controller,
+                                                      axis_id) / SDL2JoystickInterface.__DEFAULT_VALUE_NORMALIZE
 
             def get_trigger(axis_id):
-                return sdl2.SDL_GameControllerGetAxis(controller, axis_id) / SDL2JoystickInterface.__DEFAULT_VALUE_NORMALIZE
+                return sdl2.SDL_GameControllerGetAxis(controller,
+                                                      axis_id) / SDL2JoystickInterface.__DEFAULT_VALUE_NORMALIZE
 
             buttons_set = set()
 
@@ -83,12 +85,14 @@ class SDL2JoystickInterface(JoystickInterface):
                 triggers=(
                     TriggerValue(
                         name="left",
-                        shoulder=bool(sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_LEFTSHOULDER)),
+                        shoulder=bool(
+                            sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_LEFTSHOULDER)),
                         trigger=get_trigger(sdl2.SDL_CONTROLLER_AXIS_TRIGGERLEFT),
                     ),
                     TriggerValue(
                         name="right",
-                        shoulder=bool(sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)),
+                        shoulder=bool(
+                            sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)),
                         trigger=get_trigger(sdl2.SDL_CONTROLLER_AXIS_TRIGGERRIGHT),
                     ),
                 ),
