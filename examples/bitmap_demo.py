@@ -1,7 +1,7 @@
 from kurses import VirtualTerminal
 from kurses.term import Rendering
 
-term = VirtualTerminal(font_filename="./ModernDOS8x16.ttf", rendering=Rendering.SOFTWARE)
+term = VirtualTerminal(font_filename="./ModernDOS8x16.ttf", rendering=Rendering.SOFTWARE, bitmap_enabled=False)
 stream = term.stream
 graphics = term.graphics
 

@@ -1,6 +1,7 @@
 import abc
 import enum
 import typing
+import warnings
 
 import kurses.colors
 import kurses.stream
@@ -37,6 +38,8 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         :type type_rendering: Rendering
         :keyword fps: Limit frames per second, with default value 30.
         :type fps: int
+        :type bitmap_enabled: bool
+        :keyword bitmap_enabled: Enable bitmap to be able to draw shapes on the terminal.
         """
         rows, cols = shape
         self.__main_bitmap = kurses.graphics.GraphicsBuffer()
@@ -45,6 +48,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         self.__buffer_list = [self.__main_bitmap]
         self.__window_title = kwargs.get("title", "Virtual terminal")
         self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)
+        self.__bitmap_enabled = kwargs.get("bitmap_enabled")
 
         self._font_filename = font_filename
         self._dt = 1.0
@@ -52,6 +56,13 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
         self.fps = kwargs.get("fps", 30)
         self.running = True
+
+        if self.__bitmap_enabled:
+            warnings.warn("The bitmap function is experimental; changes will likely occur in future versions.", FutureWarning)
+
+    @property
+    def bitmap_enabled(self):
+        return self.__bitmap_enabled
 
     @property
     def type_rendering(self) -> Rendering:
@@ -68,7 +79,10 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
     @property
     def graphics(self):
-        return self.__buffer_list[0]
+        if self.bitmap_enabled:
+            return self.__buffer_list[0]
+
+        raise RuntimeError("Access denied: It is in experimental mode and requires to be enabled to function.")
 
     @property
     def shape(self) -> typing.Tuple[int, int]:
