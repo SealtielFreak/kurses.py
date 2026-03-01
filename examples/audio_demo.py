@@ -2,7 +2,7 @@
 from kurses import VirtualTerminal, Effect, Music
 
 # instance Virtual console
-term = VirtualTerminal(font_filename="./ModernDOS8x16.ttf", sound_enabled=True)  # load font resources
+term = VirtualTerminal(font_filename="ModernDOS8x16.ttf", sound_enabled=True)  # load font resources
 stream = term.stream  # get main buffer console
 buzzer = term.buzzer # get main buzzer console
 
@@ -10,11 +10,11 @@ buzzer = term.buzzer # get main buzzer console
 buzzer.record(0, [(440, 200), (493, 200), (523, 200), (587, 400)])
 
 # Load sound effect
-effect = Effect(filename="./laser.mp3")
+effect = Effect(filename="laser.mp3")
 effect.volume(10)
 
 # Load music
-music = Music(filename="./win95.mp3")
+music = Music(filename="win95.mp3")
 music.volume(15)
 
 music.play(2)
