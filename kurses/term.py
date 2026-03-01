@@ -48,7 +48,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         self.__buffer_list = [self.__main_bitmap]
         self.__window_title = kwargs.get("title", "Virtual terminal")
         self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)
-        self.__bitmap_enabled = kwargs.get("bitmap_enabled")
+        self.__bitmap_enabled = kwargs.get("bitmap_enabled", False)
 
         self._font_filename = font_filename
         self._dt = 1.0

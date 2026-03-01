@@ -66,7 +66,7 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
         self.__font = kurses.backend.FontResources(self._font_filename)
         self.__textures_font = kurses.backend.TextureSurface(self.__font, self.streams)
-        self.__bitmap = kurses.backend.BitmapSurface((width, height), self.graphics)
+        self.__bitmap = kurses.backend.BitmapSurface((width, height), self.graphics) if self.bitmap_enabled else None
         self.__joystick = kurses.backend.JoystickInterface()
         self.__mouse = [], (0, 0), (0, 0)
 
@@ -117,7 +117,9 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             self.__runtime = self.__runtime_class()
 
         self.__runtime.load()
-        self.__bitmap.create(self.surface)
+
+        if self.__bitmap:
+            self.__bitmap.create(self.surface)
 
         self.__joystick.open()
 
@@ -186,7 +188,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
                         if isinstance(stream, StreamBuffer):
                             stream.resize(width // w, height // h)
 
-                    self.__bitmap.resize(width, height)
+                    if self.__bitmap:
+                        self.__bitmap.resize(width, height)
 
                 self.__runtime.resize(self.resizable)
             elif event.window.event == sdl2.SDL_WINDOWEVENT_MINIMIZED:
@@ -220,8 +223,9 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             sdl2.SDL_RenderCopy(self.surface, self.__textures_font.current, None, None)
 
         def _render_bitmap():
-            self.__bitmap.present(self.surface)
-            sdl2.SDL_RenderCopy(self.surface, self.__bitmap.current, None, None)
+            if self.__bitmap:
+                self.__bitmap.present(self.surface)
+                sdl2.SDL_RenderCopy(self.surface, self.__bitmap.current, None, None)
 
         render_order = [_render_textures_font, _render_bitmap]
 
@@ -240,4 +244,5 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__textures_font.clear(self.surface)
 
     def purge(self):
-        self.__bitmap.clear(self.surface)
+        if self.__bitmap:
+            self.__bitmap.clear(self.surface)
