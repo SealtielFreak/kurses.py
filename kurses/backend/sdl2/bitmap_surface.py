@@ -34,13 +34,13 @@ class SDL2BitmapSurface(kurses.surface.bitmap.BitmapSurface):
     def present(self, surface: sdl2.SDL_Renderer) -> sdl2.SDL_Renderer:
         sdl2.SDL_SetRenderTarget(surface, self.current)
 
-        def _draw_line(line: LineFigure):
+        def _draw_line(line):
             x1, y1 = line.start
             x2, y2 = line.end
 
             gfx.thickLineRGBA(surface, x1, y1, x2, y2, line.thickness, *line.color, 255)
 
-        def _draw_rectangle(rect: RectangleFigure):
+        def _draw_rectangle(rect):
             x, y = rect.position
             w, h = rect.size
 
@@ -49,7 +49,7 @@ class SDL2BitmapSurface(kurses.surface.bitmap.BitmapSurface):
             else:
                 gfx.rectangleRGBA(surface, x, y, x + w, y + h, *rect.color, 255)
 
-        def _draw_circle(circle: CircleFigure):
+        def _draw_circle(circle):
             x, y = circle.position
 
             if circle.filled:
@@ -57,7 +57,7 @@ class SDL2BitmapSurface(kurses.surface.bitmap.BitmapSurface):
             else:
                 gfx.aacircleRGBA(surface, x, y, circle.radius, *circle.color, 255)
 
-        def _draw_polygon(poly: PolygonFigure):
+        def _draw_polygon(poly):
             vx, vy = poly.points
             length = poly.length
 

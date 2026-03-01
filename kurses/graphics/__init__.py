@@ -3,19 +3,19 @@ import math
 import typing
 
 import kurses.colors
-from kurses.graphics.primitive import PolygonFigure, CircleFigure, RectangleFigure, LineFigure
+from kurses.graphics.primitive import PolygonFigure, CircleFigure, RectangleFigure, LineFigure, PrimitiveFigure
 
 
 class GraphicsBuffer:
-    def __init__(self, **kwargs):
-        self.x = kwargs.get("x", 0)
-        self.y = kwargs.get("y", 0)
-        self.sx: int = kwargs.get("sx", 1)
-        self.sy: int = kwargs.get("sy", 1)
+    def __init__(self, x: int=0, y: int=0, sx: int=1, sy: int=1, **kwargs):
+        self.x: int = x
+        self.y: int = y
+        self.sx: int = sx
+        self.sy: int = sy
 
         self.angle = 0
         self.__background_color: kurses.colors.Color = kwargs.get("background_color", (0, 0, 0))
-        self.__primitives_figures = collections.deque()
+        self.__primitives_figures: typing.Deque[typing.Union[PolygonFigure, CircleFigure, RectangleFigure, LineFigure, PrimitiveFigure]] = collections.deque()
 
     def __iter__(self):
         while bool(self.__primitives_figures):
@@ -36,10 +36,11 @@ class GraphicsBuffer:
 
     def line(self, start: typing.Tuple[int, int], end: typing.Tuple[int, int], color: kurses.colors.Color,
              thickness: int = 1):
-        points = [*start, *end]
+        x0, y0 = start
+        x1, y1 = end
 
         line = LineFigure(
-            points=tuple(points),
+            points=(x0, y0, x1, y1),
             color=color,
             thickness=thickness,
             filled=False,

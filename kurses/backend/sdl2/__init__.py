@@ -62,9 +62,9 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             [sdl2.SDL_RENDERER_ACCELERATED, sdl2.SDL_RENDERER_SOFTWARE][self.type_rendering.value]
         )
 
-        self.__target: typing.Callable[[], None] = kurses.events.empty_target
-        self.__runtime_class: typing.Optional[typing.Type[kurses.events.EventTargetRuntime]] = None
-        self.__runtime: kurses.events.EventTargetRuntime = kurses.events.EmptyTargetRuntime()
+        self.__target = kurses.events.empty_target
+        self.__runtime_class = None
+        self.__runtime = kurses.events.EmptyTargetRuntime()
 
         self.__font = kurses.backend.FontResources(self._font_filename)
         self.__textures_font = kurses.backend.TextureSurface(self.__font, self.streams)
