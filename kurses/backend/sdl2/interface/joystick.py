@@ -1,6 +1,6 @@
 import sdl2
 
-from kurses.interface.joystick import JoystickInterface, JoystickInput, AxisValue, TriggerValue
+from kurses.interface.joystick import JoystickInterface
 
 
 class SDL2JoystickInterface(JoystickInterface):
@@ -20,7 +20,10 @@ class SDL2JoystickInterface(JoystickInterface):
     }
 
     def __init__(self):
-        self.__controllers = []
+        self.__c_controllers = []
+
+    def __del__(self):
+        self.close()
 
     def open(self):
         n_joystick = sdl2.SDL_NumJoysticks()
@@ -34,23 +37,23 @@ class SDL2JoystickInterface(JoystickInterface):
             if not controller:
                 continue
 
-            self.__controllers.append(controller)
+            self.__c_controllers.append(controller)
 
     def update(self):
         self.close()
         self.open()
 
     def close(self):
-        for controller in self.__controllers:
+        for controller in self.__c_controllers:
             sdl2.SDL_GameControllerClose(controller)
 
-        self.__controllers.clear()
+        self.__c_controllers.clear()
 
     @property
     def inputs(self):
         inputs = []
 
-        for controller in self.__controllers:
+        for controller in self.__c_controllers:
             def get_axis(axis_id):
                 return sdl2.SDL_GameControllerGetAxis(controller,
                                                       axis_id) / SDL2JoystickInterface.__DEFAULT_VALUE_NORMALIZE
@@ -65,38 +68,35 @@ class SDL2JoystickInterface(JoystickInterface):
                 if sdl2.SDL_GameControllerGetButton(controller, btn_id):
                     buttons_set.add(name)
 
-            joystick = JoystickInput(
-                name=sdl2.SDL_GameControllerName(controller).decode('utf-8'),
-                connected=True,
-                axis=(
-                    AxisValue(
+            joystick = (
+                sdl2.SDL_GameControllerName(controller).decode('utf-8'),
+                buttons_set,
+                (
+                    (
                         'left',
-                        x=get_axis(sdl2.SDL_CONTROLLER_AXIS_LEFTX),
-                        y=get_axis(sdl2.SDL_CONTROLLER_AXIS_LEFTY),
-                        stick=bool(sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_LEFTSTICK)),
+                        bool(sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_LEFTSTICK)),
+                        get_axis(sdl2.SDL_CONTROLLER_AXIS_LEFTX),
+                        get_axis(sdl2.SDL_CONTROLLER_AXIS_LEFTY)
                     ),
-                    AxisValue(
+                    (
                         'right',
-                        x=get_axis(sdl2.SDL_CONTROLLER_AXIS_RIGHTX),
-                        y=get_axis(sdl2.SDL_CONTROLLER_AXIS_RIGHTY),
-                        stick=bool(sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_RIGHTSTICK)),
+                        bool(sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_RIGHTSTICK)),
+                        get_axis(sdl2.SDL_CONTROLLER_AXIS_RIGHTX),
+                        get_axis(sdl2.SDL_CONTROLLER_AXIS_RIGHTY)
                     ),
                 ),
-                triggers=(
-                    TriggerValue(
-                        name="left",
-                        shoulder=bool(
-                            sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_LEFTSHOULDER)),
-                        trigger=get_trigger(sdl2.SDL_CONTROLLER_AXIS_TRIGGERLEFT),
+                (
+                    (
+                        'left',
+                        bool(sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_LEFTSHOULDER)),
+                        get_trigger(sdl2.SDL_CONTROLLER_AXIS_TRIGGERLEFT),
                     ),
-                    TriggerValue(
-                        name="right",
-                        shoulder=bool(
-                            sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)),
-                        trigger=get_trigger(sdl2.SDL_CONTROLLER_AXIS_TRIGGERRIGHT),
+                    (
+                        'right',
+                        bool(sdl2.SDL_GameControllerGetButton(controller, sdl2.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)),
+                        get_trigger(sdl2.SDL_CONTROLLER_AXIS_TRIGGERRIGHT),
                     ),
-                ),
-                buttons=buttons_set
+                )
             )
 
             inputs.append(joystick)

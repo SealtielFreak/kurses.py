@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from kurses.interface.joystick import JoystickInput
+from kurses.interface.joystick import JoystickType
 
 
 class EventTargetRuntime(abc.ABC):
@@ -123,7 +123,7 @@ class EventTargetRuntime(abc.ABC):
         """
         ...
 
-    def joystick(self, inputs: typing.Tuple[JoystickInput, ...]):
+    def joystick(self, inputs: typing.Tuple[JoystickType, ...]):
         ...
 
 

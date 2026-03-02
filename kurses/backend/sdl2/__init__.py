@@ -14,6 +14,9 @@ import kurses.stream
 import kurses.term
 from kurses.backend.sdl2.resources import SDL2AudioSystem
 from kurses.backend.sdl2.resources.mixer import SDL2Buzzer
+from kurses.interface.battery import BatteryType, BatteryStatus
+from kurses.interface.sensors import AccelerometerType, GyroscopeType
+from kurses.interface.touch import TouchType
 from kurses.resources.buzzer import Buzzer
 from kurses.stream import StreamBuffer
 
@@ -80,7 +83,17 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
         self.__buzzer = SDL2Buzzer()
 
+        self.__c_sensors = {}
+        self.__num_sensors = 0
+        self.__gyroscope = False, (0, 0, 0)
+        self.__accelerometer = False, (0, 0, 0)
+
+        self.__c_active_fingers = {}
+
     def __del__(self):
+        for s_id in self.__c_sensors:
+            sdl2.SDL_SensorClose(self.__c_sensors[s_id]["handle"])
+
         if self.__c_renderer is not None:
             sdl2.SDL_DestroyRenderer(self.__c_renderer)
 
@@ -134,6 +147,22 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
         self.__joystick.open()
 
+        self.__num_sensors = sdl2.SDL_NumSensors()
+
+        for i in range(self.__num_sensors):
+            sensor_type = sdl2.SDL_SensorGetDeviceType(i)
+            sensor_name = sdl2.SDL_SensorGetDeviceName(i).decode('utf-8')
+            sensor_handle = sdl2.SDL_SensorOpen(i)
+
+            if sensor_handle:
+                sensor_id = sdl2.SDL_SensorGetInstanceID(sensor_handle)
+
+                self.__c_sensors[sensor_id] = {
+                    "name": sensor_name,
+                    "type": sensor_type,
+                    "handle": sensor_handle
+                }
+
         while self.running:
             event = sdl2.SDL_Event()
 
@@ -149,8 +178,6 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
             self.clean()
             self.__runtime.draw()
             self.draw()
-
-        self.__joystick.close()
 
     def keyspressed(self) -> typing.List[str]:
         pressed_keys = []
@@ -227,6 +254,32 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
             self.__mouse = state, (x, y), (motion.x, motion.y)
             self.__runtime.mouse(state, (x, y), (motion.x, motion.y))
+        elif event.type == sdl2.SDL_SENSORUPDATE:
+            sensor_id = event.sensor.which
+
+            if sensor_id in self.__c_sensors:
+                data = event.sensor.data
+                s_type = self.__c_sensors[sensor_id]["type"]
+
+                if s_type == sdl2.SDL_SENSOR_ACCEL:
+                    self.__accelerometer = True, data
+                elif s_type == sdl2.SDL_SENSOR_GYRO:
+                    self.__gyroscope = True, data
+        elif event.type == sdl2.SDL_FINGERDOWN:
+            fid = event.tfinger.fingerId
+
+            self.__c_active_fingers[fid] = (event.tfinger.x, event.tfinger.y)
+        elif event.type == sdl2.SDL_FINGERMOTION:
+            fid = event.tfinger.fingerId
+
+            if fid in self.__c_active_fingers:
+                self.__c_active_fingers[fid] = (event.tfinger.x, event.tfinger.y)
+
+        elif event.type == sdl2.SDL_FINGERUP:
+            fid = event.tfinger.fingerId
+
+            if fid in self.__c_active_fingers:
+                del self.__c_active_fingers[fid]
 
     def present(self):
         def _render_textures_font():
@@ -257,3 +310,31 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
     def purge(self):
         if self.__bitmap:
             self.__bitmap.clear(self.surface)
+
+    def gyroscope(self) -> GyroscopeType:
+        return self.__gyroscope
+
+    def accelerometer(self) -> AccelerometerType:
+        return self.__accelerometer
+
+    def touch(self) -> typing.List[TouchType]:
+        def _read_fingers():
+            for fid, (x, y) in self.__c_active_fingers.items():
+                yield fid, (x, y)
+
+        return list(*_read_fingers())
+
+    def battery(self) -> BatteryType:
+        secs = ctypes.c_int(0)
+        pct = ctypes.c_int(0)
+
+        status = sdl2.SDL_GetPowerInfo(ctypes.byref(secs), ctypes.byref(pct))
+
+        if status == sdl2.SDL_POWERSTATE_NO_BATTERY:
+            return BatteryStatus.NO_BATTERY, 0
+        elif status == sdl2.SDL_POWERSTATE_ON_BATTERY:
+            return BatteryStatus.ON_BATTERY, 0
+        elif status == sdl2.SDL_POWERSTATE_CHARGING:
+            return BatteryStatus.CHARGING, 0
+
+        return BatteryStatus.UNKNOWN, 0
