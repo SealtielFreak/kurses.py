@@ -10,7 +10,6 @@ import kurses.interface.joystick
 import kurses.stream
 import kurses.surface.texture
 from kurses.interface.battery import BatteryType
-
 from kurses.interface.sensors import GyroscopeType, AccelerometerType
 from kurses.interface.touch import TouchType
 from kurses.resources.buzzer import Buzzer

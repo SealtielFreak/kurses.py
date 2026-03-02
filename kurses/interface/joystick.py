@@ -10,6 +10,7 @@ JoystickType = typing.Tuple[
     typing.Tuple[TriggerType, TriggerType]
 ]
 
+
 class JoystickInterface(abc.ABC):
     @abc.abstractmethod
     def open(self):

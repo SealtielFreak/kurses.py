@@ -7,7 +7,7 @@ from kurses.graphics.primitive import PolygonFigure, CircleFigure, RectangleFigu
 
 
 class GraphicsBuffer:
-    def __init__(self, x: int=0, y: int=0, sx: int=1, sy: int=1, **kwargs):
+    def __init__(self, x: int = 0, y: int = 0, sx: int = 1, sy: int = 1, **kwargs):
         self.x: int = x
         self.y: int = y
         self.sx: int = sx
@@ -15,7 +15,8 @@ class GraphicsBuffer:
 
         self.angle = 0
         self.__background_color: kurses.colors.Color = kwargs.get("background_color", (0, 0, 0))
-        self.__primitives_figures: typing.Deque[typing.Union[PolygonFigure, CircleFigure, RectangleFigure, LineFigure, PrimitiveFigure]] = collections.deque()
+        self.__primitives_figures: typing.Deque[typing.Union[
+            PolygonFigure, CircleFigure, RectangleFigure, LineFigure, PrimitiveFigure]] = collections.deque()
 
     def __iter__(self):
         while bool(self.__primitives_figures):
