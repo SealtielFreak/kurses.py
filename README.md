@@ -64,6 +64,7 @@ term.set_target(loop)
 # run all program
 term.main_loop()
 ```
+
 ### [audio_demo.py](examples/audio_demo.py)
 ```python
 # load module
@@ -122,8 +123,8 @@ term.set_target(loop)
 # run all program
 term.main_loop()
 ```
-### [keypressed.py](examples/keypressed.py)
 
+### [keypressed.py](examples/keypressed.py)
 ```python
 # load modules
 import random
@@ -172,7 +173,6 @@ console.set_target(loop)
 # run all program
 console.main_loop()
 ```
-## More examples
 
 ### [asteroids.py](examples/asteroids.py)
 ```python
@@ -402,4 +402,111 @@ if __name__ == "__main__":
 
     term.main_loop()
 
+```
+
+### [battery_demo.py](examples/battery_demo.py)
+```python
+# load module
+from kurses import VirtualTerminal
+
+# instance Virtual console
+term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources
+stream = term.stream  # get main buffer console
+
+
+# define loop function
+def loop():
+    bat_status, bat_value = term.battery()
+
+    stream.resetall()  # restore default attributes in the buffer console
+
+    # set attributes of first string
+    stream.gotoxy(0, 0)  # go to position x: 0, y: 0
+    stream.set_background_color((255, 255, 255))  # set background color characters
+    stream.set_foreign_color((0, 0, 0))  # set foreign color
+    stream.print(f"Battery status: {bat_status}")  # print info
+
+    # set attributes of second string
+    stream.gotoxy(0, 1)  # go to position x: 0, y: 1
+    stream.italic(True)  # set true italic
+    stream.print(f"Battery value: {bat_value}%") # print battery value
+
+
+# set title of terminal
+term.title = "Battery demo"
+
+# set loop function
+term.set_target(loop)
+
+# run all program
+term.main_loop()
+```
+
+### [sensor_demo.py](examples/sensor_demo.py)
+```python
+# load module
+from kurses import VirtualTerminal
+
+# instance Virtual console
+term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources
+stream = term.stream  # get main buffer console
+
+
+# define loop function
+def loop():
+    gyro = term.gyroscope()
+    acce = term.accelerometer()
+
+    stream.resetall()
+
+    stream.set_background_color((255, 255, 255))
+    stream.set_foreign_color((0, 0, 0))
+
+    stream.gotoxy(0, 0)
+    stream.print(f"Gyroscope: {gyro}")
+
+    stream.gotoxy(0, 1)
+    stream.print(f"Accelerometer: {acce}")
+
+
+# set title of terminal
+term.title = "Sensors demo (Gyroscope and accelerometer)"
+
+# set loop function
+term.set_target(loop)
+
+# run all program
+term.main_loop()
+```
+
+### [bitmap_demo.py](examples/bitmap_demo.py)
+```python
+from kurses import VirtualTerminal
+from kurses.term import Rendering
+
+term = VirtualTerminal(font_filename="./ModernDOS8x16.ttf", rendering=Rendering.SOFTWARE, bitmap_enabled=False)
+stream = term.stream
+graphics = term.graphics
+
+stream.cputsxy(40, 20, "Hello World")
+
+def loop():
+    state, _, (x, y) = term.mouse()
+    width, height = term.size
+
+    graphics.circle(0, 0, 59, (255, 0, 0), filled=True)
+    graphics.polygon([400, 100, 500, 300, 300, 300], (255, 0, 255), filled=True)
+    graphics.line([0, 0], [width, height], (255, 0, 0), thickness=10)
+    graphics.circle(x, y, 15, (255, 255, 0), filled=False)
+    graphics.rect(0, 0, (10, 10), (0, 255, 0), filled=True)
+    graphics.rect(10, 10, (10, 10), (0, 255, 0), filled=False)
+
+    term.purge()
+
+
+if __name__ == "__main__":
+    term.title = "Primitives graphics"
+    term.set_target(loop)
+
+    term.main_loop()
 ```
