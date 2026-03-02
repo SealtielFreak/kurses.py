@@ -9,6 +9,10 @@ import kurses.graphics
 import kurses.interface.joystick
 import kurses.stream
 import kurses.surface.texture
+from kurses.interface.battery import BatteryType
+
+from kurses.interface.sensors import GyroscopeType, AccelerometerType
+from kurses.interface.touch import TouchType
 from kurses.resources.buzzer import Buzzer
 
 DEFAULT_WINDOW_TITLE = "Virtual console"
@@ -230,7 +234,7 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         ...
 
     @abc.abstractmethod
-    def joystick(self) -> typing.Tuple[kurses.interface.joystick.JoystickInput, ...]:
+    def joystick(self) -> typing.Tuple[kurses.interface.joystick.JoystickType, ...]:
         ...
 
     @abc.abstractmethod
@@ -310,4 +314,30 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
 
         :return:
         """
+        ...
+
+    @abc.abstractmethod
+    def gyroscope(self) -> GyroscopeType:
+        """
+        Read gyroscope sensor
+
+        :return:
+        """
+        ...
+
+    @abc.abstractmethod
+    def accelerometer(self) -> AccelerometerType:
+        """
+        Read accelerometer sensor
+
+        :return:
+        """
+        ...
+
+    @abc.abstractmethod
+    def touch(self) -> typing.List[TouchType]:
+        ...
+
+    @abc.abstractmethod
+    def battery(self) -> BatteryType:
         ...

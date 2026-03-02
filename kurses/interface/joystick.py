@@ -1,54 +1,16 @@
 import abc
-import dataclasses
 import typing
 
-J = typing.TypeVar("J", bound="JoystickInterface")
+AxisType = typing.Tuple[str, bool, float, float]
+TriggerType = typing.Tuple[str, bool, float]
+JoystickType = typing.Tuple[
+    str,
+    typing.Set[str],
+    typing.Tuple[AxisType, AxisType],
+    typing.Tuple[TriggerType, TriggerType]
+]
 
-
-@dataclasses.dataclass(frozen=True)
-class AxisValue:
-    name: str
-
-    stick: bool
-    x: float
-    y: float
-
-    def __hash__(self) -> int:
-        return hash(self.name)
-
-
-@dataclasses.dataclass(frozen=True)
-class TriggerValue:
-    name: str
-
-    shoulder: bool
-    trigger: float
-
-    def __hash__(self) -> int:
-        return hash(self.name)
-
-
-@dataclasses.dataclass(frozen=True)
-class JoystickInput:
-    name: str
-    connected: bool
-    buttons: typing.Set[str]
-    axis: typing.Tuple[AxisValue, AxisValue]
-    triggers: typing.Tuple[TriggerValue, TriggerValue]
-
-    def __hash__(self) -> int:
-        return hash(self.name)
-
-    @property
-    def left_axis(self):
-        return self.axis[0]
-
-    @property
-    def right_axis(self):
-        return self.axis[1]
-
-
-class JoystickInterface(abc.ABC, typing.Generic[J]):
+class JoystickInterface(abc.ABC):
     @abc.abstractmethod
     def open(self):
         pass
@@ -63,5 +25,5 @@ class JoystickInterface(abc.ABC, typing.Generic[J]):
 
     @property
     @abc.abstractmethod
-    def inputs(self) -> typing.Tuple[JoystickInput, ...]:
+    def inputs(self) -> typing.Tuple[JoystickType, ...]:
         pass
