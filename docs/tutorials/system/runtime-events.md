@@ -117,4 +117,4 @@ recenter text after the window is resized.
 
 ## Next tutorial
 
-Read hardware sensors in [Sensors and Battery](sensors-battery.md).
+Read hardware sensors in [Sensors and Battery](../sensors/sensors-battery.md).

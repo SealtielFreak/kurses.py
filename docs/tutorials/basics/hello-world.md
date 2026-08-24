@@ -93,4 +93,4 @@ uv run hello.py
 
 ## Next tutorial
 
-Add movement and keyboard control in [Keyboard Input](keyboard-input.md).
+Add movement and keyboard control in [Keyboard Input](../system/keyboard-input.md).

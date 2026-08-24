@@ -211,9 +211,9 @@ when `life <= 0` the player loses. Press `SPACE` to restart.
 ## Try it
 
 Add more asteroids, a scoring multiplier or sound effects from the
-[Audio](audio.md) tutorial.
+[Audio](../audio/audio.md) tutorial.
 
 ## Where to go next
 
-Dive into the [API Reference](../api/index.md) to discover every class and method
+Dive into the [API Reference](../../api/index.md) to discover every class and method
 used in these tutorials.

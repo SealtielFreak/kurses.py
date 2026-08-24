@@ -60,7 +60,7 @@ term.main_loop()
   setup.
 - [Quickstart](getting-started/quickstart.md) — create your first window and
   understand the loop.
-- [Tutorials](tutorials/hello-world.md) — step-by-step guides based on the
+- [Tutorials](tutorials/basics/hello-world.md) — step-by-step guides based on the
   bundled examples.
 - [API Reference](api/index.md) — auto-generated docs for every module, class
   and function.

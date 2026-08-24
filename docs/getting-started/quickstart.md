@@ -94,7 +94,7 @@ term.main_loop()
 
 ## Next steps
 
-- Learn the text API in depth with the [Hello World](../tutorials/hello-world.md)
-  and [Colors and Styles](../tutorials/colors-styles.md) tutorials.
-- Add movement with [Keyboard Input](../tutorials/keyboard-input.md).
+- Learn the text API in depth with the [Hello World](../tutorials/basics/hello-world.md)
+  and [Colors and Styles](../tutorials/graphics/colors-styles.md) tutorials.
+- Add movement with [Keyboard Input](../tutorials/system/keyboard-input.md).
 - Explore the [API Reference](../api/index.md) for every class and method.

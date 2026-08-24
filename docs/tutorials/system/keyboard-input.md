@@ -89,4 +89,4 @@ Use `W`, `A`, `S`, `D` to move the rainbow text around the terminal.
 ## Next tutorial
 
 Learn about bold, italic, underline and other styles in
-[Colors and Styles](colors-styles.md).
+[Colors and Styles](../graphics/colors-styles.md).

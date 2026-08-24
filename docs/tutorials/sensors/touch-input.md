@@ -60,4 +60,4 @@ Track multiple fingers and draw a colored trail for each one.
 
 ## Next tutorial
 
-Put everything together in a small game with [Asteroids](asteroids.md).
+Put everything together in a small game with [Asteroids](../graphics/asteroids.md).

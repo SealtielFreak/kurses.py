@@ -77,4 +77,4 @@ the same loop.
 
 ## Next tutorial
 
-Add sound effects and music in [Audio](audio.md).
+Add sound effects and music in [Audio](../audio/audio.md).

@@ -114,4 +114,4 @@ colored background.
 
 ## Next tutorial
 
-Render independent screen regions in [Virtual Buffers](virtual-buffers.md).
+Render independent screen regions in [Virtual Buffers](../system/virtual-buffers.md).

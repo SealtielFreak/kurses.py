@@ -19,8 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added development instructions to `README.md`.
 - Added this `CHANGELOG.md`.
 - Added full MkDocs documentation with `mkdocstrings` API reference.
-- Added installation, quickstart and ten tutorial guides based on the bundled examples.
+- Added installation, quickstart and ten tutorial guides based on the bundled examples, now organized into Basics, Graphics, System, Sensors and Audio sections.
 - Added `docs/changelog.md` included in the documentation site.
+- Added GitHub Actions workflow to deploy documentation automatically to GitHub Pages.
+- Added GitHub Actions workflow to run `ruff` and `mypy` on push and pull requests.
 
 ### Changed
 

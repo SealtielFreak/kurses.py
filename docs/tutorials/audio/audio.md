@@ -111,4 +111,4 @@ Replace the bundled `laser.mp3` and `win95.mp3` with your own files.
 
 ## Next tutorial
 
-Draw 2D primitives in [Bitmap Graphics](bitmap-graphics.md).
+Draw 2D primitives in [Bitmap Graphics](../graphics/bitmap-graphics.md).

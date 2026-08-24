@@ -95,4 +95,4 @@ Draw a moving rectangle that follows the mouse cursor.
 
 ## Next tutorial
 
-Build a cleaner architecture with [Runtime Events](runtime-events.md).
+Build a cleaner architecture with [Runtime Events](../system/runtime-events.md).
