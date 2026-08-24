@@ -120,10 +120,20 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# uv
+.venv/
+uv.lock
+.python-version
+
 # mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
+# ruff
+.ruff_cache/
+
 # Pyre type checker
 .pyre/
+
+.idea/

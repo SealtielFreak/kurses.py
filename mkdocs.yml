@@ -1,0 +1,121 @@
+site_name: kurses.py
+site_url: https://sealtielfreak.github.io/kurses.py/
+site_description: Python module that emulates conio and curses with SDL2/Pygame.
+site_author: SealtielFreak
+
+repo_name: SealtielFreak/kurses.py
+repo_url: https://github.com/SealtielFreak/kurses.py
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  icon:
+    logo: material/console
+  favicon: resources/kurses-py.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: orange
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: orange
+      accent: deep-orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+  - Tutorials:
+      - Basics:
+          - Hello World: tutorials/basics/hello-world.md
+      - Graphics:
+          - Colors and Styles: tutorials/graphics/colors-styles.md
+          - Bitmap Graphics: tutorials/graphics/bitmap-graphics.md
+          - Asteroids Game: tutorials/graphics/asteroids.md
+      - System:
+          - Keyboard Input: tutorials/system/keyboard-input.md
+          - Virtual Buffers: tutorials/system/virtual-buffers.md
+          - Runtime Events: tutorials/system/runtime-events.md
+      - Sensors:
+          - Sensors and Battery: tutorials/sensors/sensors-battery.md
+          - Touch Input: tutorials/sensors/touch-input.md
+      - Audio:
+          - Audio: tutorials/audio/audio.md
+  - API Reference:
+      - Overview: api/index.md
+      - Virtual Terminal: api/terminal.md
+      - Stream Buffer: api/stream.md
+      - Graphics: api/graphics.md
+      - Events: api/events.md
+      - Audio: api/audio.md
+      - Interfaces: api/interfaces.md
+      - Utilities: api/utilities.md
+  - Changelog: changelog.md
+  - GitHub: https://github.com/SealtielFreak/kurses.py
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - src
+          options:
+            docstring_style: google
+            show_root_heading: true
+            show_source: true
+            show_signature: true
+            show_signature_annotations: true
+            show_bases: true
+            merge_init_into_class: true
+            filters:
+              - "!^_"
+      default_handler: python
+
+watch:
+  - docs
+  - src/kurses
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/SealtielFreak/kurses.py
+
+copyright: Copyright &copy; 2026 SealtielFreak

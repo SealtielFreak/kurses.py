@@ -1,8 +1,24 @@
+# Asteroids Game
+
+The bundled `asteroids.py` example combines text rendering, multiple buffers,
+keyboard input, collision detection and game state management in one small
+game.
+
+## What you will learn
+
+- How to use multiple [`StreamBuffer`][kurses.stream.StreamBuffer] objects (main
+  playfield + HUD).
+- How to move a player ship with the keyboard.
+- How to implement simple game logic inside the loop.
+
+## Complete example
+
+```python
 import random
 import time
 
 import kurses.stream
-from kurses import StreamBuffer, VirtualTerminal
+from kurses import VirtualTerminal, StreamBuffer
 from kurses.font_resources import QualityFont
 
 SHIP = """\
@@ -23,12 +39,18 @@ def random_asteroid(_x=(0, 80), _y=(0, 30)):
         random.randint(*_x),
         random.randint(*_y),
         random.randint(1, 2),
-        random.sample([(255, 255, 255), (255, 255, 0), (0, 0, 255), (0, 255, 255), (255, 0, 0), (0, 255, 0)], 1)[0],
+        random.sample(
+            [(255, 255, 255), (255, 255, 0), (0, 0, 255),
+             (0, 255, 255), (255, 0, 0), (0, 255, 0)], 1
+        )[0],
         random.sample("*", 1)[0],
     )
 
 
-console = VirtualTerminal(font_filename="ModernDOS8x16.ttf", quality=QualityFont.LCD)
+console = VirtualTerminal(
+    font_filename="ModernDOS8x16.ttf",
+    quality=QualityFont.LCD,
+)
 
 main_buffer = console.stream
 
@@ -40,7 +62,6 @@ score_buffer.type_cursor = kurses.stream.TypeCursor.EMPTY
 asteroids = [random_asteroid() for _ in range(5)]
 
 x_ship, y_ship = random.randint(0, 70), random.randint(0, 30)
-
 life, score = 100, 0
 shoots = []
 
@@ -59,18 +80,15 @@ def loop():
             _msg = "You win!"
             main_buffer.bold(True)
             main_buffer.cputsxy(40 - (len(_msg) // 2), 15, _msg)
-
             main_buffer.resetall()
 
             _msg = "Press SPACE for play again"
             main_buffer.set_foreign_color((255, 255, 0))
             main_buffer.cputsxy(40 - (len(_msg) // 2), 16, _msg)
-
             main_buffer.resetall()
 
             if "space" in console.keyspressed():
                 life = 100
-
         else:
             if "w" in console.keyspressed() and y_ship >= 0:
                 y_ship -= 1
@@ -82,9 +100,8 @@ def loop():
             elif "d" in console.keyspressed() and x_ship <= columns - 3:
                 x_ship += 1
 
-            if "space" in console.keyspressed():
-                if len(shoots) == 0:
-                    shoots.append((x_ship, y_ship))
+            if "space" in console.keyspressed() and len(shoots) == 0:
+                shoots.append((x_ship, y_ship))
 
             draw_ship(x_ship, y_ship, main_buffer)
 
@@ -142,18 +159,15 @@ def loop():
             score_buffer.set_foreign_color((255, 255, 255))
             score_buffer.print(_msg)
             score_buffer.resetall()
-
     else:
         _msg = "You lost!"
         main_buffer.bold(True)
         main_buffer.cputsxy(40 - (len(_msg) // 2), 15, _msg)
-
         main_buffer.resetall()
 
         _msg = "Press SPACE for play again"
         main_buffer.set_foreign_color((255, 0, 0))
         main_buffer.cputsxy(40 - (len(_msg) // 2), 16, _msg)
-
         main_buffer.resetall()
 
         if "space" in console.keyspressed():
@@ -162,7 +176,44 @@ def loop():
 
 if __name__ == '__main__':
     console.streams.append(score_buffer)
-
     console.title = "Asteroids"
     console.set_target(loop)
     console.main_loop()
+```
+
+## Breaking it down
+
+### Two buffers
+
+```python
+main_buffer = console.stream
+score_buffer = StreamBuffer(40, 15, sx=2, sy=2)
+console.streams.append(score_buffer)
+```
+
+The main buffer renders the playfield. The smaller `score_buffer` renders the
+HUD and is scaled 2x.
+
+### Ship movement
+
+```python
+if "w" in console.keyspressed() and y_ship >= 0:
+    y_ship -= 1
+```
+
+`W`, `A`, `S`, `D` move the ship while clamping it to the screen edges.
+
+### Win/lose states
+
+The example shows a simple state machine: when `score >= 10` the player wins,
+when `life <= 0` the player loses. Press `SPACE` to restart.
+
+## Try it
+
+Add more asteroids, a scoring multiplier or sound effects from the
+[Audio](../audio/audio.md) tutorial.
+
+## Where to go next
+
+Dive into the [API Reference](../../api/index.md) to discover every class and method
+used in these tutorials.

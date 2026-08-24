@@ -1,512 +1,159 @@
 # kurses.py
-![Python - Version](https://img.shields.io/badge/python-%3E%3D3.8-brightgreen)
-![PyPI - Version](https://img.shields.io/pypi/v/kurses-py?color=green&label=pip%20install%20kurses)
-![Python - Implementation](https://img.shields.io/pypi/implementation/kurses-py)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/kurses-py)
-![PyPI - Downloads (for latest version)](https://img.shields.io/pypi/dm/kurses.py)
-![License](https://img.shields.io/pypi/l/kurses.py)
 
-This module uses SDL2 (or Pygame) to emulate the functions of the [conio](https://en.wikipedia.org/wiki/Conio.h) and [curses](https://en.wikipedia.org/wiki/Curses_(programming_library)) libraries, which are used to create text-based user interfaces. You can control the color and cursor of the text, as well as the position and size of the window, the bit depth, typography and text styles (underline, bold, italic and strikethrough).
+[![Python - Version](https://img.shields.io/badge/python-%3E%3D3.8-brightgreen)](https://python.org)
+[![PyPI - Version](https://img.shields.io/pypi/v/kurses-py?color=green&label=pip%20install%20kurses)](https://pypi.org/project/kurses-py/)
+[![Python - Implementation](https://img.shields.io/pypi/implementation/kurses-py)](https://pypi.org/project/kurses-py/)
+[![PyPI - Wheel](https://img.shields.io/pypi/wheel/kurses-py)](https://pypi.org/project/kurses-py/)
+[![PyPI - Downloads (for latest version)](https://img.shields.io/pypi/dm/kurses.py)](https://pypi.org/project/kurses.py/)
+[![License](https://img.shields.io/pypi/l/kurses.py)](https://github.com/SealtielFreak/kurses.py/blob/main/LICENSE.md)
+[![Docs](https://img.shields.io/badge/docs-mkdocs-material-blue)](https://sealtielfreak.github.io/kurses.py/)
 
-It is designed to offer a cross-platform solution for creating text-based applications, independent of the system where they run.
+> A cross-platform Python module that emulates
+> [`conio`](https://en.wikipedia.org/wiki/Conio.h) and
+> [`curses`](https://en.wikipedia.org/wiki/Curses_(programming_library))
+> using SDL2/Pygame.
 
-## How to install it?
-You can install from pip:
+`kurses.py` lets you build colorful, styled, text-based user interfaces that
+work the same way on Windows, macOS and Linux. You control the color and cursor
+of the text, the position and size of the window, the bit depth, the typography
+and text styles (underline, bold, italic and strikethrough).
 
+It is designed as a cross-platform solution for creating text applications
+independent of the system where they run.
+
+## Features
+
+- **Virtual terminal** with configurable size, title, FPS and hardware/software
+  rendering.
+- **Text buffers** inspired by `conio`/`curses`: `gotoxy`, `cputs`, `clrscr`,
+  colors, bold, italic, underline, strikethrough and more.
+- **Multiple buffers** to compose independent screen regions (HUDs, menus,
+  split-screen layouts).
+- **Bitmap graphics mode** for 2D primitives (lines, rectangles, circles,
+  polygons) mixed with text.
+- **Audio system** for sound effects, music and synthesized beeps through SDL2
+  mixer.
+- **Input abstractions** for keyboard, joystick, mouse, touch, battery, gyroscope
+  and accelerometer.
+- **Event-driven runtime** class for cleaner game-loop architectures.
+- **Cross-platform**: Windows, macOS and Linux through SDL2.
+
+## Documentation
+
+Full documentation is built with MkDocs and hosted at
+[sealtielfreak.github.io/kurses.py](https://sealtielfreak.github.io/kurses.py/).
+
+You can also serve it locally:
+
+```bash
+uv run mkdocs serve
 ```
-pip install kurses-py
+
+## Installation
+
+### From PyPI (recommended)
+
+```bash
+pip install "kurses-py[sdl2]"
 ```
 
-Or from GitHub repository:
+The `[sdl2]` extra installs `pysdl2` and `pysdl2-dll`.
 
-```
-pip install git+https://github.com/SealtielFreak/kurses.py.git
-```
+### From source with uv
 
-### Dependencies
-At the moment it is only implemented to work with SDL2 (PySDL2).
-
-```
-pip install pysdl2 pysdl2-dll
+```bash
+git clone https://github.com/SealtielFreak/kurses.py.git
+cd kurses.py
+uv sync --extra sdl2
 ```
 
-## Examples
-### [hello_world.py](examples/hello_world.py)
+See the [installation guide](https://sealtielfreak.github.io/kurses.py/getting-started/installation/)
+for more options.
+
+## Quick example
 
 ```python
-# load module
 from kurses import VirtualTerminal
-
-# instance Virtual console
-term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources
-stream = term.stream  # get main buffer console
-
-
-# define loop function
-def loop():
-    stream.resetall()  # restore default attributes in the buffer console
-
-    # set attributes of first string
-    stream.gotoxy(0, 0)  # go to position x: 0, y: 0
-    stream.set_background_color((255, 255, 255))  # set background color characters
-    stream.set_foreign_color((0, 0, 0))  # set foreign color
-    stream.print("Hello\n")  # print into buffer console
-
-    # set attributes of second string
-    stream.gotoxy(5, 1)  # go to position x: 5, y: 1
-    stream.italic(True)  # set true italic
-    stream.print("world!")  # print into buffer console, again
-
-
-# set loop function
-term.set_target(loop)
-
-# run all program
-term.main_loop()
-```
-
-### [audio_demo.py](examples/audio_demo.py)
-```python
-# load module
-from kurses import VirtualTerminal, Effect, Music
-
-# instance Virtual console
-term = VirtualTerminal(font_filename="ModernDOS8x16.ttf", sound_enabled=True)  # load font resources
-stream = term.stream  # get main buffer console
-buzzer = term.buzzer # get main buzzer console
-
-# Create tracks for buzzer
-buzzer.record(0, [(440, 200), (493, 200), (523, 200), (587, 400)])
-
-# Load sound effect
-effect = Effect(filename="laser.mp3")
-effect.volume(10)
-
-# Load music
-music = Music(filename="win95.mp3")
-music.volume(15)
-
-music.play(2)
-music.fadeout(5)
-
-# define loop function
-def loop():
-    stream.resetall()  # restore default attributes in the buffer console
-
-    # set attributes of first string
-    stream.gotoxy(0, 0)  # go to position x: 0, y: 0
-    stream.set_background_color((255, 255, 255))  # set background color characters
-    stream.set_foreign_color((0, 0, 0))  # set foreign color
-    stream.print("Sounds\n")  # print into buffer console
-
-    # set attributes of second string
-    stream.gotoxy(5, 1)  # go to position x: 5, y: 1
-    stream.italic(True)  # set true italic
-    stream.print("in Kurses!")  # print into buffer console, again
-
-    keys = term.keyspressed()
-
-    if "space" in keys:
-        effect.play(2)
-
-    if "w" in keys:
-        buzzer.play(0, 25)
-
-    if "s" in keys:
-        buzzer.beep(440, 25, 25)
-
-
-
-# set loop function
-term.set_target(loop)
-
-# run all program
-term.main_loop()
-```
-
-### [keypressed.py](examples/keypressed.py)
-```python
-# load modules
-import random
-
-from kurses import VirtualTerminal
-
-# instance Virtual console
-console = VirtualTerminal("ModernDOS8x16.ttf")
-buffer = console.stream  # get buffer console
-
-# define global variables
-x, y = 0, 0
-
-
-# define loop function
-def loop():
-    global x, y
-
-    buffer.clrscr()
-    buffer.resetall()  # restore default attributes in the buffer console
-
-    # check key pressed
-    if "w" in console.keyspressed():
-        y -= 1
-    elif "s" in console.keyspressed():
-        y += 1
-    if "a" in console.keyspressed():
-        x -= 1
-    elif "d" in console.keyspressed():
-        x += 1
-
-    # all draw events of string with random colors
-    _x = x
-
-    for _c in "Random color":
-        buffer.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
-        buffer.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
-        buffer.gotoxy(_x, y)  # set position
-        buffer.cputs(_c)  # print character into buffer console
-        _x += 1
-
-
-# set loop function
-console.set_target(loop)
-
-# run all program
-console.main_loop()
-```
-
-### [asteroids.py](examples/asteroids.py)
-```python
-import random
-import time
-
-import kurses.stream
-from kurses import VirtualTerminal, StreamBuffer
-from kurses.font_resources import QualityFont
-
-SHIP = """\
- |
-/0\\
-"""
-
-
-def draw_ship(x, y, buffer):
-    buffer.gotoxy(x, y)
-    buffer.set_foreign_color((255, 0, 255))
-    buffer.print(SHIP)
-    buffer.resetall()
-
-
-def random_asteroid(_x=(0, 80), _y=(0, 30)):
-    return (
-        random.randint(*_x),
-        random.randint(*_y),
-        random.randint(1, 2),
-        random.sample([(255, 255, 255), (255, 255, 0), (0, 0, 255), (0, 255, 255), (255, 0, 0), (0, 255, 0)], 1)[0],
-        random.sample("*", 1)[0],
-    )
-
-
-console = VirtualTerminal(font_filename="ModernDOS8x16.ttf", quality=QualityFont.LCD)
-
-main_buffer = console.stream
-
-score_buffer = StreamBuffer(40, 15, sx=2, sy=2, type_cursor=kurses.stream.TypeCursor.RECT)
-score_buffer.x = 0
-score_buffer.y = 0
-score_buffer.type_cursor = kurses.stream.TypeCursor.EMPTY
-
-asteroids = [random_asteroid() for _ in range(5)]
-
-x_ship, y_ship = random.randint(0, 70), random.randint(0, 30)
-
-life, score = 100, 0
-shoots = []
-
-
-def loop():
-    global x_ship, y_ship, life, score
-    rows, columns = main_buffer.buffersize
-
-    time.sleep(0.025)
-
-    for stream in console.streams:
-        stream.clrscr()
-
-    if life > 0:
-        if score >= 10:
-            _msg = "You win!"
-            main_buffer.bold(True)
-            main_buffer.cputsxy(40 - (len(_msg) // 2), 15, _msg)
-
-            main_buffer.resetall()
-
-            _msg = "Press SPACE for play again"
-            main_buffer.set_foreign_color((255, 255, 0))
-            main_buffer.cputsxy(40 - (len(_msg) // 2), 16, _msg)
-
-            main_buffer.resetall()
-
-            if "space" in console.keyspressed():
-                life = 100
-
-        else:
-            if "w" in console.keyspressed() and y_ship >= 0:
-                y_ship -= 1
-            elif "s" in console.keyspressed() and y_ship <= rows - 3:
-                y_ship += 1
-
-            if "a" in console.keyspressed() and x_ship >= 0:
-                x_ship -= 1
-            elif "d" in console.keyspressed() and x_ship <= columns - 3:
-                x_ship += 1
-
-            if "space" in console.keyspressed():
-                if len(shoots) == 0:
-                    shoots.append((x_ship, y_ship))
-
-            draw_ship(x_ship, y_ship, main_buffer)
-
-            for i, (_x, _y, speed, color, c) in enumerate(asteroids):
-                main_buffer.set_foreign_color(color)
-                main_buffer.putchxy(_x, _y, c)
-                main_buffer.resetall()
-
-                _y += speed
-
-                if _y > rows:
-                    _x = random.randint(0, columns)
-                    _y = 0
-
-                if _x in range(x_ship, x_ship + 3) and _y in range(y_ship, y_ship + 3):
-                    if c == '.':
-                        score += 1
-                    else:
-                        life -= 5
-
-                    asteroids.remove(asteroids[i])
-                    asteroids.append(random_asteroid(_y=(0, 0)))
-                else:
-                    asteroids[i] = _x, _y, speed, color, c
-
-            for i, (_x, _y) in enumerate(shoots):
-                _y -= 1
-                main_buffer.set_foreign_color((0, 255, 0))
-                main_buffer.putchxy(_x, _y, '0')
-                main_buffer.resetall()
-
-                if _y < 0:
-                    shoots.remove(shoots[i])
-                else:
-                    shoots[i] = _x, _y
-
-            for i, (_x, _y) in enumerate(shoots):
-                for j, (_xx, _yy, speed, color, c) in enumerate(asteroids):
-                    if _x == _xx and _y == _yy:
-                        asteroids.remove(asteroids[j])
-                        score += 1
-
-            _msg = f"life: {life}"
-            score_buffer.gotoxy(0, 0)
-            score_buffer.bold(True)
-            score_buffer.set_background_color((255, 0, 0))
-            score_buffer.set_foreign_color((255, 255, 0))
-            score_buffer.print(_msg)
-            score_buffer.resetall()
-
-            _msg = f"score: {score}"
-            score_buffer.gotoxy(40 - len(_msg), 0)
-            score_buffer.bold(True)
-            score_buffer.set_background_color((0, 0, 255))
-            score_buffer.set_foreign_color((255, 255, 255))
-            score_buffer.print(_msg)
-            score_buffer.resetall()
-
-    else:
-        _msg = "You lost!"
-        main_buffer.bold(True)
-        main_buffer.cputsxy(40 - (len(_msg) // 2), 15, _msg)
-
-        main_buffer.resetall()
-
-        _msg = "Press SPACE for play again"
-        main_buffer.set_foreign_color((255, 0, 0))
-        main_buffer.cputsxy(40 - (len(_msg) // 2), 16, _msg)
-
-        main_buffer.resetall()
-
-        if "space" in console.keyspressed():
-            life = 100
-
-
-if __name__ == '__main__':
-    console.streams.append(score_buffer)
-
-    console.title = "Asteroids"
-    console.set_target(loop)
-    console.main_loop()
-
-```
-
-### [runtime_target_example.py](examples/asteroids.py)
-```python
-import random
-import typing
-
-from kurses import VirtualTerminal
-from kurses.events import EventTargetRuntime
 
 term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")
 stream = term.stream
 
 
-class MyTarget(EventTargetRuntime):
-    def __init__(self):
-        self.position = 0, 0
-
-    def load(self):
-        term.resizable = True
-        stream.resetall()
-
-    def update(self, dt):
-        x, y = self.position
-
-        stream.clrscr()
-
-        stream.gotoxy(x, y)
-        stream.set_foreign_color(tuple(random.randint(0, 255) for _ in range(3)))
-        stream.set_background_color(tuple(random.randint(0, 255) for _ in range(3)))
-        stream.print("Hello\n")
-
-        stream.gotoxy(x + 5, y + 1)
-        stream.italic(True)
-        stream.print("world!")
-
-    def key_down(self, key: chr):
-        print(f"Key down: {key}")
-
-    def key_up(self, key: chr):
-        print(f"Key up: {key}")
-
-    def mouse(self, position: typing.Tuple[int, int], click: int):
-        self.position = position
-
-    def exit(self):
-        stream.resetall()
-        stream.gotoxy(0, 0)
-        stream.set_foreign_color((255, 255, 255))
-        stream.print("Goodbye")
-
-
-if __name__ == "__main__":
-    term.set_runtime(MyTarget)
-
-    term.main_loop()
-
-```
-
-### [battery_demo.py](examples/battery_demo.py)
-```python
-# load module
-from kurses import VirtualTerminal
-
-# instance Virtual console
-term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources
-stream = term.stream  # get main buffer console
-
-
-# define loop function
 def loop():
-    bat_status, bat_value = term.battery()
-
-    stream.resetall()  # restore default attributes in the buffer console
-
-    # set attributes of first string
-    stream.gotoxy(0, 0)  # go to position x: 0, y: 0
-    stream.set_background_color((255, 255, 255))  # set background color characters
-    stream.set_foreign_color((0, 0, 0))  # set foreign color
-    stream.print(f"Battery status: {bat_status}")  # print info
-
-    # set attributes of second string
-    stream.gotoxy(0, 1)  # go to position x: 0, y: 1
-    stream.italic(True)  # set true italic
-    stream.print(f"Battery value: {bat_value}%") # print battery value
-
-
-# set title of terminal
-term.title = "Battery demo"
-
-# set loop function
-term.set_target(loop)
-
-# run all program
-term.main_loop()
-```
-
-### [sensor_demo.py](examples/sensor_demo.py)
-```python
-# load module
-from kurses import VirtualTerminal
-
-# instance Virtual console
-term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources
-stream = term.stream  # get main buffer console
-
-
-# define loop function
-def loop():
-    gyro = term.gyroscope()
-    acce = term.accelerometer()
-
     stream.resetall()
-
+    stream.gotoxy(0, 0)
     stream.set_background_color((255, 255, 255))
     stream.set_foreign_color((0, 0, 0))
+    stream.print("Hello")
 
-    stream.gotoxy(0, 0)
-    stream.print(f"Gyroscope: {gyro}")
-
-    stream.gotoxy(0, 1)
-    stream.print(f"Accelerometer: {acce}")
+    stream.gotoxy(5, 1)
+    stream.italic(True)
+    stream.print("world!")
 
 
-# set title of terminal
-term.title = "Sensors demo (Gyroscope and accelerometer)"
-
-# set loop function
 term.set_target(loop)
-
-# run all program
 term.main_loop()
 ```
 
-### [bitmap_demo.py](examples/bitmap_demo.py)
-```python
-from kurses import VirtualTerminal
-from kurses.term import Rendering
+More examples are available in the [`examples/`](examples/) directory:
 
-term = VirtualTerminal(font_filename="./ModernDOS8x16.ttf", rendering=Rendering.SOFTWARE, bitmap_enabled=False)
-stream = term.stream
-graphics = term.graphics
+- [`hello_world.py`](examples/hello_world.py) — basic styled text.
+- [`keypressed.py`](examples/keypressed.py) — keyboard-controlled movement.
+- [`testing.py`](examples/testing.py) — colors, styles and rectangles.
+- [`virtual_buffer.py`](examples/virtual_buffer.py) — multiple buffers.
+- [`audio_demo.py`](examples/audio_demo.py) — sound effects, music and buzzer.
+- [`bitmap_demo.py`](examples/bitmap_demo.py) — 2D primitives.
+- [`runtime_target_example.py`](examples/runtime_target_example.py) — event-driven runtime.
+- [`battery_demo.py`](examples/battery_demo.py) — battery status.
+- [`sensors_demo.py`](examples/sensors_demo.py) — gyroscope and accelerometer.
+- [`touch_demo.py`](examples/touch_demo.py) — touch input.
+- [`asteroids.py`](examples/asteroids.py) — small game combining several features.
 
-stream.cputsxy(40, 20, "Hello World")
+## Development
 
-def loop():
-    state, _, (x, y) = term.mouse()
-    width, height = term.size
+This project uses [uv](https://docs.astral.sh/uv/) for environment and dependency
+management.
 
-    graphics.circle(0, 0, 59, (255, 0, 0), filled=True)
-    graphics.polygon([400, 100, 500, 300, 300, 300], (255, 0, 255), filled=True)
-    graphics.line([0, 0], [width, height], (255, 0, 0), thickness=10)
-    graphics.circle(x, y, 15, (255, 255, 0), filled=False)
-    graphics.rect(0, 0, (10, 10), (0, 255, 0), filled=True)
-    graphics.rect(10, 10, (10, 10), (0, 255, 0), filled=False)
+```bash
+# Sync the environment with SDL2 support
+uv sync --extra sdl2
 
-    term.purge()
+# Run the linters and type checker
+uv run ruff check .
+uv run mypy src/kurses
 
+# Serve the documentation locally
+uv run mkdocs serve
 
-if __name__ == "__main__":
-    term.title = "Primitives graphics"
-    term.set_target(loop)
-
-    term.main_loop()
+# Build the package
+uv build
 ```
+
+## Project layout
+
+```
+.
+├── docs/                  # MkDocs documentation
+├── examples/              # Runnable examples
+├── resources/             # Logo and assets
+├── src/kurses/            # Package source
+│   ├── backend/           # SDL2/Pygame backends
+│   ├── events/            # Event-driven runtime
+│   ├── font_resources.py  # Font quality / encoding enums
+│   ├── graphics/          # Bitmap primitives
+│   ├── interface/         # Battery, sensors, joystick, touch
+│   ├── resources/         # Audio and buzzer
+│   ├── stream/            # Text buffers and attributes
+│   ├── surface/           # Texture and bitmap surfaces
+│   ├── colors.py          # Color helpers
+│   └── term.py            # VirtualTerminal base class
+├── pyproject.toml         # Project metadata and tool config
+├── mkdocs.yml             # Documentation configuration
+├── CHANGELOG.md           # Release notes
+└── README.md              # This file
+```
+
+## License
+
+This project is released under the LGPL-2.1 license. See
+[`LICENSE.md`](LICENSE.md) for details.
