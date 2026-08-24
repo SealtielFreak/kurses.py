@@ -30,6 +30,32 @@ At the moment it is only implemented to work with SDL2 (PySDL2).
 pip install pysdl2 pysdl2-dll
 ```
 
+Or install the optional SDL2 extra:
+
+```
+pip install "kurses-py[sdl2]"
+```
+
+## Development
+
+This project uses [uv](https://docs.astral.sh/uv/) for environment and dependency
+management.
+
+```bash
+# Clone the repository and sync the environment with SDL2 support
+uv sync --extra sdl2
+
+# Run the linters and type checker
+uv run ruff check .
+uv run mypy src/kurses
+
+# Serve the documentation locally
+uv run mkdocs serve
+
+# Build the package
+uv build
+```
+
 ## Examples
 ### [hello_world.py](examples/hello_world.py)
 
