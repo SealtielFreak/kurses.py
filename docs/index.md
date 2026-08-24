@@ -1,40 +1,35 @@
 # kurses.py
 
-This module uses SDL2 (or Pygame) to emulate the functions of the
+[![Python - Version](https://img.shields.io/badge/python-%3E%3D3.8-brightgreen)](https://python.org)
+[![PyPI - Version](https://img.shields.io/pypi/v/kurses-py?color=green&label=pip%20install%20kurses)](https://pypi.org/project/kurses-py/)
+[![License](https://img.shields.io/pypi/l/kurses.py)](https://github.com/SealtielFreak/kurses.py/blob/main/LICENSE.md)
+
+**kurses.py** is a Python module that emulates the classic
 [`conio`](https://en.wikipedia.org/wiki/Conio.h) and
 [`curses`](https://en.wikipedia.org/wiki/Curses_(programming_library))
-libraries, which are used to create text-based user interfaces. You can control
-the color and cursor of the text, as well as the position and size of the
-window, the bit depth, typography and text styles (underline, bold, italic and
-strikethrough).
+libraries on top of SDL2 (via PySDL2). It lets you build colorful, styled,
+text-based user interfaces that run cross-platform without relying on a real
+terminal.
 
-It is designed to offer a cross-platform solution for creating text-based
-applications, independent of the system where they run.
+Whether you want to prototype a retro console UI, draw text with custom bitmap
+fonts, play sound effects and music, read joysticks, or even render 2D
+primitives, `kurses.py` gives you a single, familiar API to do it all.
 
-## How to install it?
+## Features
 
-With `uv`:
+- **Virtual terminal** with configurable size, title, FPS and hardware/software
+  rendering.
+- **Text buffers** inspired by `conio`/`curses`: `gotoxy`, `cputs`, `clrscr`,
+  colors, bold, italic, underline, strikethrough, and more.
+- **Multiple buffers** to compose independent screen regions.
+- **Bitmap graphics mode** for 2D primitives (lines, rectangles, circles,
+  polygons) mixed with text.
+- **Audio system** for sound effects and music through SDL2 mixer.
+- **Joystick**, **sensor**, **battery** and **touch** input abstractions.
+- **Event-driven runtime** class for cleaner game-loop architectures.
+- **Cross-platform**: Windows, macOS and Linux through SDL2.
 
-```bash
-uv pip install kurses-py
-```
-
-Or with `pip`:
-
-```bash
-pip install kurses-py
-```
-
-### Dependencies
-
-At the moment it is only implemented to work with SDL2 (PySDL2). Install the
-optional SDL2 extra:
-
-```bash
-uv pip install "kurses-py[sdl2]"
-```
-
-## Quick start
+## Quick example
 
 ```python
 from kurses import VirtualTerminal
@@ -48,7 +43,7 @@ def loop():
     stream.gotoxy(0, 0)
     stream.set_background_color((255, 255, 255))
     stream.set_foreign_color((0, 0, 0))
-    stream.print("Hello\n")
+    stream.print("Hello")
 
     stream.gotoxy(5, 1)
     stream.italic(True)
@@ -59,19 +54,14 @@ term.set_target(loop)
 term.main_loop()
 ```
 
-## Development
+## Where to go next
 
-This project uses [uv](https://docs.astral.sh/uv/) for environment and dependency
-management.
-
-```bash
-# Sync the environment with SDL2 support
-uv sync --extra sdl2
-
-# Run linters and type checker
-uv run ruff check .
-uv run mypy src/kurses
-
-# Build the documentation
-uv run mkdocs serve
-```
+- [Install kurses.py](getting-started/installation.md) — `pip`, `uv` and SDL2
+  setup.
+- [Quickstart](getting-started/quickstart.md) — create your first window and
+  understand the loop.
+- [Tutorials](tutorials/hello-world.md) — step-by-step guides based on the
+  bundled examples.
+- [API Reference](api/index.md) — auto-generated docs for every module, class
+  and function.
+- [Changelog](changelog.md) — release history and breaking changes.
