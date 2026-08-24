@@ -9,7 +9,8 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
-  logo: material/console
+  icon:
+    logo: material/console
   favicon: resources/kurses-py.png
   palette:
     - media: "(prefers-color-scheme: light)"
