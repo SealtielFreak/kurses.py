@@ -77,7 +77,7 @@ class SDL2BitmapSurface(kurses.surface.bitmap.BitmapSurface):
         }
 
         for fig in self.graphics:
-            draw = all_draw_method.get(type(fig), None)
+            draw = all_draw_method.get(type(fig))
 
             if draw is not None:
                 draw(fig)

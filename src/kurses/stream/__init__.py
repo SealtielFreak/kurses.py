@@ -2,7 +2,7 @@ import collections
 import typing
 
 import kurses.colors
-from kurses.stream.attributes import TypeCursor, CharacterAttribute, RectangleAttribute
+from kurses.stream.attributes import CharacterAttribute, RectangleAttribute, TypeCursor
 from kurses.stream.buffer import BufferMatrix
 
 DEFAULT_PTSIZE = 16
@@ -326,7 +326,7 @@ class StreamBuffer:
             x += 1
 
         if isinstance(_x, str):
-            raise ""
+            raise TypeError("_x must be an integer")
 
         self.gotoxy(x, y)
 

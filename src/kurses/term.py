@@ -10,7 +10,7 @@ import kurses.interface.joystick
 import kurses.stream
 import kurses.surface.texture
 from kurses.interface.battery import BatteryType
-from kurses.interface.sensors import GyroscopeType, AccelerometerType
+from kurses.interface.sensors import AccelerometerType, GyroscopeType
 from kurses.interface.touch import TouchType
 from kurses.resources.buzzer import Buzzer
 
@@ -52,21 +52,24 @@ class VirtualTerminal(abc.ABC, typing.Generic[T]):
         self.__main_stream = kurses.stream.StreamBuffer(rows, cols)
         self.__stream_list = [self.__main_stream]
         self.__buffer_list = [self.__main_bitmap]
-        self.__window_title = kwargs.get("title", "Virtual terminal")
-        self.__type_rendering = kwargs.get("rendering", Rendering.HARDWARE)
-        self.__bitmap_enabled = kwargs.get("bitmap_enabled", False)
-        self.__sound_enabled = kwargs.get("sound_enabled", False)
+        self.__window_title: str = kwargs.get("title", "Virtual terminal")
+        self.__type_rendering: Rendering = kwargs.get("rendering", Rendering.HARDWARE)
+        self.__bitmap_enabled: bool = kwargs.get("bitmap_enabled", False)
+        self.__sound_enabled: bool = kwargs.get("sound_enabled", False)
 
         self._font_filename = font_filename
         self._dt = 1.0
-        self._resizable = kwargs.get("resizable", False)
+        self._resizable: bool = kwargs.get("resizable", False)
 
         self.fps = kwargs.get("fps", 30)
         self.running = True
 
         if self.__bitmap_enabled:
-            warnings.warn("The bitmap function is experimental; changes will likely occur in future versions.",
-                          FutureWarning)
+            warnings.warn(
+                "The bitmap function is experimental; changes will likely occur in future versions.",
+                FutureWarning,
+                stacklevel=2,
+            )
 
     @property
     @abc.abstractmethod

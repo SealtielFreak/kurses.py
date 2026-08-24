@@ -14,7 +14,7 @@ import kurses.stream
 import kurses.term
 from kurses.backend.sdl2.resources import SDL2AudioSystem
 from kurses.backend.sdl2.resources.mixer import SDL2Buzzer
-from kurses.interface.battery import BatteryType, BatteryStatus
+from kurses.interface.battery import BatteryStatus, BatteryType
 from kurses.interface.sensors import AccelerometerType, GyroscopeType
 from kurses.interface.touch import TouchType
 from kurses.resources.buzzer import Buzzer
@@ -75,18 +75,18 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         self.__joystick = kurses.backend.JoystickInterface()
         self.__mouse = [], (0, 0), (0, 0)
 
-        self.__current_resizable_window = kwargs.get("resizable_window", True)
+        self.__current_resizable_window: bool = kwargs.get("resizable_window", True)
         self.resizable_window = self.__current_resizable_window
 
         if self.sound_enabled:
             self.__system_sound = SDL2AudioSystem()
 
-        self.__buzzer = SDL2Buzzer()
+        self.__buzzer: Buzzer = SDL2Buzzer()
 
         self.__c_sensors = {}
         self.__num_sensors = 0
-        self.__gyroscope = False, (0, 0, 0)
-        self.__accelerometer = False, (0, 0, 0)
+        self.__gyroscope: GyroscopeType = False, (0, 0, 0)
+        self.__accelerometer: AccelerometerType = False, (0, 0, 0)
 
         self.__c_active_fingers = {}
 
@@ -207,7 +207,8 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
         width, height = self.size
         rows, cols = self.stream.shape
 
-        get_key_from_event = lambda e: chr_format_key_sdl2(sdl2.SDL_GetKeyName(e.key.keysym.sym))
+        def get_key_from_event(e):
+            return chr_format_key_sdl2(sdl2.SDL_GetKeyName(e.key.keysym.sym))
 
         if event.type == sdl2.SDL_QUIT:
             self.quit()
@@ -319,10 +320,9 @@ class SDL2VirtualTerminal(kurses.term.VirtualTerminal):
 
     def touch(self) -> typing.List[TouchType]:
         def _read_fingers():
-            for fid, (x, y) in self.__c_active_fingers.items():
-                yield fid, (x, y)
+            yield from self.__c_active_fingers.items()
 
-        return list(*_read_fingers())
+        return list(_read_fingers())
 
     def battery(self) -> BatteryType:
         secs = ctypes.c_int(0)

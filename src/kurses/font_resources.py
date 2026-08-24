@@ -27,8 +27,8 @@ class FontResources(abc.ABC, typing.Generic[R]):
         self.__filename = filename
         self.__ptsize = ptsize
         self.__depth_colors = depth_colors
-        self.__quality_font = kwargs.get("quality", QualityFont.BLENDED)
-        self.__encoding = kwargs.get("encoding", EncodingFont.ASCII)
+        self.__quality_font: QualityFont = kwargs.get("quality", QualityFont.BLENDED)
+        self.__encoding: EncodingFont = kwargs.get("encoding", EncodingFont.ASCII)
         self.auto_clean_cache = kwargs.get("auto_clean_cache", True)
         self.auto_clean_buffer = kwargs.get("auto_clean_buffer", True)
 

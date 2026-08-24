@@ -2,7 +2,7 @@ import random
 import time
 
 import kurses.stream
-from kurses import VirtualTerminal, StreamBuffer
+from kurses import StreamBuffer, VirtualTerminal
 from kurses.font_resources import QualityFont
 
 SHIP = """\

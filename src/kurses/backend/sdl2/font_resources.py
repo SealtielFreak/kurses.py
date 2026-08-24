@@ -42,7 +42,7 @@ def get_size_from_texture_sdl2(texture: sdl2.SDL_Texture):
     return w.value, h.value
 
 
-def get_size_from_surface_sdl2(surface: sdl2.SDL_Surface):
+def get_size_from_surface_sdl2(surface: sdl2.SDL_Surface) -> typing.Tuple[int, int]:
     return surface.contents.w, surface.contents.h
 
 
@@ -61,14 +61,14 @@ def create_texture_chr_sdl2(font: sdl2.sdlttf.TTF_Font, render_method: RenderMet
 def get_style_sdl2(chr_attr: kurses.stream.CharacterAttribute, all_styles: dict) -> int:
     style = 0
 
-    for _s in all_styles.keys():
+    for _s in all_styles:
         if getattr(chr_attr, _s):
             style |= all_styles[_s]
 
     return style
 
 
-def get_size_surface_from_font(font: sdl2.sdlttf.TTF_Font, render_method: RenderMethodSDL2):
+def get_size_surface_from_font(font: sdl2.sdlttf.TTF_Font, render_method: RenderMethodSDL2) -> typing.Tuple[int, int]:
     _surface = render_method(font, ord(' '), cast_color_sdl2((0, 0, 0)), cast_color_sdl2((0, 0, 0)))
     size = get_size_from_surface_sdl2(_surface)
 
@@ -138,7 +138,7 @@ class SDL2FontResources(kurses.font_resources.FontResources):
             self.encoding, self.quality, self.__ALL_RENDER_METHODS_SDL2
         )
 
-        self.__size = get_size_surface_from_font(
+        self.__size: typing.Tuple[int, int] = get_size_surface_from_font(
             self.__c_font, self.__default_render_method()
         )
 

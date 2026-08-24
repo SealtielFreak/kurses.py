@@ -1,6 +1,6 @@
 # load module
 import kurses.stream
-from kurses import VirtualTerminal, StreamBuffer
+from kurses import StreamBuffer, VirtualTerminal
 
 # instance Virtual console
 term = VirtualTerminal(font_filename="ModernDOS8x16.ttf")  # load font resources

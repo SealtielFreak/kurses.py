@@ -71,7 +71,7 @@ class BufferMatrix:
         self.__buffer_matrix = [[None] * self.__cols for _ in range(self.__rows)]
 
     def reshape(self, shape: typing.Tuple[int, int]):
-        all_buff_objects = [obj for obj in self]
+        all_buff_objects = list(self)
 
         self.__rows, self.__cols = shape
         self.__buffer_matrix = [[None] * self.__cols for _ in range(self.__rows)]

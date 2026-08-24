@@ -37,7 +37,7 @@ class CharacterAttribute(Attribute):
         return hash(_hash_tuple)
 
     def __bool__(self):
-        return not self.code == ord(' ')
+        return self.code != ord(' ')
 
     @property
     def chr(self) -> str:

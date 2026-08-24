@@ -3,7 +3,13 @@ import math
 import typing
 
 import kurses.colors
-from kurses.graphics.primitive import PolygonFigure, CircleFigure, RectangleFigure, LineFigure, PrimitiveFigure
+from kurses.graphics.primitive import (
+    CircleFigure,
+    LineFigure,
+    PolygonFigure,
+    PrimitiveFigure,
+    RectangleFigure,
+)
 
 
 class GraphicsBuffer:

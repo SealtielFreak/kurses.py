@@ -1,5 +1,5 @@
 # load module
-from kurses import VirtualTerminal, Effect, Music
+from kurses import Effect, Music, VirtualTerminal
 
 # instance Virtual console
 term = VirtualTerminal(font_filename="ModernDOS8x16.ttf", sound_enabled=True)  # load font resources
