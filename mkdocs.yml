@@ -42,16 +42,21 @@ nav:
       - Installation: getting-started/installation.md
       - Quickstart: getting-started/quickstart.md
   - Tutorials:
-      - Hello World: tutorials/hello-world.md
-      - Keyboard Input: tutorials/keyboard-input.md
-      - Colors and Styles: tutorials/colors-styles.md
-      - Virtual Buffers: tutorials/virtual-buffers.md
-      - Audio: tutorials/audio.md
-      - Bitmap Graphics: tutorials/bitmap-graphics.md
-      - Runtime Events: tutorials/runtime-events.md
-      - Sensors and Battery: tutorials/sensors-battery.md
-      - Touch Input: tutorials/touch-input.md
-      - Asteroids Game: tutorials/asteroids.md
+      - Basics:
+          - Hello World: tutorials/basics/hello-world.md
+      - Graphics:
+          - Colors and Styles: tutorials/graphics/colors-styles.md
+          - Bitmap Graphics: tutorials/graphics/bitmap-graphics.md
+          - Asteroids Game: tutorials/graphics/asteroids.md
+      - System:
+          - Keyboard Input: tutorials/system/keyboard-input.md
+          - Virtual Buffers: tutorials/system/virtual-buffers.md
+          - Runtime Events: tutorials/system/runtime-events.md
+      - Sensors:
+          - Sensors and Battery: tutorials/sensors/sensors-battery.md
+          - Touch Input: tutorials/sensors/touch-input.md
+      - Audio:
+          - Audio: tutorials/audio/audio.md
   - API Reference:
       - Overview: api/index.md
       - Virtual Terminal: api/terminal.md
